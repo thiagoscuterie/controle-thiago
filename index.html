@@ -4,1046 +4,779 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Controle Thiago">
 <title>Controle do Thiago</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&family=DM+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root {
-  --bg0: #080b12;
-  --bg1: #0d1220;
-  --glass: rgba(255,255,255,0.04);
-  --glass2: rgba(255,255,255,0.07);
-  --border: rgba(255,255,255,0.09);
-  --border2: rgba(255,255,255,0.14);
-  --text: #f0f4ff;
-  --sub: #7a8aaa;
-  --dim: #3a4560;
-  --green: #00f5b0;
-  --green2: #00c98a;
-  --red: #ff4d6d;
-  --orange: #ff9f43;
-  --warn: #ffd166;
-  --purple: #b197fc;
-  --blue: #74c0fc;
-  --etanol: #40e0a0;
-  --gasolina: #ff9f43;
-  --r: 16px;
-  --r2: 20px;
+:root{
+  --bg:#080b12;--glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.14);
+  --text:#f0f4ff;--sub:#7a8aaa;
+  --green:#00f5b0;--green2:#00c98a;--red:#ff4d6d;--orange:#ff9f43;
+  --warn:#ffd166;--purple:#b197fc;--blue:#74c0fc;
+  --etanol:#40e0a0;--gasolina:#ff9f43;
 }
-* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding:16px 14px 60px;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 80% 10%,rgba(0,245,176,0.10) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 10% 80%,rgba(180,120,255,0.08) 0%,transparent 55%);}
+body>*{position:relative;z-index:1;}
 
-body {
-  background: var(--bg0);
-  color: var(--text);
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  min-height: 100vh;
-  padding: 16px 14px 60px;
-  overflow-x: hidden;
-}
+.header{text-align:center;padding:10px 0 18px;}
+.header-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,245,176,0.1);border:1px solid rgba(0,245,176,0.2);border-radius:99px;padding:4px 12px;font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:10px;}
+.header-title{font-family:'Montserrat',sans-serif;font-size:2rem;font-weight:900;background:linear-gradient(135deg,#fff 30%,var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header-sub{font-size:0.72rem;color:var(--sub);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
 
-/* ANIMATED BG */
-body::before {
-  content:'';
-  position:fixed; inset:0; z-index:0; pointer-events:none;
-  background:
-    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(0,245,176,0.10) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 10% 80%, rgba(180,120,255,0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(116,192,252,0.04) 0%, transparent 50%);
-}
-body > * { position:relative; z-index:1; }
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:20px;background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:4px;}
+.tab-btn{padding:10px 6px;border-radius:14px;border:none;background:transparent;color:var(--sub);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.25s;-webkit-appearance:none;}
+.tab-btn.active{background:linear-gradient(135deg,rgba(0,245,176,0.2),rgba(0,201,138,0.15));color:var(--green);border:1px solid rgba(0,245,176,0.25);}
 
-/* HEADER */
-.header {
-  text-align:center;
-  padding: 10px 0 18px;
-}
-.header-badge {
-  display:inline-flex; align-items:center; gap:6px;
-  background: rgba(0,245,176,0.1);
-  border: 1px solid rgba(0,245,176,0.2);
-  border-radius:99px;
-  padding: 4px 12px;
-  font-size:0.68rem;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color: var(--green);
-  margin-bottom:10px;
-}
-.header-title {
-  font-family:'Montserrat',sans-serif;
-  font-size:2rem;
-  font-weight:800;
-  letter-spacing:-0.5px;
-  background: linear-gradient(135deg, #fff 30%, var(--green));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  background-clip:text;
-  line-height:1.1;
-}
-.header-sub {
-  font-size:0.72rem;
-  color:var(--sub);
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  margin-top:4px;
-}
+.gc{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;}
+.gc.ag{border-color:rgba(0,245,176,0.2);background:linear-gradient(135deg,rgba(0,245,176,0.06),var(--glass));}
+.gc.ap{border-color:rgba(177,151,252,0.2);background:linear-gradient(135deg,rgba(177,151,252,0.05),var(--glass));}
+.sec{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--sub);margin-bottom:10px;font-weight:600;}
 
-/* STORAGE BANNER */
-.storage-banner {
-  display:flex; align-items:center; justify-content:center; gap:6px;
-  padding:7px 14px; border-radius:99px; font-size:0.68rem;
-  margin-bottom:16px; width:fit-content; margin-inline:auto;
-  animation: fadeIn 0.5s ease;
-}
-.storage-banner.ok   { background:rgba(0,245,176,0.08); color:var(--green);  border:1px solid rgba(0,245,176,0.2); }
-.storage-banner.warn { background:rgba(255,209,102,0.08); color:var(--warn); border:1px solid rgba(255,209,102,0.2); }
+.meta-goal-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.meta-num{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--green);cursor:pointer;border-bottom:1px dashed rgba(0,245,176,0.4);}
+.meta-inp{background:rgba(0,245,176,0.08);border:1px solid rgba(0,245,176,0.3);border-radius:10px;color:var(--green);font-family:'DM Mono',monospace;font-size:1.1rem;padding:4px 10px;width:130px;outline:none;display:none;-webkit-appearance:none;}
+.meta-tap{font-size:0.7rem;color:var(--sub);background:var(--glass2);border:1px solid var(--border2);border-radius:99px;padding:3px 10px;cursor:pointer;}
+.meta-track{width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;margin-bottom:8px;}
+.meta-fill{height:100%;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:99px;transition:width 0.8s ease;box-shadow:0 0 10px rgba(0,245,176,0.4);}
+.meta-row{display:flex;justify-content:space-between;font-size:0.78rem;}
+.meta-done{color:var(--green);font-weight:600;font-family:'DM Mono',monospace;}
+.meta-pct{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--green);}
+.meta-hint{font-size:0.7rem;color:var(--warn);margin-top:5px;font-family:'DM Mono',monospace;}
 
-/* TABS */
-.tabs {
-  display:grid; grid-template-columns:1fr 1fr 1fr;
-  gap:6px; margin-bottom:20px;
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius:var(--r2);
-  padding:4px;
-  backdrop-filter:blur(12px);
-}
-.tab-btn {
-  padding:10px 6px; border-radius:14px;
-  border:none; background:transparent;
-  color:var(--sub); font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:0.8rem; font-weight:600; cursor:pointer;
-  transition:all 0.25s ease; letter-spacing:0.3px;
-  -webkit-appearance:none;
-}
-.tab-btn.active {
-  background: linear-gradient(135deg, rgba(0,245,176,0.2), rgba(0,201,138,0.15));
-  color:var(--green);
-  border:1px solid rgba(0,245,176,0.25);
-  box-shadow: 0 2px 12px rgba(0,245,176,0.15);
-}
+.md-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.md-item{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:12px;}
+.md-label{font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;}
+.md-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;margin-top:3px;}
 
-/* GLASS CARD */
-.gc {
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius:var(--r2);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding:16px;
-  margin-bottom:12px;
-  animation: slideUp 0.4s ease both;
-}
-.gc.accent-green { border-color:rgba(0,245,176,0.2); background:linear-gradient(135deg,rgba(0,245,176,0.06),var(--glass)); }
-.gc.accent-red   { border-color:rgba(255,77,109,0.2); background:linear-gradient(135deg,rgba(255,77,109,0.05),var(--glass)); }
-.gc.accent-purple{ border-color:rgba(177,151,252,0.2); background:linear-gradient(135deg,rgba(177,151,252,0.05),var(--glass)); }
-.gc.accent-orange{ border-color:rgba(255,159,67,0.2);  background:linear-gradient(135deg,rgba(255,159,67,0.05),var(--glass)); }
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.kpi{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:14px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi.g::before{background:linear-gradient(90deg,transparent,var(--green),transparent);}
+.kpi.r::before{background:linear-gradient(90deg,transparent,var(--red),transparent);}
+.kpi.w::before{background:linear-gradient(90deg,transparent,var(--warn),transparent);}
+.kpi.p::before{background:linear-gradient(90deg,transparent,var(--purple),transparent);}
+.kpi-icon{font-size:1.1rem;margin-bottom:4px;}
+.kpi-label{font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;}
+.kpi-val{font-family:'DM Mono',monospace;font-size:1.15rem;font-weight:600;margin-top:3px;}
+.kpi-val.g{color:var(--green);}.kpi-val.r{color:var(--red);}.kpi-val.w{color:var(--warn);}.kpi-val.wh{color:var(--text);}.kpi-val.p{color:var(--purple);}
 
-@keyframes slideUp {
-  from { opacity:0; transform:translateY(14px); }
-  to   { opacity:1; transform:translateY(0); }
-}
-@keyframes fadeIn {
-  from { opacity:0; } to { opacity:1; }
-}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.stat{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:12px 14px;}
+.stat-label{font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;}
+.stat-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--text);margin-top:3px;}
 
-/* SECTION LABEL */
-.sec-label {
-  font-size:0.62rem; letter-spacing:2px; text-transform:uppercase;
-  color:var(--sub); margin-bottom:10px; font-weight:600;
-}
+.fuel-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.fuel-card{border-radius:16px;padding:14px;}
+.fuel-card.et{background:linear-gradient(135deg,rgba(64,224,160,0.12),rgba(64,224,160,0.04));border:1px solid rgba(64,224,160,0.25);}
+.fuel-card.gas{background:linear-gradient(135deg,rgba(255,159,67,0.12),rgba(255,159,67,0.04));border:1px solid rgba(255,159,67,0.25);}
+.fuel-icon{font-size:1.3rem;margin-bottom:6px;}
+.fuel-name{font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;}
+.fuel-card.et .fuel-name{color:var(--etanol);}.fuel-card.gas .fuel-name{color:var(--gasolina);}
+.fuel-avg{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:600;margin-top:4px;}
+.fuel-card.et .fuel-avg{color:var(--etanol);}.fuel-card.gas .fuel-avg{color:var(--gasolina);}
+.fuel-sub{font-size:0.64rem;color:var(--sub);margin-top:3px;}
 
-/* META BAR */
-.meta-goal-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
-.meta-title { font-family:'DM Mono',monospace !important;
-  font-family:'DM Mono',monospace; font-size:1.4rem; font-weight:600;
-  color:var(--green); line-height:1;
-}
-.meta-goal-tap {
-  font-size:0.7rem; color:var(--sub);
-  background:var(--glass2); border:1px solid var(--border2);
-  border-radius:99px; padding:3px 10px; cursor:pointer;
-  transition:all 0.2s;
-}
-.meta-goal-tap:active { background:rgba(0,245,176,0.1); }
-.meta-goal-input {
-  background:rgba(0,245,176,0.08); border:1px solid rgba(0,245,176,0.3);
-  border-radius:10px; color:var(--green);
-  font-family:'Montserrat',sans-serif; font-size:1.1rem; font-weight:700;
-  padding:4px 10px; width:120px; outline:none; display:none; -webkit-appearance:none;
-}
-.meta-track {
-  width:100%; height:6px;
-  background:rgba(255,255,255,0.06);
-  border-radius:99px; overflow:hidden; margin-bottom:8px;
-}
-.meta-fill {
-  height:100%;
-  background:linear-gradient(90deg, var(--green2), var(--green), #80ffda);
-  border-radius:99px;
-  transition:width 0.8s cubic-bezier(.4,0,.2,1);
-  box-shadow:0 0 10px rgba(0,245,176,0.4);
-}
-.meta-row { display:flex; justify-content:space-between; font-size:0.78rem; }
-.meta-done { color:var(--green); font-weight:600; }
-.meta-pct  { font-family:'DM Mono',monospace; font-size:1rem; font-weight:600; color:var(--green); }
-.meta-hint { font-size:0.7rem; color:var(--warn); margin-top:5px; }
+.desp-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.desp-item:last-child{border-bottom:none;}
+.desp-dot{width:6px;height:6px;border-radius:50%;background:var(--purple);flex-shrink:0;}
+.desp-nome{flex:1;font-size:0.83rem;}
+.desp-valor{font-family:'DM Mono',monospace;font-size:0.95rem;font-weight:600;color:var(--purple);}
+.btn-dd{background:none;border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;font-size:0.7rem;padding:3px 6px;border-radius:6px;-webkit-appearance:none;}
+.desp-form{margin-top:10px;display:none;}
+.desp-inputs{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;}
+.btn-add-desp{background:transparent;border:1px dashed rgba(177,151,252,0.3);color:var(--purple);border-radius:10px;padding:9px;width:100%;font-size:0.78rem;cursor:pointer;margin-top:8px;font-weight:600;-webkit-appearance:none;}
 
-/* KPI GRID */
-.kpi-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-.kpi {
-  background:var(--glass);
-  border:1px solid var(--border);
-  border-radius:var(--r);
-  padding:14px;
-  backdrop-filter:blur(12px);
-  position:relative; overflow:hidden;
-  animation: slideUp 0.4s ease both;
-}
-.kpi::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:2px;
-  border-radius:99px;
-}
-.kpi.g::before { background:linear-gradient(90deg,transparent,var(--green),transparent); }
-.kpi.r::before { background:linear-gradient(90deg,transparent,var(--red),transparent); }
-.kpi.w::before { background:linear-gradient(90deg,transparent,var(--warn),transparent); }
-.kpi.p::before { background:linear-gradient(90deg,transparent,var(--purple),transparent); }
-.kpi.b::before { background:linear-gradient(90deg,transparent,var(--blue),transparent); }
-.kpi.o::before { background:linear-gradient(90deg,transparent,var(--orange),transparent); }
-.kpi-icon { font-size:1.1rem; margin-bottom:4px; }
-.kpi-label { font-size:0.6rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--sub); font-weight:600; }
-.kpi-val { font-family:'DM Mono',monospace; font-size:1.15rem; font-weight:600; margin-top:3px; line-height:1.1; }
-.kpi-val.g { color:var(--green); }
-.kpi-val.r { color:var(--red); }
-.kpi-val.w { color:var(--warn); }
-.kpi-val.wh{ color:var(--text); }
-.kpi-val.p { color:var(--purple); }
-.kpi-val.b { color:var(--blue); }
-.kpi-val.o { color:var(--orange); }
+.f-label{font-size:0.62rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:5px;display:block;}
+.inp{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;padding:12px 14px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+.inp:focus{border-color:rgba(0,245,176,0.4);background:rgba(0,245,176,0.04);}
+.inp[type="date"]{color-scheme:dark;}
+.inp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.f-block{display:flex;flex-direction:column;gap:4px;}
 
-/* STATS MINI */
-.stats-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-.stat-mini {
-  background:var(--glass); border:1px solid var(--border);
-  border-radius:var(--r); padding:12px 14px;
-  backdrop-filter:blur(12px);
-}
-.stat-label { font-size:0.6rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--sub); font-weight:600; }
-.stat-val { font-family:'DM Mono',monospace; font-size:1rem; font-weight:600; color:var(--text); margin-top:3px; }
+.ftog-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.ftog{padding:12px;border-radius:12px;border:1px solid var(--border2);background:var(--glass);color:var(--sub);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;-webkit-appearance:none;}
+.ftog.et.on{border-color:rgba(64,224,160,0.4);background:rgba(64,224,160,0.1);color:var(--etanol);}
+.ftog.gas.on{border-color:rgba(255,159,67,0.4);background:rgba(255,159,67,0.1);color:var(--gasolina);}
 
-/* FUEL CARDS */
-.fuel-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-.fuel-card {
-  border-radius:var(--r); padding:14px;
-  backdrop-filter:blur(12px); position:relative; overflow:hidden;
-}
-.fuel-card.et  { background:linear-gradient(135deg,rgba(64,224,160,0.12),rgba(64,224,160,0.04)); border:1px solid rgba(64,224,160,0.25); }
-.fuel-card.gas { background:linear-gradient(135deg,rgba(255,159,67,0.12),rgba(255,159,67,0.04)); border:1px solid rgba(255,159,67,0.25); }
-.fuel-icon { font-size:1.3rem; margin-bottom:6px; }
-.fuel-name { font-size:0.62rem; letter-spacing:1.5px; text-transform:uppercase; font-weight:600; }
-.fuel-card.et  .fuel-name { color:var(--etanol); }
-.fuel-card.gas .fuel-name { color:var(--gasolina); }
-.fuel-avg { font-family:'DM Mono',monospace; font-size:1.3rem; font-weight:600; margin-top:4px; }
-.fuel-card.et  .fuel-avg { color:var(--etanol); }
-.fuel-card.gas .fuel-avg { color:var(--gasolina); }
-.fuel-sub { font-size:0.64rem; color:var(--sub); margin-top:3px; }
+.prev-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+.prev-item{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:8px 10px;}
+.prev-lbl{font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600;}
+.prev-val{font-family:'DM Mono',monospace;font-size:0.95rem;font-weight:600;margin-top:2px;}
 
-/* META DIÁRIA */
-.md-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
-.md-item {
-  background:var(--glass); border:1px solid var(--border);
-  border-radius:var(--r); padding:12px;
-  backdrop-filter:blur(12px);
-}
-.md-label { font-size:0.6rem; letter-spacing:1px; text-transform:uppercase; color:var(--sub); font-weight:600; }
-.md-val { font-family:'DM Mono',monospace; font-size:1rem; font-weight:600; margin-top:3px; }
+.btn-p{width:100%;padding:15px;border:none;border-radius:14px;font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.2s;-webkit-appearance:none;background:linear-gradient(135deg,var(--green2),var(--green));color:#050a10;box-shadow:0 4px 20px rgba(0,245,176,0.25);}
+.btn-p:active{transform:scale(0.98);}
+.btn-p.edit{background:linear-gradient(135deg,#e08000,var(--orange));color:#fff;box-shadow:0 4px 20px rgba(255,159,67,0.25);}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.btn-s{padding:13px;border-radius:14px;font-family:'Montserrat',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;-webkit-appearance:none;transition:all 0.2s;}
+.btn-close{background:linear-gradient(135deg,rgba(177,151,252,0.2),rgba(177,151,252,0.1));border:1px solid rgba(177,151,252,0.3);color:var(--purple);}
+.btn-clear{background:transparent;border:1px solid rgba(255,77,109,0.3);color:var(--red);}
+.btn-wa{width:100%;padding:13px;border-radius:14px;background:linear-gradient(135deg,#1a8c45,#25D366);color:#fff;border:none;font-family:'Montserrat',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-top:10px;-webkit-appearance:none;}
 
-/* ALERTA */
+.tbl-wrap{background:var(--glass);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:12px;}
+.tbl-head{display:grid;grid-template-columns:50px 1fr 1fr 1fr 70px;gap:4px;padding:10px 12px;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);font-size:0.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;}
+.tbl-row{display:grid;grid-template-columns:50px 1fr 1fr 1fr 70px;gap:4px;padding:11px 12px;border-bottom:1px solid var(--border);font-size:0.8rem;align-items:center;}
+.tbl-row:last-child{border-bottom:none;}
+.td{color:var(--sub);font-size:0.74rem;line-height:1.6;}
+.tl{color:var(--green);font-family:'DM Mono',monospace;font-weight:600;font-size:0.82rem;line-height:1.6;}
+.tc{color:var(--red);font-size:0.75rem;line-height:1.6;}
+.tk{color:var(--warn);font-size:0.75rem;line-height:1.6;}
+.ta{display:flex;gap:5px;justify-content:flex-end;}
+.btn-te{background:rgba(255,159,67,0.1);border:1px solid rgba(255,159,67,0.3);color:var(--orange);cursor:pointer;font-size:0.7rem;padding:4px 7px;border-radius:8px;-webkit-appearance:none;}
+.btn-td{background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;font-size:0.7rem;padding:4px 7px;border-radius:8px;-webkit-appearance:none;}
+.tag-et{display:inline-block;background:rgba(64,224,160,0.12);color:var(--etanol);font-size:0.58rem;padding:1px 6px;border-radius:99px;font-weight:600;border:1px solid rgba(64,224,160,0.2);}
+.tag-gas{display:inline-block;background:rgba(255,159,67,0.12);color:var(--gasolina);font-size:0.58rem;padding:1px 6px;border-radius:99px;font-weight:600;border:1px solid rgba(255,159,67,0.2);}
+.empty{text-align:center;padding:32px 20px;color:var(--sub);font-size:0.85rem;line-height:1.7;}
 
-
-/* DESPESAS */
-.desp-item {
-  display:flex; align-items:center; gap:10px;
-  padding:10px 0; border-bottom:1px solid var(--border);
-}
-.desp-item:last-child { border-bottom:none; }
-.desp-dot { width:6px; height:6px; border-radius:50%; background:var(--purple); flex-shrink:0; }
-.desp-nome { flex:1; font-size:0.83rem; }
-.desp-valor { font-family:'DM Mono',monospace; font-size:0.9rem; font-weight:600; color:var(--purple); }
-.btn-del-desp {
-  background:none; border:1px solid rgba(255,77,109,0.3);
-  color:var(--red); cursor:pointer; font-size:0.7rem;
-  padding:3px 6px; border-radius:6px; -webkit-appearance:none;
-}
-.desp-form { margin-top:10px; display:none; }
-.desp-inputs { display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:end; }
-.btn-add-desp {
-  background:transparent; border:1px dashed rgba(177,151,252,0.3);
-  color:var(--purple); border-radius:10px; padding:9px;
-  width:100%; font-size:0.78rem; cursor:pointer; margin-top:8px;
-  font-weight:600; transition:all 0.2s; -webkit-appearance:none;
-}
-.btn-add-desp:active { background:rgba(177,151,252,0.1); }
-
-/* FORM INPUTS */
-.form-block { margin-bottom:10px; }
-.inp-label { font-size:0.62rem; letter-spacing:1.2px; text-transform:uppercase; color:var(--sub); font-weight:600; margin-bottom:5px; display:block; }
-.inp {
-  width:100%; background:rgba(255,255,255,0.04);
-  border:1px solid var(--border2); border-radius:12px;
-  color:var(--text); font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:0.95rem; padding:12px 14px; outline:none;
-  transition:border-color 0.2s, background 0.2s;
-  -webkit-appearance:none;
-}
-.inp:focus { border-color:rgba(0,245,176,0.4); background:rgba(0,245,176,0.04); }
-.inp[type="date"] { color-scheme:dark; }
-.inp-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
-
-/* FUEL TOGGLE */
-.fuel-toggle-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
-.fuel-tog {
-  padding:12px; border-radius:12px; border:1px solid var(--border2);
-  background:var(--glass); color:var(--sub);
-  font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:600;
-  cursor:pointer; transition:all 0.2s; text-align:center; -webkit-appearance:none;
-}
-.fuel-tog.et.on  { border-color:rgba(64,224,160,0.4);  background:rgba(64,224,160,0.1);  color:var(--etanol); }
-.fuel-tog.gas.on { border-color:rgba(255,159,67,0.4);  background:rgba(255,159,67,0.1);  color:var(--gasolina); }
-
-/* PREVIEW BOX */
-.preview-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
-.prev-item {
-  background:rgba(255,255,255,0.03); border:1px solid var(--border);
-  border-radius:10px; padding:8px 10px;
-}
-.prev-lbl { font-size:0.58rem; letter-spacing:1px; text-transform:uppercase; color:var(--sub); font-weight:600; }
-.prev-val { font-family:'DM Mono',monospace; font-size:0.9rem; font-weight:600; margin-top:2px; }
-
-/* BUTTONS */
-.btn-primary {
-  width:100%; padding:15px; border:none; border-radius:14px;
-  font-family:'Montserrat',sans-serif; font-size:1rem; font-weight:700;
-  letter-spacing:0.5px; cursor:pointer; transition:all 0.2s;
-  background:linear-gradient(135deg, var(--green2), var(--green));
-  color:#050a10;
-  box-shadow:0 4px 20px rgba(0,245,176,0.25);
-  -webkit-appearance:none;
-}
-.btn-primary:active { transform:scale(0.98); box-shadow:0 2px 10px rgba(0,245,176,0.15); }
-.btn-primary.editing {
-  background:linear-gradient(135deg, #e08000, var(--orange));
-  box-shadow:0 4px 20px rgba(255,159,67,0.25); color:#fff;
-}
-.btn-primary.quick {
-  background:linear-gradient(135deg,rgba(0,245,176,0.2),rgba(0,245,176,0.12));
-  color:var(--green); border:1px solid rgba(0,245,176,0.3);
-  box-shadow:none;
-}
-.btn-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
-.btn-sec {
-  padding:13px; border-radius:14px; font-family:'Montserrat',sans-serif;
-  font-size:0.9rem; font-weight:700; cursor:pointer; -webkit-appearance:none;
-  transition:all 0.2s;
-}
-.btn-close {
-  background:linear-gradient(135deg,rgba(177,151,252,0.2),rgba(177,151,252,0.1));
-  border:1px solid rgba(177,151,252,0.3); color:var(--purple);
-}
-.btn-clear {
-  background:transparent; border:1px solid rgba(255,77,109,0.3); color:var(--red);
-}
-.btn-close:active, .btn-clear:active { opacity:0.75; transform:scale(0.98); }
-.btn-wa {
-  width:100%; padding:13px; border-radius:14px;
-  background:linear-gradient(135deg,#1a8c45,#25D366);
-  color:#fff; border:none; font-family:'Montserrat',sans-serif;
-  font-size:0.9rem; font-weight:700; cursor:pointer;
-  margin-top:10px; -webkit-appearance:none;
-  box-shadow:0 4px 16px rgba(37,211,102,0.2);
-  transition:all 0.2s;
-}
-.btn-wa:active { transform:scale(0.98); }
-
-/* TABELA */
-.table-wrap {
-  background:var(--glass); border:1px solid var(--border);
-  border-radius:var(--r2); overflow:hidden; margin-bottom:12px;
-  backdrop-filter:blur(12px);
-}
-.table-head {
-  display:grid; grid-template-columns:46px 1fr 1fr 1fr 68px;
-  gap:4px; padding:10px 12px;
-  background:rgba(255,255,255,0.03);
-  border-bottom:1px solid var(--border);
-  font-size:0.58rem; letter-spacing:1.5px; text-transform:uppercase;
-  color:var(--sub); font-weight:600;
-}
-.table-row {
-  display:grid; grid-template-columns:46px 1fr 1fr 1fr 68px;
-  gap:4px; padding:11px 12px;
-  border-bottom:1px solid var(--border);
-  font-size:0.8rem; align-items:center;
-  transition:background 0.15s;
-}
-.table-row:last-child { border-bottom:none; }
-.table-row:active { background:rgba(255,255,255,0.03); }
-
-.t-date { color:var(--sub); font-size:0.74rem; line-height:1.5; }
-.t-liq  { color:var(--green); font-family:'DM Mono',monospace; font-weight:600; font-size:0.82rem; line-height:1.5; }
-.t-comb { color:var(--red); font-size:0.75rem; line-height:1.5; }
-.t-km   { color:var(--warn); font-size:0.75rem; line-height:1.5; }
-.t-acts { display:flex; gap:5px; justify-content:flex-end; }
-.btn-te { background:rgba(255,159,67,0.1); border:1px solid rgba(255,159,67,0.3); color:var(--orange); cursor:pointer; font-size:0.7rem; padding:4px 7px; border-radius:8px; -webkit-appearance:none; transition:all 0.15s; }
-.btn-td { background:rgba(255,77,109,0.1);  border:1px solid rgba(255,77,109,0.3);  color:var(--red);    cursor:pointer; font-size:0.7rem; padding:4px 7px; border-radius:8px; -webkit-appearance:none; transition:all 0.15s; }
-.btn-te:active, .btn-td:active { opacity:0.7; }
-.tag-et  { display:inline-block; background:rgba(64,224,160,0.12);  color:var(--etanol);   font-size:0.58rem; padding:1px 6px; border-radius:99px; font-weight:600; border:1px solid rgba(64,224,160,0.2); }
-.tag-gas { display:inline-block; background:rgba(255,159,67,0.12);  color:var(--gasolina); font-size:0.58rem; padding:1px 6px; border-radius:99px; font-weight:600; border:1px solid rgba(255,159,67,0.2); }
-
-.empty {
-  text-align:center; padding:32px 20px; color:var(--sub); font-size:0.85rem; line-height:1.7;
-}
-
-/* CHART */
-.chart-wrap { height:180px; position:relative; }
-
-/* HISTÓRICO */
-.hist-card {
-  background:var(--glass); border:1px solid var(--border);
-  border-radius:var(--r2); margin-bottom:12px; overflow:hidden;
-  backdrop-filter:blur(12px);
-}
-.hist-head {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:14px 16px; cursor:pointer; user-select:none; -webkit-user-select:none;
-  border-bottom:1px solid transparent; transition:border-color 0.2s;
-}
-.hist-head:active { background:rgba(255,255,255,0.02); }
-.hist-period { font-family:'Montserrat',sans-serif; font-size:0.95rem; font-weight:800; color:var(--purple); }
-.hist-badge { font-size:0.62rem; padding:3px 8px; border-radius:99px; font-weight:600; margin-top:4px; display:inline-block; }
-.hist-badge.ok  { background:rgba(0,245,176,0.1); color:var(--green);  border:1px solid rgba(0,245,176,0.2); }
-.hist-badge.nok { background:rgba(255,77,109,0.1); color:var(--red);   border:1px solid rgba(255,77,109,0.2); }
-.hist-liq-big { font-family:'DM Mono',monospace; font-size:1.2rem; font-weight:600; color:var(--green); }
-.hist-liq-sub { font-size:0.62rem; color:var(--sub); text-align:right; margin-top:2px; }
-.hist-body { padding:14px 16px; display:none; border-top:1px solid var(--border); }
-.hist-body.open { display:block; }
-.hist-kpi-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px; }
-.hist-kpi { text-align:center; background:rgba(255,255,255,0.02); border-radius:10px; padding:8px 4px; }
-.hist-kpi-label { font-size:0.58rem; letter-spacing:1px; text-transform:uppercase; color:var(--sub); font-weight:600; }
-.hist-kpi-val { font-family:'DM Mono',monospace; font-size:0.88rem; font-weight:600; margin-top:3px; }
-.hist-days { border-top:1px solid var(--border); padding-top:10px; margin-top:4px; }
-.hist-day-row { display:flex; justify-content:space-between; align-items:center; font-size:0.76rem; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--sub); }
-.hist-day-row:last-child { border-bottom:none; }
-.hist-day-liq { color:var(--green); font-weight:600; font-family:'DM Mono',monospace; }
-.btn-del-sem {
-  display:block; width:100%; margin-top:12px; padding:12px;
-  background:rgba(255,77,109,0.07); color:var(--red);
-  border:1px solid rgba(255,77,109,0.25); border-radius:12px;
-  font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:700;
-  cursor:pointer; -webkit-appearance:none; letter-spacing:0.3px;
-  transition:all 0.2s;
-}
-.btn-del-sem:active { background:rgba(255,77,109,0.15); }
-.empty-hist { text-align:center; padding:48px 20px; color:var(--sub); font-size:0.85rem; line-height:1.8; }
-
-/* QUICK */
-.quick-header {
-  display:flex; align-items:center; gap:10px; margin-bottom:14px;
-}
-.quick-dot {
-  width:10px; height:10px; border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 10px var(--green);
-  animation:pulse 2s infinite;
-}
-@keyframes pulse {
-  0%,100% { opacity:1; transform:scale(1); }
-  50%      { opacity:0.6; transform:scale(1.3); }
-}
-.quick-title { font-family:'Montserrat',sans-serif; font-size:1.1rem; font-weight:800; color:var(--green); }
+.chart-wrap{height:180px;position:relative;}
+.hist-card{background:var(--glass);border:1px solid var(--border);border-radius:20px;margin-bottom:12px;overflow:hidden;}
+.hist-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;-webkit-user-select:none;user-select:none;}
+.hist-period{font-family:'Montserrat',sans-serif;font-size:0.95rem;font-weight:800;color:var(--purple);}
+.hist-badge{font-size:0.62rem;padding:3px 8px;border-radius:99px;font-weight:600;margin-top:4px;display:inline-block;}
+.hist-badge.ok{background:rgba(0,245,176,0.1);color:var(--green);border:1px solid rgba(0,245,176,0.2);}
+.hist-badge.nok{background:rgba(255,77,109,0.1);color:var(--red);border:1px solid rgba(255,77,109,0.2);}
+.hist-liq{font-family:'DM Mono',monospace;font-size:1.2rem;font-weight:600;color:var(--green);}
+.hist-sub{font-size:0.62rem;color:var(--sub);text-align:right;margin-top:2px;}
+.hist-body{padding:14px 16px;display:none;border-top:1px solid var(--border);}
+.hist-body.open{display:block;}
+.hist-kgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.hk{text-align:center;background:rgba(255,255,255,0.02);border-radius:10px;padding:8px 4px;}
+.hk-label{font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600;}
+.hk-val{font-family:'DM Mono',monospace;font-size:0.95rem;font-weight:600;margin-top:3px;}
+.hist-days{border-top:1px solid var(--border);padding-top:10px;margin-top:4px;}
+.hd-row{display:flex;justify-content:space-between;align-items:center;font-size:0.76rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--sub);}
+.hd-row:last-child{border-bottom:none;}
+.hd-liq{color:var(--green);font-weight:600;font-family:'DM Mono',monospace;}
+.btn-del-sem{display:block;width:100%;margin-top:12px;padding:12px;background:rgba(255,77,109,0.07);color:var(--red);border:1px solid rgba(255,77,109,0.25);border-radius:12px;font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;-webkit-appearance:none;}
+.empty-hist{text-align:center;padding:48px 20px;color:var(--sub);font-size:0.85rem;line-height:1.8;}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-badge">🚗 App do Motorista</div>
-  <div class="header-title">Controle do<br>Thiago</div>
+  <div class="header-title">Controle do Thiago</div>
   <div class="header-sub">Relatório Semanal</div>
 </div>
 
-<div id="storageBanner" class="storage-banner ok">💾 Salvando automaticamente</div>
-
 <div class="tabs">
-  <button class="tab-btn active" onclick="showTab('semana')">📋 Semana</button>
-  <button class="tab-btn" onclick="showTab('rapido')">⚡ Rápido</button>
-  <button class="tab-btn" onclick="showTab('historico')">📚 Histórico</button>
+  <button class="tab-btn active" id="tabBtn0" onclick="showTab(0)">📋 Semana</button>
+  <button class="tab-btn" id="tabBtn1" onclick="showTab(1)">📚 Histórico</button>
 </div>
 
-<!-- ===== SEMANA ===== -->
-<div id="tabSemana">
+<!-- SEMANA -->
+<div id="pSemana">
 
-  <!-- META -->
-  <div class="gc accent-green">
-    <div class="sec-label">🎯 Meta semanal líquida</div>
+  <div class="gc ag">
+    <div class="sec">🎯 Meta Semanal Líquida</div>
     <div class="meta-goal-row">
-      <div class="meta-title" id="metaGoalVal" onclick="editarMeta()">R$ 1.200</div>
-      <span class="meta-goal-tap" onclick="editarMeta()">✏️ editar</span>
-      <input type="number" class="meta-goal-input" id="metaGoalInput" placeholder="1200" onblur="salvarMeta()" onkeydown="if(event.key==='Enter')salvarMeta()">
-      <div class="meta-pct" id="metaPct">0%</div>
+      <span class="meta-num" id="metaVal" onclick="editMeta()">R$ 1.200,00</span>
+      <span class="meta-tap" onclick="editMeta()">✏️ editar</span>
+      <input type="number" class="meta-inp" id="metaInp" onblur="saveMeta()" onkeydown="if(event.key==='Enter')saveMeta()">
+      <span class="meta-pct" id="metaPct">0%</span>
     </div>
     <div class="meta-track"><div class="meta-fill" id="metaFill" style="width:0%"></div></div>
-    <div class="meta-row">
-      <span class="meta-done" id="metaAtual">R$ 0,00 atingido</span>
-    </div>
-    <div class="meta-hint" id="faltam"></div>
+    <div class="meta-row"><span class="meta-done" id="metaDone">R$ 0,00 atingido</span></div>
+    <div class="meta-hint" id="metaHint"></div>
   </div>
 
-  <!-- META DIÁRIA -->
   <div class="md-grid">
     <div class="md-item"><div class="md-label">📅 Dias trab.</div><div class="md-val" id="mdDias" style="color:var(--blue)">0</div></div>
-    <div class="md-item"><div class="md-label">🎯 Meta/dia restante</div><div class="md-val" id="mdMetaDia" style="color:var(--warn)">—</div></div>
+    <div class="md-item"><div class="md-label">🎯 Meta/dia restante</div><div class="md-val" id="mdMeta" style="color:var(--warn)">—</div></div>
   </div>
 
-  <!-- KPIs -->
   <div class="kpi-grid">
-    <div class="kpi g"><div class="kpi-icon">💰</div><div class="kpi-label">Líquido Total</div><div class="kpi-val g" id="totLiquido">R$ 0,00</div></div>
-    <div class="kpi"><div class="kpi-icon">🚗</div><div class="kpi-label">Total Bruto</div><div class="kpi-val wh" id="totBruto">R$ 0,00</div></div>
-    <div class="kpi r"><div class="kpi-icon">⛽</div><div class="kpi-label">Combustível</div><div class="kpi-val r" id="totComb">R$ 0,00</div></div>
-    <div class="kpi w"><div class="kpi-icon">📍</div><div class="kpi-label">Km Rodado</div><div class="kpi-val w" id="totKm">0 km</div></div>
-    <div class="kpi r"><div class="kpi-icon">🏠</div><div class="kpi-label">Despesas Fixas</div><div class="kpi-val r" id="totDespesas">R$ 0,00</div></div>
-    <div class="kpi g"><div class="kpi-icon">✅</div><div class="kpi-label">Líquido Real</div><div class="kpi-val g" id="totLiqReal">R$ 0,00</div></div>
+    <div class="kpi g"><div class="kpi-icon">💰</div><div class="kpi-label">Líquido Total</div><div class="kpi-val g" id="kLiq">R$ 0,00</div></div>
+    <div class="kpi"><div class="kpi-icon">🚗</div><div class="kpi-label">Total Bruto</div><div class="kpi-val wh" id="kBruto">R$ 0,00</div></div>
+    <div class="kpi r"><div class="kpi-icon">⛽</div><div class="kpi-label">Combustível</div><div class="kpi-val r" id="kComb">R$ 0,00</div></div>
+    <div class="kpi w"><div class="kpi-icon">📍</div><div class="kpi-label">Km Rodado</div><div class="kpi-val w" id="kKm">0 km</div></div>
+    <div class="kpi r"><div class="kpi-icon">🏠</div><div class="kpi-label">Despesas Fixas</div><div class="kpi-val r" id="kDesp">R$ 0,00</div></div>
+    <div class="kpi g"><div class="kpi-icon">✅</div><div class="kpi-label">Líquido Real</div><div class="kpi-val g" id="kReal">R$ 0,00</div></div>
   </div>
 
-  <!-- MÉDIAS -->
   <div class="stats-row">
-    <div class="stat-mini"><div class="stat-label">📊 Média km/L</div><div class="stat-val" id="medConsumo">—</div></div>
-    <div class="stat-mini"><div class="stat-label">🔋 Total Litros</div><div class="stat-val" id="medLitros">—</div></div>
-    <div class="stat-mini"><div class="stat-label">💸 Líquido/km</div><div class="stat-val" id="medLiqKm">—</div></div>
-    <div class="stat-mini"><div class="stat-label">⛽ Custo/km</div><div class="stat-val" id="medCustKm">—</div></div>
+    <div class="stat"><div class="stat-label">📊 Média km/L</div><div class="stat-val" id="sMed">—</div></div>
+    <div class="stat"><div class="stat-label">🔋 Total Litros</div><div class="stat-val" id="sLit">—</div></div>
+    <div class="stat"><div class="stat-label">💸 Líquido/km</div><div class="stat-val" id="sLkm">—</div></div>
+    <div class="stat"><div class="stat-label">⛽ Custo/km</div><div class="stat-val" id="sCkm">—</div></div>
   </div>
 
-  <!-- COMBUSTÍVEL -->
-  <div class="sec-label" style="margin-top:4px">⛽ Média por combustível</div>
+  <div class="sec" style="margin-top:4px">⛽ Média por combustível</div>
   <div class="fuel-row">
-    <div class="fuel-card et"><div class="fuel-icon">🌿</div><div class="fuel-name">Etanol</div><div class="fuel-avg" id="medEtanol">—</div><div class="fuel-sub" id="medEtanolSub">sem registros</div></div>
-    <div class="fuel-card gas"><div class="fuel-icon">🔶</div><div class="fuel-name">Gasolina</div><div class="fuel-avg" id="medGasolina">—</div><div class="fuel-sub" id="medGasolinaSub">sem registros</div></div>
+    <div class="fuel-card et"><div class="fuel-icon">🌿</div><div class="fuel-name">Etanol</div><div class="fuel-avg" id="fEt">—</div><div class="fuel-sub" id="fEtSub">sem registros</div></div>
+    <div class="fuel-card gas"><div class="fuel-icon">🔶</div><div class="fuel-name">Gasolina</div><div class="fuel-avg" id="fGas">—</div><div class="fuel-sub" id="fGasSub">sem registros</div></div>
   </div>
 
-  <!-- DESPESAS -->
-  <div class="gc accent-purple">
-    <div class="sec-label">🏠 Despesas fixas da semana</div>
-    <div id="listaDespesas"><p style="font-size:0.78rem;color:var(--sub);padding:4px 0">Nenhuma despesa cadastrada.</p></div>
-    <div class="desp-form" id="formDespesa">
+  <div class="gc ap">
+    <div class="sec">🏠 Despesas Fixas da Semana</div>
+    <div id="despLista"><p style="font-size:0.78rem;color:var(--sub);padding:4px 0">Nenhuma despesa cadastrada.</p></div>
+    <div class="desp-form" id="despForm">
       <div class="desp-inputs">
-        <div class="form-block" style="margin-bottom:0"><label class="inp-label">Nome</label><input class="inp" type="text" id="despNome" placeholder="ex: Aluguel do carro"></div>
-        <div class="form-block" style="margin-bottom:0"><label class="inp-label">Valor (R$)</label><input class="inp" type="number" id="despValor" placeholder="0,00" step="0.01" min="0"></div>
-        <button style="background:var(--purple);color:#fff;border:none;border-radius:10px;padding:12px 10px;font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap;align-self:end" onclick="confirmarDespesa()">OK</button>
+        <div class="f-block"><label class="f-label">Nome</label><input class="inp" type="text" id="dNome" placeholder="ex: Aluguel do carro"></div>
+        <div class="f-block"><label class="f-label">Valor (R$)</label><input class="inp" type="number" id="dValor" placeholder="0,00" step="0.01" min="0"></div>
+        <button style="background:var(--purple);color:#fff;border:none;border-radius:10px;padding:12px 10px;font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;align-self:end" onclick="addDesp()">OK</button>
       </div>
     </div>
-    <button class="btn-add-desp" onclick="toggleFormDespesa()">+ Adicionar despesa</button>
+    <button class="btn-add-desp" onclick="toggleDespForm()">+ Adicionar despesa</button>
   </div>
 
-  <!-- FORM -->
   <div class="gc">
-    <div style="font-family:'Montserrat',sans-serif;font-size:1.05rem;font-weight:800;margin-bottom:16px;color:var(--text)" id="formTitle">➕ Registrar Dia</div>
+    <div style="font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:16px" id="formTit">➕ Registrar Dia</div>
 
     <div class="inp-grid">
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">📅 Data</label><input class="inp" type="date" id="inpData"></div>
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">💰 Bruto Uber (R$)</label><input class="inp" type="number" id="inpBruto" placeholder="0,00" step="0.01" min="0" oninput="calcPreview()"></div>
-    </div>
-    <div class="inp-grid" style="margin-top:10px">
+      <div class="f-block"><label class="f-label">📅 Data</label><input class="inp" type="date" id="iData"></div>
+      <div class="f-block"><label class="f-label">💰 Bruto Uber (R$)</label><input class="inp" type="number" id="iBruto" placeholder="0,00" step="0.01" min="0" oninput="preview()"></div>
     </div>
 
-    <div style="margin-top:12px;margin-bottom:6px"><span class="inp-label">⛽ Combustível utilizado</span></div>
-    <div class="fuel-toggle-row">
-      <button class="fuel-tog et" id="btnEtanol" onclick="selectFuel('etanol')">🌿 Etanol</button>
-      <button class="fuel-tog gas" id="btnGasolina" onclick="selectFuel('gasolina')">🔶 Gasolina</button>
+    <div class="f-label" style="margin-bottom:6px">⛽ Combustível utilizado</div>
+    <div class="ftog-row">
+      <button class="ftog et" id="fEtBtn" onclick="setFuel('etanol')">🌿 Etanol</button>
+      <button class="ftog gas" id="fGasBtn" onclick="setFuel('gasolina')">🔶 Gasolina</button>
     </div>
 
     <div class="inp-grid">
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">⛽ Combustível (R$)</label><input class="inp" type="number" id="inpComb" placeholder="0,00" step="0.01" min="0" oninput="calcPreview()"></div>
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">🔢 Preço do litro</label><input class="inp" type="number" id="inpPrecoL" placeholder="ex: 6,20" step="0.01" min="0" oninput="calcPreview()"></div>
+      <div class="f-block"><label class="f-label">⛽ Combustível (R$)</label><input class="inp" type="number" id="iComb" placeholder="0,00" step="0.01" min="0" oninput="preview()"></div>
+      <div class="f-block"><label class="f-label">🔢 Preço do litro (R$)</label><input class="inp" type="number" id="iPreco" placeholder="ex: 6,20" step="0.01" min="0" oninput="preview()"></div>
     </div>
-    <div style="margin-top:10px">
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">📍 Km Rodado</label><input class="inp" type="number" id="inpKm" placeholder="0,00" step="0.01" min="0" oninput="calcPreview()"></div>
-    </div>
-
-    <div style="margin-top:12px;margin-bottom:6px"><span class="inp-label">⚡ Preview automático</span></div>
-    <div class="preview-grid">
-      <div class="prev-item"><div class="prev-lbl">Litros</div><div class="prev-val" id="previewLitros" style="color:var(--warn)">—</div></div>
-      <div class="prev-item"><div class="prev-lbl">Média km/L</div><div class="prev-val" id="previewMedia" style="color:var(--green)">—</div></div>
-      <div class="prev-item"><div class="prev-lbl">Líquido dia</div><div class="prev-val" id="previewLiq" style="color:var(--green)">—</div></div>
+    <div class="inp-grid">
+      <div class="f-block"><label class="f-label">📍 Km Rodado</label><input class="inp" type="number" id="iKm" placeholder="0,00" step="0.01" min="0" oninput="preview()"></div>
+      <div></div>
     </div>
 
-    <button class="btn-primary" id="btnRegistrar" onclick="salvarDia()" style="margin-top:4px">Registrar Dia</button>
+    <div class="f-label" style="margin-bottom:6px">⚡ Preview</div>
+    <div class="prev-grid">
+      <div class="prev-item"><div class="prev-lbl">Litros</div><div class="prev-val" id="pLit" style="color:var(--warn)">—</div></div>
+      <div class="prev-item"><div class="prev-lbl">Média km/L</div><div class="prev-val" id="pMed" style="color:var(--green)">—</div></div>
+      <div class="prev-item"><div class="prev-lbl">Líquido dia</div><div class="prev-val" id="pLiq" style="color:var(--green)">—</div></div>
+      <div class="prev-item"><div class="prev-lbl">Custo/km</div><div class="prev-val" id="pCkm" style="color:var(--red)">—</div></div>
+    </div>
+
+    <button class="btn-p" id="btnReg" onclick="registrar()">Registrar Dia</button>
   </div>
 
-  <!-- TABELA -->
-  <div class="table-wrap">
-    <div class="table-head"><span>Data</span><span>Líquido</span><span>Comb.</span><span>Km</span><span style="text-align:right">Ações</span></div>
-    <div id="tabelaBody"><div class="empty">Nenhum dia registrado ainda.<br>Adicione acima! ☝️</div></div>
+  <div class="tbl-wrap">
+    <div class="tbl-head"><span>Data</span><span>Líquido</span><span>Comb.</span><span>Km</span><span style="text-align:right">Ações</span></div>
+    <div id="tblBody"><div class="empty">Nenhum dia registrado ainda.<br>Preencha o formulário acima! ☝️</div></div>
   </div>
 
   <div class="btn-row">
-    <button class="btn-sec btn-close" onclick="fecharSemana()">📚 Fechar Semana</button>
-    <button class="btn-sec btn-clear" onclick="limparSemana()">🗑️ Limpar</button>
+    <button class="btn-s btn-close" onclick="fecharSemana()">📚 Fechar Semana</button>
+    <button class="btn-s btn-clear" onclick="limpar()">🗑️ Limpar</button>
   </div>
-  <button class="btn-wa" onclick="compartilharResumo()">📤 Compartilhar no WhatsApp</button>
+  <button class="btn-wa" onclick="whatsapp()">📤 Compartilhar no WhatsApp</button>
 
 </div>
 
-<!-- ===== RÁPIDO ===== -->
-<div id="tabRapido" style="display:none">
-  <div class="gc accent-green">
-    <div class="quick-header">
-      <div class="quick-dot"></div>
-      <div class="quick-title">Entrada Rápida</div>
-    </div>
-    <p style="font-size:0.78rem;color:var(--sub);margin-bottom:16px;line-height:1.6">Preencha agora enquanto está no carro. Rápido e completo.</p>
-
-    <div class="inp-grid">
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">📅 Data</label><input class="inp" type="date" id="qData"></div>
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">💰 Bruto Uber</label><input class="inp" type="number" id="qBruto" placeholder="0,00" step="0.01" min="0"></div>
-    </div>
-    <div class="inp-grid" style="margin-top:10px">
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">⛽ Combustível (R$)</label><input class="inp" type="number" id="qComb" placeholder="0,00" step="0.01" min="0"></div>
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">🔢 Preço do litro</label><input class="inp" type="number" id="qPrecoL" placeholder="ex: 6,20" step="0.01" min="0"></div>
-    </div>
-    <div class="inp-grid" style="margin-top:10px">
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">📍 Km Rodado</label><input class="inp" type="number" id="qKm" placeholder="0,00" step="0.01" min="0"></div>
-    </div>
-
-    <div style="margin-top:12px;margin-bottom:6px"><span class="inp-label">⛽ Combustível utilizado</span></div>
-    <div class="fuel-toggle-row">
-      <button class="fuel-tog et" id="qBtnEtanol" onclick="selectFuelQ('etanol')">🌿 Etanol</button>
-      <button class="fuel-tog gas" id="qBtnGasolina" onclick="selectFuelQ('gasolina')">🔶 Gasolina</button>
-    </div>
-    <button class="btn-primary quick" onclick="salvarRapido()" style="margin-top:4px">⚡ Registrar Agora</button>
-  </div>
-</div>
-
-<!-- ===== HISTÓRICO ===== -->
-<div id="tabHistorico" style="display:none">
+<!-- HISTÓRICO -->
+<div id="pHistorico" style="display:none">
   <div class="gc">
     <div style="font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:800;margin-bottom:12px">📈 Líquido por Semana</div>
-    <div class="chart-wrap"><canvas id="graficoSemanas"></canvas></div>
+    <div class="chart-wrap"><canvas id="grafico"></canvas></div>
   </div>
-  <div id="histBody"><div class="empty-hist">Nenhuma semana fechada ainda.<br>Feche sua primeira semana! 📚</div></div>
+  <div id="histLista"><div class="empty-hist">Nenhuma semana fechada ainda.<br>Feche sua primeira semana! 📚</div></div>
 </div>
 
 <script>
-  let META = 1200, DB = null, memStore = {};
-  let dias = [], historico = [], despesas = [];
-  let combustivelSelecionado = 'gasolina', combustivelQ = 'gasolina';
-  let editIdx = -1, graficoInstance = null;
+// ======= STATE =======
+var META = 1200;
+var dias = [];
+var historico = [];
+var despesas = [];
+var combustivel = 'gasolina';
+var editIdx = -1;
+var graficoInst = null;
 
-  function openDB() {
-    return new Promise(resolve => {
-      if (!window.indexedDB) { resolve(false); return; }
-      const req = indexedDB.open('ThiagoMotorista', 3);
-      req.onupgradeneeded = e => { const db=e.target.result; if(!db.objectStoreNames.contains('dados')) db.createObjectStore('dados',{keyPath:'id'}); };
-      req.onsuccess = e => { DB=e.target.result; resolve(true); };
-      req.onerror   = () => resolve(false);
-    });
+// ======= STORAGE =======
+function salvar() {
+  try {
+    localStorage.setItem('th_dias',      JSON.stringify(dias));
+    localStorage.setItem('th_historico', JSON.stringify(historico));
+    localStorage.setItem('th_despesas',  JSON.stringify(despesas));
+    localStorage.setItem('th_meta',      String(META));
+  } catch(e) { console.warn('localStorage erro:', e); }
+}
+
+function carregar() {
+  try {
+    var d = localStorage.getItem('th_dias');
+    var h = localStorage.getItem('th_historico');
+    var dp = localStorage.getItem('th_despesas');
+    var m = localStorage.getItem('th_meta');
+    dias      = d  ? JSON.parse(d)  : [];
+    historico = h  ? JSON.parse(h)  : [];
+    despesas  = dp ? JSON.parse(dp) : [];
+    META      = m  ? parseFloat(m)  : 1200;
+  } catch(e) {
+    dias = []; historico = []; despesas = []; META = 1200;
   }
-  function dbGet(id) {
-    return new Promise(resolve => {
-      if (!DB) { resolve(memStore[id]!==undefined?memStore[id]:null); return; }
-      const req = DB.transaction('dados','readonly').objectStore('dados').get(id);
-      req.onsuccess = ()=>resolve(req.result?req.result.value:null);
-      req.onerror   = ()=>resolve(null);
-    });
-  }
-  function dbSet(id,value) {
-    return new Promise(resolve => {
-      memStore[id]=value;
-      if (!DB) { resolve(); return; }
-      const tx=DB.transaction('dados','readwrite');
-      tx.objectStore('dados').put({id,value});
-      tx.oncomplete=resolve; tx.onerror=resolve;
-    });
-  }
+}
 
-  async function init() {
-    const ok  = await openDB();
-    dias       = (await dbGet('dias'))      || [];
-    historico  = (await dbGet('historico')) || [];
-    despesas   = (await dbGet('despesas'))  || [];
-    const ms   = await dbGet('meta');
-    if (ms && ms>0) META=ms;
-    dias = dias.map(d=>({combustivel:'gasolina',km:0,...d}));
+// ======= UTILS =======
+function fmt(v) {
+  return Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtD(s) {
+  if (!s) return '—';
+  var p = s.split('-');
+  return p[2]+'/'+p[1];
+}
+function hoje() {
+  var d = new Date();
+  var m = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  return d.getFullYear()+'-'+m+'-'+dd;
+}
 
-    const b=document.getElementById('storageBanner');
-    b.className = ok?'storage-banner ok':'storage-banner warn';
-    b.textContent = ok?'💾 Salvando automaticamente':'⚠️ Abra pelo Documents para salvar';
+// ======= INIT =======
+function init() {
+  carregar();
+  document.getElementById('iData').value = hoje();
+  setFuel('gasolina');
+  atualizaMeta();
+  renderDespesas();
+  renderSemana();
+}
 
-    const hoje=new Date(), pad=n=>String(n).padStart(2,'0');
-    const hj=`${hoje.getFullYear()}-${pad(hoje.getMonth()+1)}-${pad(hoje.getDate())}`;
-    document.getElementById('inpData').value=hj;
-    document.getElementById('qData').value=hj;
+// ======= TABS =======
+function showTab(i) {
+  document.getElementById('pSemana').style.display    = i===0 ? 'block' : 'none';
+  document.getElementById('pHistorico').style.display = i===1 ? 'block' : 'none';
+  document.getElementById('tabBtn0').classList.toggle('active', i===0);
+  document.getElementById('tabBtn1').classList.toggle('active', i===1);
+  if (i===1) renderHistorico();
+}
 
-    atualizarMeta(); selectFuel('gasolina'); selectFuelQ('gasolina');
-    renderDespesas(); renderSemana();
-  }
+// ======= META =======
+function atualizaMeta() {
+  document.getElementById('metaVal').textContent = 'R$ ' + fmt(META);
+}
+function editMeta() {
+  document.getElementById('metaVal').style.display = 'none';
+  var inp = document.getElementById('metaInp');
+  inp.style.display = 'inline-block';
+  inp.value = META;
+  inp.focus();
+  inp.select();
+}
+function saveMeta() {
+  var v = parseFloat(document.getElementById('metaInp').value);
+  if (!isNaN(v) && v > 0) META = v;
+  document.getElementById('metaInp').style.display = 'none';
+  document.getElementById('metaVal').style.display = 'inline';
+  salvar();
+  atualizaMeta();
+  renderSemana();
+}
 
-  function fmt(v){return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
-  function fmtData(s){if(!s)return'—';const[y,m,d]=s.split('-');return`${d}/${m}`;}
+// ======= COMBUSTÍVEL =======
+function setFuel(t) {
+  combustivel = t;
+  document.getElementById('fEtBtn').classList.toggle('on',  t==='etanol');
+  document.getElementById('fGasBtn').classList.toggle('on', t==='gasolina');
+  preview();
+}
 
-  function atualizarMeta(){document.getElementById('metaGoalVal').textContent='R$ '+fmt(META);}
-  function editarMeta(){
-    document.getElementById('metaGoalVal').style.display='none';
-    const inp=document.getElementById('metaGoalInput');
-    inp.style.display='inline-block'; inp.value=META; inp.focus(); inp.select();
-  }
-  async function salvarMeta(){
-    const v=parseFloat(document.getElementById('metaGoalInput').value);
-    if(!isNaN(v)&&v>0){META=v;await dbSet('meta',META);}
-    document.getElementById('metaGoalInput').style.display='none';
-    document.getElementById('metaGoalVal').style.display='inline';
-    atualizarMeta(); renderSemana();
-  }
+// ======= PREVIEW =======
+function preview() {
+  var bruto  = parseFloat(document.getElementById('iBruto').value)  || 0;
+  var comb   = parseFloat(document.getElementById('iComb').value)   || 0;
+  var preco  = parseFloat(document.getElementById('iPreco').value)  || 0;
+  var km     = parseFloat(document.getElementById('iKm').value)     || 0;
+  var litros = (preco > 0 && comb > 0) ? comb / preco : 0;
+  var media  = (litros > 0 && km > 0)  ? km / litros  : 0;
+  var liq    = bruto - comb;
+  var ckm    = (km > 0 && comb > 0)    ? comb / km    : 0;
+  document.getElementById('pLit').textContent = litros > 0 ? fmt(litros)+' L'    : '—';
+  document.getElementById('pMed').textContent = media  > 0 ? fmt(media)+' km/L'  : '—';
+  document.getElementById('pLiq').textContent = bruto  > 0 ? 'R$ '+fmt(liq)      : '—';
+  document.getElementById('pCkm').textContent = ckm    > 0 ? 'R$ '+fmt(ckm)+'/km': '—';
+}
 
-  function showTab(tab){
-    ['Semana','Rapido','Historico'].forEach(t=>{
-      const el=document.getElementById('tab'+t);
-      if(el) el.style.display=t.toLowerCase()===tab?'block':'none';
-    });
-    document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['semana','rapido','historico'][i]===tab));
-    if(tab==='historico') renderHistorico();
-  }
+// ======= CALC DIA =======
+function calcDia(bruto, comb, preco, km, fuel) {
+  var litros = (preco > 0 && comb > 0) ? comb / preco : 0;
+  var media  = (litros > 0 && km > 0)  ? km / litros  : 0;
+  var liquido = bruto - comb;
+  return { bruto:bruto, comb:comb, preco:preco, km:km, litros:litros, media:media, liquido:liquido, fuel:fuel };
+}
 
-  function selectFuel(t){
-    combustivelSelecionado=t;
-    document.getElementById('btnEtanol').classList.toggle('on',t==='etanol');
-    document.getElementById('btnGasolina').classList.toggle('on',t==='gasolina');
-    calcPreview();
-  }
-  function selectFuelQ(t){
-    combustivelQ=t;
-    document.getElementById('qBtnEtanol').classList.toggle('on',t==='etanol');
-    document.getElementById('qBtnGasolina').classList.toggle('on',t==='gasolina');
-  }
+// ======= REGISTRAR DIA =======
+function registrar() {
+  var data  = document.getElementById('iData').value;
+  var bruto = parseFloat(document.getElementById('iBruto').value);
+  var comb  = parseFloat(document.getElementById('iComb').value);
+  var preco = parseFloat(document.getElementById('iPreco').value) || 0;
+  var km    = parseFloat(document.getElementById('iKm').value)    || 0;
 
-  function calcDia(bruto,comb,precoL,km,combustivel){
-    const litrosReais=(precoL>0&&comb>0)?comb/precoL:0;
-    const media=(litrosReais>0&&km>0)?km/litrosReais:0;
-    const liquido=bruto-comb;
-    return{bruto,comb,precoL,km,litrosReais,media,liquido,combustivel};
-  }
-
-  function calcPreview(){
-    const bruto=parseFloat(document.getElementById('inpBruto').value)||0;
-    const comb=parseFloat(document.getElementById('inpComb').value)||0;
-    const precoL=parseFloat(document.getElementById('inpPrecoL').value)||0;
-    const km=parseFloat(document.getElementById('inpKm').value)||0;
-    const c=calcDia(bruto,comb,precoL,km,combustivelSelecionado,0);
-    document.getElementById('previewLitros').textContent=c.litrosReais>0?fmt(c.litrosReais)+' L':'—';
-    document.getElementById('previewMedia').textContent=c.media>0?fmt(c.media)+' km/L':'—';
-    document.getElementById('previewLiq').textContent=bruto>0?'R$ '+fmt(c.liquido):'—';
-  }
-
-  async function salvarDia(){
-    const data=document.getElementById('inpData').value;
-    const bruto=parseFloat(document.getElementById('inpBruto').value);
-    const comb=parseFloat(document.getElementById('inpComb').value);
-    const precoL=parseFloat(document.getElementById('inpPrecoL').value)||0;
-    const km=parseFloat(document.getElementById('inpKm').value)||0;
-    if(!data||isNaN(bruto)||isNaN(comb)){alert('Preencha Data, Bruto e Combustível!');return;}
-    const e={data,...calcDia(bruto,comb,precoL,km,combustivelSelecionado)};
-    if(editIdx>=0){
-      dias[editIdx]=e; editIdx=-1;
-      document.getElementById('formTitle').textContent='➕ Registrar Dia';
-      document.getElementById('btnRegistrar').textContent='Registrar Dia';
-      document.getElementById('btnRegistrar').classList.remove('editing');
-    } else { dias.push(e); }
-    dias.sort((a,b)=>a.data.localeCompare(b.data));
-    await dbSet('dias',dias); renderSemana();
-    ['inpBruto','inpComb','inpPrecoL','inpKm'].forEach(id=>document.getElementById(id).value='');
-    ['previewLitros','previewMedia','previewLiq'].forEach(id=>document.getElementById(id).textContent='—');
+  if (!data || isNaN(bruto) || isNaN(comb)) {
+    alert('Preencha pelo menos: Data, Bruto Uber e Combustível!');
+    return;
   }
 
-  async function salvarRapido(){
-    const data=document.getElementById('qData').value;
-    const bruto=parseFloat(document.getElementById('qBruto').value);
-    const comb=parseFloat(document.getElementById('qComb').value);
-    const precoL=parseFloat(document.getElementById('qPrecoL').value)||0;
-    const km=parseFloat(document.getElementById('qKm').value)||0;
-    if(!data||isNaN(bruto)||isNaN(comb)){alert('Preencha Data, Bruto e Combustível!');return;}
-    dias.push({data,...calcDia(bruto,comb,precoL,km,combustivelQ,0)});
-    dias.sort((a,b)=>a.data.localeCompare(b.data));
-    await dbSet('dias',dias);
-    ['qBruto','qComb','qPrecoL','qKm'].forEach(id=>document.getElementById(id).value='');
+  var entrada = { data: data, ...calcDia(bruto, comb, preco, km, combustivel) };
+
+  if (editIdx >= 0) {
+    dias[editIdx] = entrada;
+    editIdx = -1;
+    document.getElementById('formTit').textContent = '➕ Registrar Dia';
+    document.getElementById('btnReg').textContent  = 'Registrar Dia';
+    document.getElementById('btnReg').classList.remove('edit');
+  } else {
+    dias.push(entrada);
+  }
+
+  dias.sort(function(a,b){ return a.data.localeCompare(b.data); });
+
+  // Limpa campos
+  document.getElementById('iData').value  = hoje();
+  document.getElementById('iBruto').value = '';
+  document.getElementById('iComb').value  = '';
+  document.getElementById('iPreco').value = '';
+  document.getElementById('iKm').value    = '';
+  document.getElementById('pLit').textContent = '—';
+  document.getElementById('pMed').textContent = '—';
+  document.getElementById('pLiq').textContent = '—';
+  document.getElementById('pCkm').textContent = '—';
+
+  // Salva e renderiza
+  salvar();
+  renderSemana();
+}
+
+// ======= EDITAR =======
+function editarDia(i) {
+  var d = dias[i];
+  editIdx = i;
+  document.getElementById('iData').value  = d.data;
+  document.getElementById('iBruto').value = d.bruto;
+  document.getElementById('iComb').value  = d.comb;
+  document.getElementById('iPreco').value = d.preco || '';
+  document.getElementById('iKm').value    = d.km    || '';
+  setFuel(d.fuel || 'gasolina');
+  preview();
+  document.getElementById('formTit').textContent = '✏️ Editando Lançamento';
+  document.getElementById('btnReg').textContent  = 'Salvar Edição';
+  document.getElementById('btnReg').classList.add('edit');
+  document.getElementById('formTit').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// ======= EXCLUIR =======
+function excluirDia(i) {
+  if (confirm('Excluir este lançamento?')) {
+    dias.splice(i, 1);
+    if (editIdx === i) {
+      editIdx = -1;
+      document.getElementById('formTit').textContent = '➕ Registrar Dia';
+      document.getElementById('btnReg').textContent  = 'Registrar Dia';
+      document.getElementById('btnReg').classList.remove('edit');
+    }
+    salvar();
     renderSemana();
-    showTab('semana');
-    alert('✅ Dia registrado!');
   }
+}
 
-  function editarDia(i){
-    const d=dias[i]; editIdx=i;
-    document.getElementById('inpData').value=d.data;
-    document.getElementById('inpBruto').value=d.bruto;
-    document.getElementById('inpComb').value=d.comb;
-    document.getElementById('inpPrecoL').value=d.precoL||'';
-    document.getElementById('inpKm').value=d.km||'';
-    selectFuel(d.combustivel||'gasolina'); calcPreview();
-    document.getElementById('formTitle').textContent='✏️ Editando Lançamento';
-    document.getElementById('btnRegistrar').textContent='Salvar Edição';
-    document.getElementById('btnRegistrar').classList.add('editing');
-    document.getElementById('formTitle').scrollIntoView({behavior:'smooth',block:'start'});
+// ======= DESPESAS =======
+function toggleDespForm() {
+  var f = document.getElementById('despForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+function addDesp() {
+  var nome  = document.getElementById('dNome').value.trim();
+  var valor = parseFloat(document.getElementById('dValor').value);
+  if (!nome || isNaN(valor) || valor <= 0) { alert('Preencha nome e valor!'); return; }
+  despesas.push({ id: Date.now(), nome: nome, valor: valor });
+  document.getElementById('dNome').value  = '';
+  document.getElementById('dValor').value = '';
+  document.getElementById('despForm').style.display = 'none';
+  salvar();
+  renderDespesas();
+  renderSemana();
+}
+function excluirDesp(id) {
+  despesas = despesas.filter(function(d){ return d.id !== id; });
+  salvar();
+  renderDespesas();
+  renderSemana();
+}
+function renderDespesas() {
+  var el = document.getElementById('despLista');
+  if (!despesas.length) {
+    el.innerHTML = '<p style="font-size:0.78rem;color:var(--sub);padding:4px 0">Nenhuma despesa cadastrada.</p>';
+    return;
   }
+  el.innerHTML = despesas.map(function(d) {
+    return '<div class="desp-item"><div class="desp-dot"></div><span class="desp-nome">'+d.nome+'</span><span class="desp-valor">R$ '+fmt(d.valor)+'</span><button class="btn-dd" onclick="excluirDesp('+d.id+')">✕</button></div>';
+  }).join('');
+}
 
-  async function excluirDia(i){
-    if(confirm('Excluir este lançamento?')){
-      dias.splice(i,1);
-      if(editIdx===i){editIdx=-1;document.getElementById('formTitle').textContent='➕ Registrar Dia';document.getElementById('btnRegistrar').textContent='Registrar Dia';document.getElementById('btnRegistrar').classList.remove('editing');}
-      await dbSet('dias',dias); renderSemana();
+// ======= FECHAR SEMANA =======
+function fecharSemana() {
+  if (!dias.length) { alert('Nenhum dia para fechar!'); return; }
+  var tB=0, tC=0, tK=0, tL=0, tLit=0, tD=0, mArr=[];
+  for (var i=0; i<dias.length; i++) {
+    tB   += dias[i].bruto;
+    tC   += dias[i].comb;
+    tK   += (dias[i].km || 0);
+    tL   += dias[i].liquido;
+    tLit += (dias[i].litros || 0);
+    tD   += 0;
+    if (dias[i].media > 0) mArr.push(dias[i].media);
+  }
+  for (var j=0; j<despesas.length; j++) tD += despesas[j].valor;
+  var mc = mArr.length ? mArr.reduce(function(s,v){return s+v;},0)/mArr.length : 0;
+  var dts = dias.map(function(d){return d.data;}).sort();
+  var per = dts.length > 1 ? fmtD(dts[0])+' – '+fmtD(dts[dts.length-1]) : fmtD(dts[0]);
+  var mEt  = mediaFuel('etanol');
+  var mGas = mediaFuel('gasolina');
+  var semana = {
+    id: Date.now(), periodo: per,
+    tB:tB, tC:tC, tK:tK, tL:tL, tLit:tLit, tD:tD, mc:mc,
+    ok: tL >= META, mEt:mEt, mGas:mGas,
+    dias: dias.slice(), despesas: despesas.slice()
+  };
+  historico.unshift(semana);
+  dias = [];
+  salvar();
+  renderSemana();
+  alert('✅ Semana fechada!\nPeríodo: '+per+'\nLíquido: R$ '+fmt(tL));
+  showTab(1);
+}
+
+function limpar() {
+  if (confirm('Apagar sem salvar no histórico?')) {
+    dias = [];
+    salvar();
+    renderSemana();
+  }
+}
+
+function excluirSemana(id) {
+  if (confirm('Remover esta semana do histórico?')) {
+    historico = historico.filter(function(s){ return s.id !== id; });
+    salvar();
+    renderHistorico();
+  }
+}
+
+function toggleHist(id) {
+  var el = document.getElementById('hb-'+id);
+  if (el) el.classList.toggle('open');
+}
+
+function mediaFuel(tipo) {
+  var f = dias.filter(function(d){ return d.fuel===tipo && d.media>0; });
+  if (!f.length) return null;
+  return { media: f.reduce(function(s,d){return s+d.media;},0)/f.length, n: f.length };
+}
+
+// ======= WHATSAPP =======
+function whatsapp() {
+  var tB=0, tC=0, tK=0, tL=0, tD=0, mArr=[];
+  for (var i=0; i<dias.length; i++) {
+    tB += dias[i].bruto; tC += dias[i].comb;
+    tK += (dias[i].km||0); tL += dias[i].liquido;
+    if (dias[i].media > 0) mArr.push(dias[i].media);
+  }
+  for (var j=0; j<despesas.length; j++) tD += despesas[j].valor;
+  var mc  = mArr.length ? mArr.reduce(function(s,v){return s+v;},0)/mArr.length : 0;
+  var lqR = tL - tD;
+  var pct = Math.round((tL/META)*100);
+  var dts = dias.map(function(d){return d.data;}).sort();
+  var per = dts.length > 1 ? fmtD(dts[0])+' a '+fmtD(dts[dts.length-1]) : (dts[0] ? fmtD(dts[0]) : 'esta semana');
+  var mEt  = mediaFuel('etanol');
+  var mGas = mediaFuel('gasolina');
+  var t = '🚗 *RESUMO SEMANAL — THIAGO*\n📅 '+per+'\n\n';
+  t += '💰 *Bruto:* R$ '+fmt(tB)+'\n';
+  t += '⛽ *Combustível:* R$ '+fmt(tC)+'\n';
+  if (tD > 0) t += '🏠 *Despesas:* R$ '+fmt(tD)+'\n';
+  t += '\n✅ *Líquido:* R$ '+fmt(tL)+'\n';
+  if (tD > 0) t += '📊 *Líquido real:* R$ '+fmt(lqR)+'\n';
+  t += '🎯 *Meta (R$ '+fmt(META)+'):* '+pct+'%\n\n';
+  t += '📍 *Km rodado:* '+fmt(tK)+' km\n';
+  if (mc > 0) t += '📊 *Consumo médio:* '+fmt(mc)+' km/L\n';
+  if (mEt)  t += '🌿 *Etanol:* '+fmt(mEt.media)+' km/L\n';
+  if (mGas) t += '🔶 *Gasolina:* '+fmt(mGas.media)+' km/L\n';
+  t += '\n_App Controle do Thiago_ 🚗';
+  window.open('https://wa.me/?text='+encodeURIComponent(t), '_blank');
+}
+
+// ======= RENDER SEMANA =======
+function renderSemana() {
+  var tB=0, tC=0, tK=0, tL=0, tLit=0, tD=0, mArr=[];
+  for (var i=0; i<dias.length; i++) {
+    tB   += dias[i].bruto;
+    tC   += dias[i].comb;
+    tK   += (dias[i].km || 0);
+    tL   += dias[i].liquido;
+    tLit += (dias[i].litros || 0);
+    if (dias[i].media > 0) mArr.push(dias[i].media);
+  }
+  for (var j=0; j<despesas.length; j++) tD += despesas[j].valor;
+
+  var mc   = mArr.length ? mArr.reduce(function(s,v){return s+v;},0)/mArr.length : 0;
+  var lqR  = tL - tD;
+  var mLkm = tK > 0 ? tL / tK : 0;
+  var mCkm = tK > 0 ? tC / tK : 0;
+
+  // KPIs
+  document.getElementById('kLiq').textContent   = 'R$ '+fmt(tL);
+  document.getElementById('kBruto').textContent = 'R$ '+fmt(tB);
+  document.getElementById('kComb').textContent  = 'R$ '+fmt(tC);
+  document.getElementById('kKm').textContent    = fmt(tK)+' km';
+  document.getElementById('kDesp').textContent  = 'R$ '+fmt(tD);
+  document.getElementById('kReal').textContent  = 'R$ '+fmt(lqR);
+
+  // Stats
+  document.getElementById('sMed').textContent  = mc   > 0 ? fmt(mc)+' km/L'       : '—';
+  document.getElementById('sLit').textContent  = tLit > 0 ? fmt(tLit)+' L'        : '—';
+  document.getElementById('sLkm').textContent  = mLkm > 0 ? 'R$ '+fmt(mLkm)+'/km' : '—';
+  document.getElementById('sCkm').textContent  = mCkm > 0 ? 'R$ '+fmt(mCkm)+'/km' : '—';
+
+  // Fuel médias
+  var mEt  = mediaFuel('etanol');
+  var mGas = mediaFuel('gasolina');
+  document.getElementById('fEt').textContent     = mEt  ? fmt(mEt.media)+' km/L'  : '—';
+  document.getElementById('fEtSub').textContent  = mEt  ? mEt.n+' abastecimento'+(mEt.n>1?'s':'')  : 'sem registros';
+  document.getElementById('fGas').textContent    = mGas ? fmt(mGas.media)+' km/L' : '—';
+  document.getElementById('fGasSub').textContent = mGas ? mGas.n+' abastecimento'+(mGas.n>1?'s':'') : 'sem registros';
+
+  // Meta
+  var pct = Math.min((tL/META)*100, 100);
+  document.getElementById('metaFill').style.width = pct+'%';
+  document.getElementById('metaPct').textContent  = Math.round((tL/META)*100)+'%';
+  document.getElementById('metaDone').textContent = 'R$ '+fmt(tL)+' atingido';
+  var falta = META - tL;
+  document.getElementById('metaHint').textContent = falta > 0 ? 'Faltam R$ '+fmt(falta)+' para a meta' : '🎉 Meta atingida!';
+
+  // Meta diária
+  document.getElementById('mdDias').textContent = dias.length;
+  var dHoje = new Date();
+  var dIdx  = dHoje.getDay() === 0 ? 6 : dHoje.getDay() - 1; // 0=seg...6=dom
+  var datas = {};
+  for (var k=0; k<dias.length; k++) datas[dias[k].data] = true;
+  var diasR = 0;
+  for (var x = dIdx; x <= 6; x++) {
+    var dt = new Date(dHoje);
+    dt.setDate(dt.getDate() + (x - dIdx));
+    var ds = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    if (!datas[ds]) diasR++;
+  }
+  var mD = diasR > 0 ? Math.max(falta,0) / diasR : 0;
+  document.getElementById('mdMeta').textContent = falta <= 0 ? '✅ Bateu!' : (diasR > 0 ? 'R$ '+fmt(mD)+'/dia' : '—');
+
+  // Tabela
+  var tb = document.getElementById('tblBody');
+  if (!dias.length) {
+    tb.innerHTML = '<div class="empty">Nenhum dia registrado ainda.<br>Preencha o formulário acima! ☝️</div>';
+    return;
+  }
+  var html = '';
+  for (var n=0; n<dias.length; n++) {
+    var d   = dias[n];
+    var tag = d.fuel === 'etanol'
+      ? '<span class="tag-et">🌿</span>'
+      : '<span class="tag-gas">🔶</span>';
+    html += '<div class="tbl-row">';
+    html += '<span class="td">'+fmtD(d.data)+'<br>'+tag+'</span>';
+    html += '<span class="tl">R$ '+fmt(d.liquido)+'</span>';
+    html += '<span class="tc">R$ '+fmt(d.comb)+'</span>';
+    html += '<span class="tk">'+(d.km > 0 ? fmt(d.km)+' km' : '—')+(d.media > 0 ? '<br><span style="color:var(--sub);font-size:0.65rem">'+fmt(d.media)+' km/L</span>' : '')+'</span>';
+    html += '<span class="ta"><button class="btn-te" onclick="editarDia('+n+')">✏️</button><button class="btn-td" onclick="excluirDia('+n+')">🗑️</button></span>';
+    html += '</div>';
+  }
+  tb.innerHTML = html;
+}
+
+// ======= RENDER HISTÓRICO =======
+function renderHistorico() {
+  renderGrafico();
+  var el = document.getElementById('histLista');
+  if (!historico.length) {
+    el.innerHTML = '<div class="empty-hist">Nenhuma semana fechada ainda.<br>Feche sua primeira semana! 📚</div>';
+    return;
+  }
+  var html = '';
+  for (var i=0; i<historico.length; i++) {
+    var s   = historico[i];
+    var etS  = s.mEt  ? fmt(s.mEt.media)+' km/L'  : '—';
+    var gasS = s.mGas ? fmt(s.mGas.media)+' km/L' : '—';
+    var lqR  = s.tL - (s.tD||0);
+    var dH = '';
+    for (var j=0; j<(s.dias||[]).length; j++) {
+      var d = s.dias[j];
+      dH += '<div class="hd-row"><span>'+fmtD(d.data)+' '+(d.fuel==='etanol'?'🌿':'🔶')+'</span><span class="hd-liq">R$ '+fmt(d.liquido)+'</span><span style="color:var(--red)">R$ '+fmt(d.comb)+'</span><span style="color:var(--warn)">'+(d.km>0?fmt(d.km)+' km':'—')+'</span></div>';
     }
-  }
-
-  function toggleFormDespesa(){const f=document.getElementById('formDespesa');f.style.display=f.style.display==='none'?'block':'none';}
-  async function confirmarDespesa(){
-    const nome=document.getElementById('despNome').value.trim();
-    const valor=parseFloat(document.getElementById('despValor').value);
-    if(!nome||isNaN(valor)||valor<=0){alert('Preencha nome e valor!');return;}
-    despesas.push({id:Date.now(),nome,valor});
-    await dbSet('despesas',despesas);
-    document.getElementById('despNome').value='';
-    document.getElementById('despValor').value='';
-    document.getElementById('formDespesa').style.display='none';
-    renderDespesas(); renderSemana();
-  }
-  async function excluirDespesa(id){
-    despesas=despesas.filter(d=>d.id!==id);
-    await dbSet('despesas',despesas); renderDespesas(); renderSemana();
-  }
-  function renderDespesas(){
-    const el=document.getElementById('listaDespesas');
-    if(!despesas.length){el.innerHTML='<p style="font-size:0.78rem;color:var(--sub);padding:4px 0">Nenhuma despesa cadastrada.</p>';return;}
-    el.innerHTML=despesas.map(d=>`
-      <div class="desp-item">
-        <div class="desp-dot"></div>
-        <span class="desp-nome">${d.nome}</span>
-        <span class="desp-valor">R$ ${fmt(d.valor)}</span>
-        <button class="btn-del-desp" onclick="excluirDespesa(${d.id})">✕</button>
-      </div>`).join('');
-  }
-
-  async function fecharSemana(){
-    if(!dias.length){alert('Nenhum dia para fechar!');return;}
-    const tB=dias.reduce((s,d)=>s+d.bruto,0),tC=dias.reduce((s,d)=>s+d.comb,0),
-          tK=dias.reduce((s,d)=>s+(d.km||0),0),tL=dias.reduce((s,d)=>s+d.liquido,0),
-          tLit=dias.reduce((s,d)=>s+d.litrosReais,0),
-          tD=despesas.reduce((s,d)=>s+d.valor,0);
-    const dm=dias.filter(d=>d.media>0),mc=dm.length?dm.reduce((s,d)=>s+d.media,0)/dm.length:0;
-    const dts=dias.map(d=>d.data).sort();
-    const per=dts.length>1?`${fmtData(dts[0])} – ${fmtData(dts[dts.length-1])}`:fmtData(dts[0]);
-    const semana={id:Date.now(),fechadoEm:new Date().toISOString(),periodo:per,
-      totBruto:tB,totComb:tC,totKm:tK,totLiquido:tL,totLitros:tLit,totDesp:tD,
-      medConsumo:mc,metaAtingida:tL>=META,
-      medEtanol:calcMediaFuel(dias,'etanol'),medGasolina:calcMediaFuel(dias,'gasolina'),
-      dias:[...dias],despesas:[...despesas]};
-    historico.unshift(semana);
-    await dbSet('historico',historico);
-    dias=[]; await dbSet('dias',dias); renderSemana();
-    alert(`✅ Semana fechada!\nPeríodo: ${per}\nLíquido: R$ ${fmt(tL)}`);
-    showTab('historico');
-  }
-
-  async function limparSemana(){if(confirm('Apagar sem salvar?')){dias=[];await dbSet('dias',dias);renderSemana();}}
-
-  async function excluirSemana(id){
-    if(confirm('Remover esta semana do histórico?\nEsta ação não pode ser desfeita.')){
-      historico=historico.filter(s=>s.id!==id);
-      await dbSet('historico',historico); renderHistorico();
-    }
-  }
-
-  function toggleDetalhe(id){const el=document.getElementById('hb-'+id);if(el)el.classList.toggle('open');}
-
-  function calcMediaFuel(lista,tipo){
-    const f=lista.filter(d=>d.combustivel===tipo&&d.media>0);
-    if(!f.length)return null;
-    return{media:f.reduce((s,d)=>s+d.media,0)/f.length,count:f.length};
-  }
-
-  function compartilharResumo(){
-    const tB=dias.reduce((s,d)=>s+d.bruto,0),tC=dias.reduce((s,d)=>s+d.comb,0),
-          tK=dias.reduce((s,d)=>s+(d.km||0),0),tL=dias.reduce((s,d)=>s+d.liquido,0),
-          tD=despesas.reduce((s,d)=>s+d.valor,0);
-    const dm=dias.filter(d=>d.media>0),mc=dm.length?dm.reduce((s,d)=>s+d.media,0)/dm.length:0;
-    const lqR=tL-tD,pct=Math.round((tL/META)*100);
-    const dts=dias.map(d=>d.data).sort();
-    const per=dts.length>1?`${fmtData(dts[0])} a ${fmtData(dts[dts.length-1])}`:(dts[0]?fmtData(dts[0]):'esta semana');
-    const mEt=calcMediaFuel(dias,'etanol'),mGas=calcMediaFuel(dias,'gasolina');
-    let t=`🚗 *RESUMO SEMANAL — THIAGO*\n📅 ${per}\n\n`;
-    t+=`💰 *Bruto:* R$ ${fmt(tB)}\n⛽ *Combustível:* R$ ${fmt(tC)}\n`;
-    if(tD>0)t+=`🏠 *Despesas:* R$ ${fmt(tD)}\n`;
-    t+=`\n✅ *Líquido:* R$ ${fmt(tL)}\n`;
-    if(tD>0)t+=`📊 *Líquido real:* R$ ${fmt(lqR)}\n`;
-    t+=`🎯 *Meta (R$ ${fmt(META)}):* ${pct}%\n\n`;
-    t+=`📍 *Km rodado:* ${fmt(tK)} km\n`;
-    if(mc>0)t+=`📊 *Consumo médio:* ${fmt(mc)} km/L\n`;
-    if(mEt)t+=`🌿 *Etanol:* ${fmt(mEt.media)} km/L\n`;
-    if(mGas)t+=`🔶 *Gasolina:* ${fmt(mGas.media)} km/L\n`;
-    t+=`\n_App Controle do Thiago_ 🚗`;
-    window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
-  }
-
-  function renderSemana(){
-    const tB=dias.reduce((s,d)=>s+d.bruto,0),tC=dias.reduce((s,d)=>s+d.comb,0),
-          tK=dias.reduce((s,d)=>s+(d.km||0),0),tL=dias.reduce((s,d)=>s+d.liquido,0),
-          tLit=dias.reduce((s,d)=>s+d.litrosReais,0),tH=dias.reduce((s,d)=>s+(d.horas||0),0),
-          tD=despesas.reduce((s,d)=>s+d.valor,0),lqR=tL-tD;
-    const dm=dias.filter(d=>d.media>0),mc=dm.length?dm.reduce((s,d)=>s+d.media,0)/dm.length:0;
-    const rsH=tH>0?tL/tH:0,mLK=tK>0?tL/tK:0,mCK=tK>0?tC/tK:0;
-    // Dias restantes da semana (seg=1 ... dom=0) que ainda não passaram E não foram trabalhados
-    const hoje = new Date();
-    const diaSemanaHoje = hoje.getDay(); // 0=dom,1=seg,...,6=sab
-    // Converte para seg=0...dom=6
-    const diaIdx = diaSemanaHoje === 0 ? 6 : diaSemanaHoje - 1;
-    // Dias que já foram lançados (por data)
-    const datasLancadas = new Set(dias.map(d => d.data));
-    // Conta dias restantes: de amanhã até domingo (diaIdx 0-6, seg-dom)
-    let diasRestantes = 0;
-    for (let i = diaIdx + 1; i <= 6; i++) {
-      // Calcula a data desse dia da semana
-      const diff = i - diaIdx;
-      const dt = new Date(hoje);
-      dt.setDate(dt.getDate() + diff);
-      const dtStr = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
-      if (!datasLancadas.has(dtStr)) diasRestantes++;
-    }
-    // Inclui hoje se ainda não lançou
-    const hjStr = hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
-    if (!datasLancadas.has(hjStr)) diasRestantes++;
-    const fM = Math.max(META - tL, 0);
-    const mD = diasRestantes > 0 ? fM / diasRestantes : 0;
-
-    document.getElementById('totBruto').textContent='R$ '+fmt(tB);
-    document.getElementById('totComb').textContent='R$ '+fmt(tC);
-    document.getElementById('totKm').textContent=fmt(tK)+' km';
-    document.getElementById('totLiquido').textContent='R$ '+fmt(tL);
-    document.getElementById('totDespesas').textContent='R$ '+fmt(tD);
-    document.getElementById('totLiqReal').textContent='R$ '+fmt(lqR);
-    document.getElementById('medConsumo').textContent=mc>0?fmt(mc)+' km/L':'—';
-    document.getElementById('medLitros').textContent=tLit>0?fmt(tLit)+' L':'—';
-    document.getElementById('medLiqKm').textContent=mLK>0?'R$ '+fmt(mLK)+'/km':'—';
-    document.getElementById('medCustKm').textContent=mCK>0?'R$ '+fmt(mCK)+'/km':'—';
-
-    const mEt=calcMediaFuel(dias,'etanol'),mGas=calcMediaFuel(dias,'gasolina');
-    document.getElementById('medEtanol').textContent=mEt?fmt(mEt.media)+' km/L':'—';
-    document.getElementById('medEtanolSub').textContent=mEt?`${mEt.count} abastecimento${mEt.count>1?'s':''}` :'sem registros';
-    document.getElementById('medGasolina').textContent=mGas?fmt(mGas.media)+' km/L':'—';
-    document.getElementById('medGasolinaSub').textContent=mGas?`${mGas.count} abastecimento${mGas.count>1?'s':''}` :'sem registros';
-
-    document.getElementById('mdDias').textContent=dias.length;
-    document.getElementById('mdMetaDia').textContent=diasRestantes>0&&fM>0?'R$ '+fmt(mD)+'/dia':(fM<=0?'✅ Bateu!':'—');
-
-    const pct=Math.min((tL/META)*100,100);
-    document.getElementById('metaFill').style.width=pct+'%';
-    document.getElementById('metaPct').textContent=Math.round((tL/META)*100)+'%';
-    document.getElementById('metaAtual').textContent='R$ '+fmt(tL)+' atingido';
-    const f=META-tL;
-    document.getElementById('faltam').textContent=f>0?`Faltam R$ ${fmt(f)} para a meta`:'🎉 Meta atingida!';
-
-
-    const tb=document.getElementById('tabelaBody');
-    if(!dias.length){tb.innerHTML='<div class="empty">Nenhum dia registrado ainda.<br>Adicione acima! ☝️</div>';return;}
-    tb.innerHTML=dias.map((d,i)=>{
-      const tag=d.combustivel==='etanol'?`<span class="tag-et">🌿 Et</span>`:`<span class="tag-gas">🔶 Gas</span>`;
-      return`<div class="table-row${low?' low':''}">
-        <span class="t-date">${fmtData(d.data)}<br>${tag}</span>
-        <span class="t-liq">R$ ${fmt(d.liquido)}</span>
-        <span class="t-comb">R$ ${fmt(d.comb)}</span>
-        <span class="t-km">${d.km>0?fmt(d.km)+' km':'—'}${d.media>0?`<br><span style="color:var(--sub);font-size:0.65rem">${fmt(d.media)} km/L</span>`:''}</span>
-        <span class="t-acts">
-          <button class="btn-te" onclick="editarDia(${i})">✏️</button>
-          <button class="btn-td" onclick="excluirDia(${i})">🗑️</button>
-        </span>
-      </div>`;
-    }).join('');
-  }
-
-  function renderHistorico(){
-    renderGrafico();
-    const hb=document.getElementById('histBody');
-    if(!historico.length){hb.innerHTML='<div class="empty-hist">Nenhuma semana fechada ainda.<br>Feche sua primeira semana! 📚</div>';return;}
-    hb.innerHTML=historico.map(s=>{
-      const etS=s.medEtanol?fmt(s.medEtanol.media)+' km/L':'—';
-      const gaS=s.medGasolina?fmt(s.medGasolina.media)+' km/L':'—';
-      const lqR=s.totLiquido-(s.totDesp||0);
-      const dH=(s.dias||[]).map(d=>`
-        <div class="hist-day-row">
-          <span>${fmtData(d.data)} ${d.combustivel==='etanol'?'🌿':'🔶'}</span>
-          <span class="hist-day-liq">R$ ${fmt(d.liquido)}</span>
-          <span style="color:var(--red)">R$ ${fmt(d.comb)}</span>
-          <span style="color:var(--warn)">${d.km>0?fmt(d.km)+' km':'—'}</span>
-        </div>`).join('');
-      const dpH=(s.despesas||[]).length?
-        `<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">` +
-        (s.despesas||[]).map(d=>`<div class="hist-day-row"><span>${d.nome}</span><span style="color:var(--purple)">R$ ${fmt(d.valor)}</span></div>`).join('') +
-        `</div>`:'';
-      return`<div class="hist-card">
-        <div class="hist-head" onclick="toggleDetalhe(${s.id})">
-          <div>
-            <div class="hist-period">📅 ${s.periodo}</div>
-            <span class="hist-badge ${s.metaAtingida?'ok':'nok'}">${s.metaAtingida?'✅ Meta atingida':'❌ Abaixo da meta'}</span>
-          </div>
-          <div>
-            <div class="hist-liq-big">R$ ${fmt(s.totLiquido)}</div>
-            <div class="hist-liq-sub">toque p/ detalhes</div>
-          </div>
-        </div>
-        <div class="hist-body" id="hb-${s.id}">
-          <div class="hist-kpi-grid">
-            <div class="hist-kpi"><div class="hist-kpi-label">Bruto</div><div class="hist-kpi-val" style="color:var(--text)">R$ ${fmt(s.totBruto)}</div></div>
-            <div class="hist-kpi"><div class="hist-kpi-label">Combustível</div><div class="hist-kpi-val" style="color:var(--red)">R$ ${fmt(s.totComb)}</div></div>
-            <div class="hist-kpi"><div class="hist-kpi-label">Km total</div><div class="hist-kpi-val" style="color:var(--warn)">${s.totKm>0?fmt(s.totKm)+' km':'—'}</div></div>
-            <div class="hist-kpi"><div class="hist-kpi-label">Litros</div><div class="hist-kpi-val" style="color:var(--purple)">${s.totLitros>0?fmt(s.totLitros)+' L':'—'}</div></div>
-            <div class="hist-kpi"><div class="hist-kpi-label">🌿 Etanol</div><div class="hist-kpi-val" style="color:var(--etanol)">${etS}</div></div>
-            <div class="hist-kpi"><div class="hist-kpi-label">🔶 Gasolina</div><div class="hist-kpi-val" style="color:var(--gasolina)">${gaS}</div></div>
-            ${s.totDesp>0?`<div class="hist-kpi"><div class="hist-kpi-label">Despesas</div><div class="hist-kpi-val" style="color:var(--purple)">R$ ${fmt(s.totDesp)}</div></div>`:''}
-            ${s.totDesp>0?`<div class="hist-kpi"><div class="hist-kpi-label">Liq. Real</div><div class="hist-kpi-val" style="color:var(--green)">R$ ${fmt(lqR)}</div></div>`:''}
-          </div>
-          <div class="hist-days">${dH}</div>
-          ${dpH}
-          <button class="btn-del-sem" onclick="excluirSemana(${s.id})">🗑️ Remover esta semana</button>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  function renderGrafico(){
-    const canvas=document.getElementById('graficoSemanas');
-    if(!canvas)return;
-    const dados=[...historico].reverse().slice(-10);
-    if(!dados.length)return;
-    if(graficoInstance){graficoInstance.destroy();graficoInstance=null;}
-    graficoInstance=new Chart(canvas,{
-      type:'bar',
-      data:{
-        labels:dados.map(s=>s.periodo),
-        datasets:[{
-          label:'Líquido (R$)',
-          data:dados.map(s=>s.totLiquido),
-          backgroundColor:dados.map(s=>s.totLiquido>=META?'rgba(0,245,176,0.25)':'rgba(255,209,102,0.2)'),
-          borderColor:dados.map(s=>s.totLiquido>=META?'rgba(0,245,176,0.8)':'rgba(255,209,102,0.8)'),
-          borderWidth:2, borderRadius:8,
-        }]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`R$ ${fmt(ctx.raw)}`},backgroundColor:'rgba(13,18,32,0.9)',titleColor:'#f0f4ff',bodyColor:'#7a8aaa',borderColor:'rgba(255,255,255,0.1)',borderWidth:1}},
-        scales:{
-          x:{ticks:{color:'#5a6680',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
-          y:{ticks:{color:'#5a6680',callback:v=>'R$'+Math.round(v),font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}
-        }
+    var dpH = '';
+    if ((s.despesas||[]).length) {
+      dpH = '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">';
+      for (var k=0; k<s.despesas.length; k++) {
+        dpH += '<div class="hd-row"><span>'+s.despesas[k].nome+'</span><span style="color:var(--purple)">R$ '+fmt(s.despesas[k].valor)+'</span></div>';
       }
-    });
+      dpH += '</div>';
+    }
+    html += '<div class="hist-card">';
+    html += '<div class="hist-head" onclick="toggleHist('+s.id+')">';
+    html += '<div><div class="hist-period">📅 '+s.periodo+'</div><span class="hist-badge '+(s.ok?'ok':'nok')+'">'+(s.ok?'✅ Meta atingida':'❌ Abaixo da meta')+'</span></div>';
+    html += '<div><div class="hist-liq">R$ '+fmt(s.tL)+'</div><div class="hist-sub">toque p/ detalhes</div></div>';
+    html += '</div>';
+    html += '<div class="hist-body" id="hb-'+s.id+'">';
+    html += '<div class="hist-kgrid">';
+    html += '<div class="hk"><div class="hk-label">Bruto</div><div class="hk-val" style="color:var(--text)">R$ '+fmt(s.tB)+'</div></div>';
+    html += '<div class="hk"><div class="hk-label">Combustível</div><div class="hk-val" style="color:var(--red)">R$ '+fmt(s.tC)+'</div></div>';
+    html += '<div class="hk"><div class="hk-label">Km total</div><div class="hk-val" style="color:var(--warn)">'+(s.tK>0?fmt(s.tK)+' km':'—')+'</div></div>';
+    html += '<div class="hk"><div class="hk-label">Litros</div><div class="hk-val" style="color:var(--purple)">'+(s.tLit>0?fmt(s.tLit)+' L':'—')+'</div></div>';
+    html += '<div class="hk"><div class="hk-label">🌿 Etanol</div><div class="hk-val" style="color:var(--etanol)">'+etS+'</div></div>';
+    html += '<div class="hk"><div class="hk-label">🔶 Gasolina</div><div class="hk-val" style="color:var(--gasolina)">'+gasS+'</div></div>';
+    if (s.tD > 0) {
+      html += '<div class="hk"><div class="hk-label">Despesas</div><div class="hk-val" style="color:var(--purple)">R$ '+fmt(s.tD)+'</div></div>';
+      html += '<div class="hk"><div class="hk-label">Liq. Real</div><div class="hk-val" style="color:var(--green)">R$ '+fmt(lqR)+'</div></div>';
+    }
+    html += '</div>';
+    html += '<div class="hist-days">'+dH+'</div>';
+    html += dpH;
+    html += '<button class="btn-del-sem" onclick="excluirSemana('+s.id+')">🗑️ Remover esta semana</button>';
+    html += '</div></div>';
   }
+  el.innerHTML = html;
+}
 
-  init();
+// ======= GRÁFICO =======
+function renderGrafico() {
+  var canvas = document.getElementById('grafico');
+  if (!canvas) return;
+  var dados = historico.slice().reverse().slice(-10);
+  if (!dados.length) return;
+  if (graficoInst) { graficoInst.destroy(); graficoInst = null; }
+  graficoInst = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: dados.map(function(s){ return s.periodo; }),
+      datasets: [{
+        label: 'Líquido (R$)',
+        data: dados.map(function(s){ return s.tL; }),
+        backgroundColor: dados.map(function(s){ return s.tL>=META ? 'rgba(0,245,176,0.25)' : 'rgba(255,209,102,0.2)'; }),
+        borderColor:     dados.map(function(s){ return s.tL>=META ? 'rgba(0,245,176,0.8)'  : 'rgba(255,209,102,0.8)'; }),
+        borderWidth: 2, borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: function(ctx){ return 'R$ '+fmt(ctx.raw); } }, backgroundColor:'rgba(13,18,32,0.9)', titleColor:'#f0f4ff', bodyColor:'#7a8aaa', borderColor:'rgba(255,255,255,0.1)', borderWidth:1 }
+      },
+      scales: {
+        x: { ticks:{ color:'#5a6680', font:{size:9} }, grid:{ color:'rgba(255,255,255,0.04)' } },
+        y: { ticks:{ color:'#5a6680', callback: function(v){ return 'R$'+Math.round(v); }, font:{size:9} }, grid:{ color:'rgba(255,255,255,0.04)' } }
+      }
+    }
+  });
+}
+
+init();
 </script>
 </body>
 </html>
