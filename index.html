@@ -260,12 +260,7 @@ body > * { position:relative; z-index:1; }
 .md-val { font-family:'DM Mono',monospace; font-size:1rem; font-weight:600; margin-top:3px; }
 
 /* ALERTA */
-.alerta {
-  display:none; background:rgba(255,77,109,0.08);
-  border:1px solid rgba(255,77,109,0.25); border-radius:var(--r);
-  padding:12px 14px; margin-bottom:12px; font-size:0.78rem; color:var(--red);
-}
-.alerta.show { display:flex; align-items:center; gap:8px; }
+
 
 /* DESPESAS */
 .desp-item {
@@ -394,7 +389,7 @@ body > * { position:relative; z-index:1; }
 }
 .table-row:last-child { border-bottom:none; }
 .table-row:active { background:rgba(255,255,255,0.03); }
-.table-row.low { background:rgba(255,77,109,0.04); }
+
 .t-date { color:var(--sub); font-size:0.74rem; line-height:1.5; }
 .t-liq  { color:var(--green); font-family:'DM Mono',monospace; font-weight:600; font-size:0.82rem; line-height:1.5; }
 .t-comb { color:var(--red); font-size:0.75rem; line-height:1.5; }
@@ -405,7 +400,7 @@ body > * { position:relative; z-index:1; }
 .btn-te:active, .btn-td:active { opacity:0.7; }
 .tag-et  { display:inline-block; background:rgba(64,224,160,0.12);  color:var(--etanol);   font-size:0.58rem; padding:1px 6px; border-radius:99px; font-weight:600; border:1px solid rgba(64,224,160,0.2); }
 .tag-gas { display:inline-block; background:rgba(255,159,67,0.12);  color:var(--gasolina); font-size:0.58rem; padding:1px 6px; border-radius:99px; font-weight:600; border:1px solid rgba(255,159,67,0.2); }
-.tag-low { display:inline-block; background:rgba(255,77,109,0.12);  color:var(--red);      font-size:0.56rem; padding:1px 5px; border-radius:99px; border:1px solid rgba(255,77,109,0.2); }
+
 .empty {
   text-align:center; padding:32px 20px; color:var(--sub); font-size:0.85rem; line-height:1.7;
 }
@@ -507,12 +502,8 @@ body > * { position:relative; z-index:1; }
   <!-- META DIÁRIA -->
   <div class="md-grid">
     <div class="md-item"><div class="md-label">📅 Dias trab.</div><div class="md-val" id="mdDias" style="color:var(--blue)">0</div></div>
-    <div class="md-item"><div class="md-label">⏱️ Horas</div><div class="md-val" id="mdHoras" style="color:var(--purple)">0h</div></div>
-    <div class="md-item"><div class="md-label">🎯 Meta/dia</div><div class="md-val" id="mdMetaDia" style="color:var(--warn)">—</div></div>
-    <div class="md-item"><div class="md-label">💵 R$/hora</div><div class="md-val" id="mdRsHora" style="color:var(--green)">—</div></div>
+    <div class="md-item"><div class="md-label">🎯 Meta/dia restante</div><div class="md-val" id="mdMetaDia" style="color:var(--warn)">—</div></div>
   </div>
-
-  <div class="alerta" id="alertaRendimento">⚠️ Dias abaixo do rendimento mínimo.</div>
 
   <!-- KPIs -->
   <div class="kpi-grid">
@@ -562,8 +553,6 @@ body > * { position:relative; z-index:1; }
       <div class="form-block" style="margin-bottom:0"><label class="inp-label">💰 Bruto Uber (R$)</label><input class="inp" type="number" id="inpBruto" placeholder="0,00" step="0.01" min="0" oninput="calcPreview()"></div>
     </div>
     <div class="inp-grid" style="margin-top:10px">
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">⏱️ Horas trabalhadas</label><input class="inp" type="number" id="inpHoras" placeholder="ex: 8.5" step="0.5" min="0" oninput="calcPreview()"></div>
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">⚠️ Mínimo aceitável (R$)</label><input class="inp" type="number" id="inpMinimo" placeholder="ex: 100" step="1" min="0"></div>
     </div>
 
     <div style="margin-top:12px;margin-bottom:6px"><span class="inp-label">⛽ Combustível utilizado</span></div>
@@ -585,7 +574,6 @@ body > * { position:relative; z-index:1; }
       <div class="prev-item"><div class="prev-lbl">Litros</div><div class="prev-val" id="previewLitros" style="color:var(--warn)">—</div></div>
       <div class="prev-item"><div class="prev-lbl">Média km/L</div><div class="prev-val" id="previewMedia" style="color:var(--green)">—</div></div>
       <div class="prev-item"><div class="prev-lbl">Líquido dia</div><div class="prev-val" id="previewLiq" style="color:var(--green)">—</div></div>
-      <div class="prev-item"><div class="prev-lbl">R$/hora</div><div class="prev-val" id="previewRsHora" style="color:var(--purple)">—</div></div>
     </div>
 
     <button class="btn-primary" id="btnRegistrar" onclick="salvarDia()" style="margin-top:4px">Registrar Dia</button>
@@ -624,7 +612,6 @@ body > * { position:relative; z-index:1; }
     </div>
     <div class="inp-grid" style="margin-top:10px">
       <div class="form-block" style="margin-bottom:0"><label class="inp-label">📍 Km Rodado</label><input class="inp" type="number" id="qKm" placeholder="0,00" step="0.01" min="0"></div>
-      <div class="form-block" style="margin-bottom:0"><label class="inp-label">⏱️ Horas</label><input class="inp" type="number" id="qHoras" placeholder="ex: 8" step="0.5" min="0"></div>
     </div>
 
     <div style="margin-top:12px;margin-bottom:6px"><span class="inp-label">⛽ Combustível utilizado</span></div>
@@ -685,7 +672,7 @@ body > * { position:relative; z-index:1; }
     despesas   = (await dbGet('despesas'))  || [];
     const ms   = await dbGet('meta');
     if (ms && ms>0) META=ms;
-    dias = dias.map(d=>({combustivel:'gasolina',horas:0,minimo:0,km:0,...d}));
+    dias = dias.map(d=>({combustivel:'gasolina',km:0,...d}));
 
     const b=document.getElementById('storageBanner');
     b.className = ok?'storage-banner ok':'storage-banner warn';
@@ -738,12 +725,11 @@ body > * { position:relative; z-index:1; }
     document.getElementById('qBtnGasolina').classList.toggle('on',t==='gasolina');
   }
 
-  function calcDia(bruto,comb,precoL,km,combustivel,horas,minimo){
+  function calcDia(bruto,comb,precoL,km,combustivel){
     const litrosReais=(precoL>0&&comb>0)?comb/precoL:0;
     const media=(litrosReais>0&&km>0)?km/litrosReais:0;
     const liquido=bruto-comb;
-    const rsHora=(horas>0&&liquido>0)?liquido/horas:0;
-    return{bruto,comb,precoL,km,litrosReais,media,liquido,combustivel,horas:horas||0,minimo:minimo||0,rsHora};
+    return{bruto,comb,precoL,km,litrosReais,media,liquido,combustivel};
   }
 
   function calcPreview(){
@@ -751,12 +737,10 @@ body > * { position:relative; z-index:1; }
     const comb=parseFloat(document.getElementById('inpComb').value)||0;
     const precoL=parseFloat(document.getElementById('inpPrecoL').value)||0;
     const km=parseFloat(document.getElementById('inpKm').value)||0;
-    const horas=parseFloat(document.getElementById('inpHoras').value)||0;
-    const c=calcDia(bruto,comb,precoL,km,combustivelSelecionado,horas,0);
+    const c=calcDia(bruto,comb,precoL,km,combustivelSelecionado,0);
     document.getElementById('previewLitros').textContent=c.litrosReais>0?fmt(c.litrosReais)+' L':'—';
     document.getElementById('previewMedia').textContent=c.media>0?fmt(c.media)+' km/L':'—';
     document.getElementById('previewLiq').textContent=bruto>0?'R$ '+fmt(c.liquido):'—';
-    document.getElementById('previewRsHora').textContent=c.rsHora>0?'R$ '+fmt(c.rsHora)+'/h':'—';
   }
 
   async function salvarDia(){
@@ -765,10 +749,8 @@ body > * { position:relative; z-index:1; }
     const comb=parseFloat(document.getElementById('inpComb').value);
     const precoL=parseFloat(document.getElementById('inpPrecoL').value)||0;
     const km=parseFloat(document.getElementById('inpKm').value)||0;
-    const horas=parseFloat(document.getElementById('inpHoras').value)||0;
-    const minimo=parseFloat(document.getElementById('inpMinimo').value)||0;
     if(!data||isNaN(bruto)||isNaN(comb)){alert('Preencha Data, Bruto e Combustível!');return;}
-    const e={data,...calcDia(bruto,comb,precoL,km,combustivelSelecionado,horas,minimo)};
+    const e={data,...calcDia(bruto,comb,precoL,km,combustivelSelecionado)};
     if(editIdx>=0){
       dias[editIdx]=e; editIdx=-1;
       document.getElementById('formTitle').textContent='➕ Registrar Dia';
@@ -777,8 +759,8 @@ body > * { position:relative; z-index:1; }
     } else { dias.push(e); }
     dias.sort((a,b)=>a.data.localeCompare(b.data));
     await dbSet('dias',dias); renderSemana();
-    ['inpBruto','inpComb','inpPrecoL','inpKm','inpHoras','inpMinimo'].forEach(id=>document.getElementById(id).value='');
-    ['previewLitros','previewMedia','previewLiq','previewRsHora'].forEach(id=>document.getElementById(id).textContent='—');
+    ['inpBruto','inpComb','inpPrecoL','inpKm'].forEach(id=>document.getElementById(id).value='');
+    ['previewLitros','previewMedia','previewLiq'].forEach(id=>document.getElementById(id).textContent='—');
   }
 
   async function salvarRapido(){
@@ -787,12 +769,11 @@ body > * { position:relative; z-index:1; }
     const comb=parseFloat(document.getElementById('qComb').value);
     const precoL=parseFloat(document.getElementById('qPrecoL').value)||0;
     const km=parseFloat(document.getElementById('qKm').value)||0;
-    const horas=parseFloat(document.getElementById('qHoras').value)||0;
     if(!data||isNaN(bruto)||isNaN(comb)){alert('Preencha Data, Bruto e Combustível!');return;}
-    dias.push({data,...calcDia(bruto,comb,precoL,km,combustivelQ,horas,0)});
+    dias.push({data,...calcDia(bruto,comb,precoL,km,combustivelQ,0)});
     dias.sort((a,b)=>a.data.localeCompare(b.data));
     await dbSet('dias',dias);
-    ['qBruto','qComb','qPrecoL','qKm','qHoras'].forEach(id=>document.getElementById(id).value='');
+    ['qBruto','qComb','qPrecoL','qKm'].forEach(id=>document.getElementById(id).value='');
     alert('✅ Dia registrado!');
     showTab('semana'); renderSemana();
   }
@@ -804,8 +785,6 @@ body > * { position:relative; z-index:1; }
     document.getElementById('inpComb').value=d.comb;
     document.getElementById('inpPrecoL').value=d.precoL||'';
     document.getElementById('inpKm').value=d.km||'';
-    document.getElementById('inpHoras').value=d.horas||'';
-    document.getElementById('inpMinimo').value=d.minimo||'';
     selectFuel(d.combustivel||'gasolina'); calcPreview();
     document.getElementById('formTitle').textContent='✏️ Editando Lançamento';
     document.getElementById('btnRegistrar').textContent='Salvar Edição';
@@ -853,13 +832,13 @@ body > * { position:relative; z-index:1; }
     if(!dias.length){alert('Nenhum dia para fechar!');return;}
     const tB=dias.reduce((s,d)=>s+d.bruto,0),tC=dias.reduce((s,d)=>s+d.comb,0),
           tK=dias.reduce((s,d)=>s+(d.km||0),0),tL=dias.reduce((s,d)=>s+d.liquido,0),
-          tLit=dias.reduce((s,d)=>s+d.litrosReais,0),tH=dias.reduce((s,d)=>s+(d.horas||0),0),
+          tLit=dias.reduce((s,d)=>s+d.litrosReais,0),
           tD=despesas.reduce((s,d)=>s+d.valor,0);
     const dm=dias.filter(d=>d.media>0),mc=dm.length?dm.reduce((s,d)=>s+d.media,0)/dm.length:0;
     const dts=dias.map(d=>d.data).sort();
     const per=dts.length>1?`${fmtData(dts[0])} – ${fmtData(dts[dts.length-1])}`:fmtData(dts[0]);
     const semana={id:Date.now(),fechadoEm:new Date().toISOString(),periodo:per,
-      totBruto:tB,totComb:tC,totKm:tK,totLiquido:tL,totLitros:tLit,totHoras:tH,totDesp:tD,
+      totBruto:tB,totComb:tC,totKm:tK,totLiquido:tL,totLitros:tLit,totDesp:tD,
       medConsumo:mc,metaAtingida:tL>=META,
       medEtanol:calcMediaFuel(dias,'etanol'),medGasolina:calcMediaFuel(dias,'gasolina'),
       dias:[...dias],despesas:[...despesas]};
@@ -890,9 +869,9 @@ body > * { position:relative; z-index:1; }
   function compartilharResumo(){
     const tB=dias.reduce((s,d)=>s+d.bruto,0),tC=dias.reduce((s,d)=>s+d.comb,0),
           tK=dias.reduce((s,d)=>s+(d.km||0),0),tL=dias.reduce((s,d)=>s+d.liquido,0),
-          tH=dias.reduce((s,d)=>s+(d.horas||0),0),tD=despesas.reduce((s,d)=>s+d.valor,0);
+          tD=despesas.reduce((s,d)=>s+d.valor,0);
     const dm=dias.filter(d=>d.media>0),mc=dm.length?dm.reduce((s,d)=>s+d.media,0)/dm.length:0;
-    const rsH=tH>0?tL/tH:0,lqR=tL-tD,pct=Math.round((tL/META)*100);
+    const lqR=tL-tD,pct=Math.round((tL/META)*100);
     const dts=dias.map(d=>d.data).sort();
     const per=dts.length>1?`${fmtData(dts[0])} a ${fmtData(dts[dts.length-1])}`:(dts[0]?fmtData(dts[0]):'esta semana');
     const mEt=calcMediaFuel(dias,'etanol'),mGas=calcMediaFuel(dias,'gasolina');
@@ -906,7 +885,6 @@ body > * { position:relative; z-index:1; }
     if(mc>0)t+=`📊 *Consumo médio:* ${fmt(mc)} km/L\n`;
     if(mEt)t+=`🌿 *Etanol:* ${fmt(mEt.media)} km/L\n`;
     if(mGas)t+=`🔶 *Gasolina:* ${fmt(mGas.media)} km/L\n`;
-    if(rsH>0)t+=`\n⏱️ *Horas:* ${tH}h | 💵 *R$/h:* R$ ${fmt(rsH)}\n`;
     t+=`\n_App Controle do Thiago_ 🚗`;
     window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
   }
@@ -918,7 +896,28 @@ body > * { position:relative; z-index:1; }
           tD=despesas.reduce((s,d)=>s+d.valor,0),lqR=tL-tD;
     const dm=dias.filter(d=>d.media>0),mc=dm.length?dm.reduce((s,d)=>s+d.media,0)/dm.length:0;
     const rsH=tH>0?tL/tH:0,mLK=tK>0?tL/tK:0,mCK=tK>0?tC/tK:0;
-    const diasR=Math.max(7-dias.length,0),fM=Math.max(META-tL,0),mD=diasR>0?fM/diasR:0;
+    // Dias restantes da semana (seg=1 ... dom=0) que ainda não passaram E não foram trabalhados
+    const hoje = new Date();
+    const diaSemanaHoje = hoje.getDay(); // 0=dom,1=seg,...,6=sab
+    // Converte para seg=0...dom=6
+    const diaIdx = diaSemanaHoje === 0 ? 6 : diaSemanaHoje - 1;
+    // Dias que já foram lançados (por data)
+    const datasLancadas = new Set(dias.map(d => d.data));
+    // Conta dias restantes: de amanhã até domingo (diaIdx 0-6, seg-dom)
+    let diasRestantes = 0;
+    for (let i = diaIdx + 1; i <= 6; i++) {
+      // Calcula a data desse dia da semana
+      const diff = i - diaIdx;
+      const dt = new Date(hoje);
+      dt.setDate(dt.getDate() + diff);
+      const dtStr = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+      if (!datasLancadas.has(dtStr)) diasRestantes++;
+    }
+    // Inclui hoje se ainda não lançou
+    const hjStr = hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0')+'-'+String(hoje.getDate()).padStart(2,'0');
+    if (!datasLancadas.has(hjStr)) diasRestantes++;
+    const fM = Math.max(META - tL, 0);
+    const mD = diasRestantes > 0 ? fM / diasRestantes : 0;
 
     document.getElementById('totBruto').textContent='R$ '+fmt(tB);
     document.getElementById('totComb').textContent='R$ '+fmt(tC);
@@ -938,9 +937,7 @@ body > * { position:relative; z-index:1; }
     document.getElementById('medGasolinaSub').textContent=mGas?`${mGas.count} abastecimento${mGas.count>1?'s':''}` :'sem registros';
 
     document.getElementById('mdDias').textContent=dias.length;
-    document.getElementById('mdHoras').textContent=tH>0?tH+'h':'0h';
-    document.getElementById('mdMetaDia').textContent=diasR>0&&fM>0?'R$ '+fmt(mD)+'/dia':(fM<=0?'✅ Bateu!':'—');
-    document.getElementById('mdRsHora').textContent=rsH>0?'R$ '+fmt(rsH)+'/h':'—';
+    document.getElementById('mdMetaDia').textContent=diasRestantes>0&&fM>0?'R$ '+fmt(mD)+'/dia':(fM<=0?'✅ Bateu!':'—');
 
     const pct=Math.min((tL/META)*100,100);
     document.getElementById('metaFill').style.width=pct+'%';
@@ -949,16 +946,14 @@ body > * { position:relative; z-index:1; }
     const f=META-tL;
     document.getElementById('faltam').textContent=f>0?`Faltam R$ ${fmt(f)} para a meta`:'🎉 Meta atingida!';
 
-    document.getElementById('alertaRendimento').classList.toggle('show',dias.some(d=>d.minimo>0&&d.liquido<d.minimo));
 
     const tb=document.getElementById('tabelaBody');
     if(!dias.length){tb.innerHTML='<div class="empty">Nenhum dia registrado ainda.<br>Adicione acima! ☝️</div>';return;}
     tb.innerHTML=dias.map((d,i)=>{
       const tag=d.combustivel==='etanol'?`<span class="tag-et">🌿 Et</span>`:`<span class="tag-gas">🔶 Gas</span>`;
-      const low=d.minimo>0&&d.liquido<d.minimo;
       return`<div class="table-row${low?' low':''}">
-        <span class="t-date">${fmtData(d.data)}<br>${tag}${low?'<br><span class="tag-low">baixo</span>':''}</span>
-        <span class="t-liq">R$ ${fmt(d.liquido)}${d.horas>0?`<br><span style="color:var(--purple);font-size:0.66rem">${fmt(d.rsHora)}/h</span>`:''}</span>
+        <span class="t-date">${fmtData(d.data)}<br>${tag}</span>
+        <span class="t-liq">R$ ${fmt(d.liquido)}</span>
         <span class="t-comb">R$ ${fmt(d.comb)}</span>
         <span class="t-km">${d.km>0?fmt(d.km)+' km':'—'}${d.media>0?`<br><span style="color:var(--sub);font-size:0.65rem">${fmt(d.media)} km/L</span>`:''}</span>
         <span class="t-acts">
@@ -974,7 +969,6 @@ body > * { position:relative; z-index:1; }
     const hb=document.getElementById('histBody');
     if(!historico.length){hb.innerHTML='<div class="empty-hist">Nenhuma semana fechada ainda.<br>Feche sua primeira semana! 📚</div>';return;}
     hb.innerHTML=historico.map(s=>{
-      const rsH=s.totHoras>0?s.totLiquido/s.totHoras:0;
       const etS=s.medEtanol?fmt(s.medEtanol.media)+' km/L':'—';
       const gaS=s.medGasolina?fmt(s.medGasolina.media)+' km/L':'—';
       const lqR=s.totLiquido-(s.totDesp||0);
@@ -1008,7 +1002,6 @@ body > * { position:relative; z-index:1; }
             <div class="hist-kpi"><div class="hist-kpi-label">Litros</div><div class="hist-kpi-val" style="color:var(--purple)">${s.totLitros>0?fmt(s.totLitros)+' L':'—'}</div></div>
             <div class="hist-kpi"><div class="hist-kpi-label">🌿 Etanol</div><div class="hist-kpi-val" style="color:var(--etanol)">${etS}</div></div>
             <div class="hist-kpi"><div class="hist-kpi-label">🔶 Gasolina</div><div class="hist-kpi-val" style="color:var(--gasolina)">${gaS}</div></div>
-            ${rsH>0?`<div class="hist-kpi"><div class="hist-kpi-label">R$/hora</div><div class="hist-kpi-val" style="color:var(--green)">R$ ${fmt(rsH)}</div></div>`:''}
             ${s.totDesp>0?`<div class="hist-kpi"><div class="hist-kpi-label">Despesas</div><div class="hist-kpi-val" style="color:var(--purple)">R$ ${fmt(s.totDesp)}</div></div>`:''}
             ${s.totDesp>0?`<div class="hist-kpi"><div class="hist-kpi-label">Liq. Real</div><div class="hist-kpi-val" style="color:var(--green)">R$ ${fmt(lqR)}</div></div>`:''}
           </div>
