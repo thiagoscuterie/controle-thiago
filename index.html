@@ -774,8 +774,9 @@ body > * { position:relative; z-index:1; }
     dias.sort((a,b)=>a.data.localeCompare(b.data));
     await dbSet('dias',dias);
     ['qBruto','qComb','qPrecoL','qKm'].forEach(id=>document.getElementById(id).value='');
+    renderSemana();
+    showTab('semana');
     alert('✅ Dia registrado!');
-    showTab('semana'); renderSemana();
   }
 
   function editarDia(i){
