@@ -172,7 +172,7 @@ body>*{position:relative;z-index:1;}
 <div id="pSemana">
 
   <div class="gc ag">
-    <div class="sec">🎯 Meta Semanal Líquida</div>
+    <div class="sec">🎯 Meta Semanal — Líquido Real</div>
     <div class="meta-goal-row">
       <span class="meta-num" id="metaVal" onclick="editMeta()">R$ 1.200,00</span>
       <span class="meta-tap" onclick="editMeta()">✏️ editar</span>
@@ -182,6 +182,27 @@ body>*{position:relative;z-index:1;}
     <div class="meta-track"><div class="meta-fill" id="metaFill" style="width:0%"></div></div>
     <div class="meta-row"><span class="meta-done" id="metaDone">R$ 0,00 atingido</span></div>
     <div class="meta-hint" id="metaHint"></div>
+    <div id="metaBrutoNec" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06)">
+      <div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:6px">📊 Para bater a meta você precisa faturar</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 10px">
+          <div style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600">Bruto necessário</div>
+          <div style="font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--orange);margin-top:3px" id="metaBrutoVal">—</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 10px">
+          <div style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600">Média histórica comb.</div>
+          <div style="font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--red);margin-top:3px" id="metaCombMed">—</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 10px">
+          <div style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600">Despesas fixas</div>
+          <div style="font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--purple);margin-top:3px" id="metaDespVal">—</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 10px">
+          <div style="font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600">% comb. sobre bruto</div>
+          <div style="font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--warn);margin-top:3px" id="metaPctComb">—</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="md-grid">
@@ -195,7 +216,7 @@ body>*{position:relative;z-index:1;}
     <div class="kpi r"><div class="kpi-icon">⛽</div><div class="kpi-label">Combustível</div><div class="kpi-val r" id="kComb">R$ 0,00</div></div>
     <div class="kpi w"><div class="kpi-icon">📍</div><div class="kpi-label">Km Rodado</div><div class="kpi-val w" id="kKm">0 km</div></div>
     <div class="kpi r"><div class="kpi-icon">🏠</div><div class="kpi-label">Despesas Fixas</div><div class="kpi-val r" id="kDesp">R$ 0,00</div></div>
-    <div class="kpi g"><div class="kpi-icon">✅</div><div class="kpi-label">Líquido Real</div><div class="kpi-val g" id="kReal">R$ 0,00</div></div>
+    <div class="kpi g"><div class="kpi-icon">✅</div><div class="kpi-label">Líquido Real (meta)</div><div class="kpi-val g" id="kReal">R$ 0,00</div></div>
   </div>
 
   <div class="stats-row">
@@ -748,7 +769,7 @@ function whatsapp() {
   for (var j=0; j<despesas.length; j++) tD += despesas[j].valor;
   var mc  = mArr.length ? mArr.reduce(function(s,v){return s+v;},0)/mArr.length : 0;
   var lqR = tL - tD;
-  var pct = Math.round((tL/META)*100);
+  var pct = Math.round(((tL-tD)/META)*100);
   var dts = dias.map(function(d){return d.data;}).sort();
   var per = dts.length > 1 ? fmtD(dts[0])+' a '+fmtD(dts[dts.length-1]) : (dts[0] ? fmtD(dts[0]) : 'esta semana');
   var mEt  = mediaFuel('etanol');
@@ -782,7 +803,6 @@ function renderSemana() {
   for (var j=0; j<despesas.length; j++) tD += despesas[j].valor;
 
   var mc   = mArr.length ? mArr.reduce(function(s,v){return s+v;},0)/mArr.length : 0;
-  var lqR  = tL - tD;
   var mLkm = tK > 0 ? tL / tK : 0;
   var mCkm = tK > 0 ? tC / tK : 0;
 
@@ -792,7 +812,7 @@ function renderSemana() {
   document.getElementById('kComb').textContent  = 'R$ '+fmt(tC);
   document.getElementById('kKm').textContent    = fmt(tK)+' km';
   document.getElementById('kDesp').textContent  = 'R$ '+fmt(tD);
-  document.getElementById('kReal').textContent  = 'R$ '+fmt(lqR);
+  document.getElementById('kReal').textContent  = 'R$ '+fmt(lqReal);
 
   // Stats
   document.getElementById('sMed').textContent  = mc   > 0 ? fmt(mc)+' km/L'       : '—';
@@ -808,18 +828,50 @@ function renderSemana() {
   document.getElementById('fGas').textContent    = mGas ? fmt(mGas.media)+' km/L' : '—';
   document.getElementById('fGasSub').textContent = mGas ? mGas.n+' abastecimento'+(mGas.n>1?'s':'') : 'sem registros';
 
-  // Meta
-  var pct = Math.min((tL/META)*100, 100);
+  // META usa líquido real (já descontando despesas)
+  var lqReal = tL - tD;
+  var pct = Math.min((lqReal/META)*100, 100);
   document.getElementById('metaFill').style.width = pct+'%';
-  document.getElementById('metaPct').textContent  = Math.round((tL/META)*100)+'%';
-  document.getElementById('metaDone').textContent = 'R$ '+fmt(tL)+' atingido';
-  var falta = META - tL;
+  document.getElementById('metaPct').textContent  = Math.round((lqReal/META)*100)+'%';
+  document.getElementById('metaDone').textContent = 'R$ '+fmt(lqReal)+' líquido real atingido';
+  var falta = META - lqReal;
   document.getElementById('metaHint').textContent = falta > 0 ? 'Faltam R$ '+fmt(falta)+' para a meta' : '🎉 Meta atingida!';
 
-  // Meta diária
+  // Calcula média histórica de combustível (% do bruto)
+  var histPctComb = 0;
+  var histCombMed = 0;
+  if (historico.length > 0) {
+    var somaB = 0, somaC = 0, semanas = 0;
+    for (var hi=0; hi<historico.length; hi++) {
+      if (historico[hi].tB > 0) {
+        somaB += historico[hi].tB;
+        somaC += historico[hi].tC;
+        semanas++;
+      }
+    }
+    if (somaB > 0) {
+      histPctComb = (somaC / somaB) * 100;
+      histCombMed = semanas > 0 ? somaC / semanas : 0;
+    }
+  }
+
+  // Bruto necessário = (meta + despesas) / (1 - %comb)
+  // Se não tem histórico, assume 30% de combustível sobre bruto
+  var pctCombFrac = histPctComb > 0 ? histPctComb/100 : 0.30;
+  var brutoNec = (1 - pctCombFrac) > 0 ? (META + tD) / (1 - pctCombFrac) : 0;
+
+  // Exibe painel de bruto necessário
+  var painelEl = document.getElementById('metaBrutoNec');
+  painelEl.style.display = 'block';
+  document.getElementById('metaBrutoVal').textContent  = brutoNec > 0 ? 'R$ '+fmt(brutoNec) : '—';
+  document.getElementById('metaCombMed').textContent   = histCombMed > 0 ? 'R$ '+fmt(histCombMed)+'/sem' : (histPctComb===0?'~30% estimado':'—');
+  document.getElementById('metaDespVal').textContent   = tD > 0 ? 'R$ '+fmt(tD) : 'R$ 0,00';
+  document.getElementById('metaPctComb').textContent   = histPctComb > 0 ? fmt(histPctComb)+'%' : '~30% estimado';
+
+  // Meta diária (baseada no líquido real)
   document.getElementById('mdDias').textContent = dias.length;
   var dHoje = new Date();
-  var dIdx  = dHoje.getDay() === 0 ? 6 : dHoje.getDay() - 1; // 0=seg...6=dom
+  var dIdx  = dHoje.getDay() === 0 ? 6 : dHoje.getDay() - 1;
   var datas = {};
   for (var k=0; k<dias.length; k++) datas[dias[k].data] = true;
   var diasR = 0;
