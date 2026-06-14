@@ -34,6 +34,7 @@ body>*{position:relative;z-index:1;}
 .gc{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;}
 .gc.ag{border-color:rgba(0,245,176,0.2);background:linear-gradient(135deg,rgba(0,245,176,0.06),var(--glass));}
 .gc.ap{border-color:rgba(177,151,252,0.2);background:linear-gradient(135deg,rgba(177,151,252,0.05),var(--glass));}
+.gc.ab{border-color:rgba(255,159,67,0.2);background:linear-gradient(135deg,rgba(255,159,67,0.05),var(--glass));}
 .sec{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--sub);margin-bottom:10px;font-weight:600;}
 
 /* META */
@@ -121,9 +122,16 @@ body>*{position:relative;z-index:1;}
 .prev-lbl{font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600;}
 .prev-val{font-family:'DM Mono',monospace;font-size:0.95rem;font-weight:600;margin-top:2px;}
 
+/* DATE CHIPS (seleção múltipla de dias p/ abastecimento) */
+.date-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.date-chip{padding:8px 4px;border-radius:10px;border:1px solid var(--border2);background:var(--glass);color:var(--sub);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;-webkit-appearance:none;min-width:50px;line-height:1.3;}
+.date-chip .dc-d{font-family:'DM Mono',monospace;font-size:0.85rem;display:block;}
+.date-chip.on{border-color:rgba(255,159,67,0.45);background:rgba(255,159,67,0.12);color:var(--gasolina);}
+
 .btn-p{width:100%;padding:15px;border:none;border-radius:14px;font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.2s;-webkit-appearance:none;background:linear-gradient(135deg,var(--green2),var(--green));color:#050a10;box-shadow:0 4px 20px rgba(0,245,176,0.25);}
 .btn-p:active{transform:scale(0.98);}
 .btn-p.edit{background:linear-gradient(135deg,#e08000,var(--orange));color:#fff;box-shadow:0 4px 20px rgba(255,159,67,0.25);}
+.btn-p.ab{background:linear-gradient(135deg,#d97c1a,var(--gasolina));color:#fff;box-shadow:0 4px 20px rgba(255,159,67,0.25);}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .btn-s{padding:13px;border-radius:14px;font-family:'Montserrat',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;-webkit-appearance:none;transition:all 0.2s;}
 .btn-close{background:linear-gradient(135deg,rgba(177,151,252,0.2),rgba(177,151,252,0.1));border:1px solid rgba(177,151,252,0.3);color:var(--purple);}
@@ -135,6 +143,9 @@ body>*{position:relative;z-index:1;}
 .tbl-head{display:grid;grid-template-columns:50px 1fr 1fr 1fr 70px;gap:4px;padding:10px 12px;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);font-size:0.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;}
 .tbl-row{display:grid;grid-template-columns:50px 1fr 1fr 1fr 70px;gap:4px;padding:11px 12px;border-bottom:1px solid var(--border);font-size:0.8rem;align-items:center;}
 .tbl-row:last-child{border-bottom:none;}
+.tbl2-head{display:grid;grid-template-columns:1.3fr 1fr 1fr 0.9fr 60px;gap:4px;padding:10px 12px;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);font-size:0.58rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;}
+.tbl2-row{display:grid;grid-template-columns:1.3fr 1fr 1fr 0.9fr 60px;gap:4px;padding:11px 12px;border-bottom:1px solid var(--border);font-size:0.8rem;align-items:center;}
+.tbl2-row:last-child{border-bottom:none;}
 .td{color:var(--sub);font-size:0.74rem;line-height:1.6;}
 .tl{color:var(--green);font-family:'DM Mono',monospace;font-weight:600;font-size:0.82rem;line-height:1.6;}
 .tc{color:var(--red);font-size:0.75rem;line-height:1.6;}
@@ -163,6 +174,7 @@ body>*{position:relative;z-index:1;}
 .hk-label{font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600;}
 .hk-val{font-family:'DM Mono',monospace;font-size:0.95rem;font-weight:600;margin-top:3px;}
 .hist-days{border-top:1px solid var(--border);padding-top:10px;margin-top:4px;}
+.hist-days-title{font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:6px;}
 .hd-row{display:flex;justify-content:space-between;align-items:center;font-size:0.76rem;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--sub);}
 .hd-row:last-child{border-bottom:none;}
 .hd-liq{color:var(--green);font-weight:600;font-family:'DM Mono',monospace;}
@@ -214,7 +226,7 @@ body>*{position:relative;z-index:1;}
 
   <div class="md-grid">
     <div class="md-item"><div class="md-label">📅 Dias trabalhados</div><div class="md-val" id="mdDias" style="color:var(--blue)">0</div></div>
-    <div class="md-item"><div class="md-label">🎯 Meta/dia restante</div><div class="md-val" id="mdMeta" style="color:var(--warn)">—</div></div>
+    <div class="md-item"><div class="md-label">🎯 Bruto/dia restante</div><div class="md-val" id="mdMeta" style="color:var(--warn)">—</div></div>
   </div>
 
   <div class="kpi-grid">
@@ -252,38 +264,62 @@ body>*{position:relative;z-index:1;}
     <button class="btn-add-desp" onclick="toggleDespForm()">+ Adicionar despesa</button>
   </div>
 
+  <!-- ===== FATURAMENTO ===== -->
   <div class="gc">
-    <div style="font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:16px" id="formTit">➕ Registrar Dia</div>
+    <div style="font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:4px" id="formTitFat">💰 Lançar Faturamento (Uber/App)</div>
+    <p style="font-size:0.76rem;color:var(--sub);margin-bottom:14px">Registre o valor bruto que você fez em cada dia.</p>
     <div class="inp-grid">
-      <div class="f-block"><label class="f-label">📅 Data</label><input class="inp" type="date" id="iData"></div>
-      <div class="f-block"><label class="f-label">💰 Bruto Uber (R$)</label><input class="inp" type="number" id="iBruto" placeholder="0,00" step="0.01" min="0" oninput="preview()"></div>
+      <div class="f-block"><label class="f-label">📅 Data</label><input class="inp" type="date" id="fData"></div>
+      <div class="f-block"><label class="f-label">💰 Bruto Uber (R$)</label><input class="inp" type="number" id="fBruto" placeholder="0,00" step="0.01" min="0"></div>
     </div>
-    <div class="f-label" style="margin-bottom:6px">⛽ Combustível utilizado</div>
-    <div class="ftog-row">
-      <button class="ftog et" id="fEtBtn" onclick="setFuel('etanol')">🌿 Etanol</button>
-      <button class="ftog gas" id="fGasBtn" onclick="setFuel('gasolina')">🔶 Gasolina</button>
-    </div>
-    <div class="inp-grid">
-      <div class="f-block"><label class="f-label">⛽ Combustível (R$)</label><input class="inp" type="number" id="iComb" placeholder="0,00" step="0.01" min="0" oninput="preview()"></div>
-      <div class="f-block"><label class="f-label">🔢 Preço do litro (R$)</label><input class="inp" type="number" id="iPreco" placeholder="ex: 6,20" step="0.01" min="0" oninput="preview()"></div>
-    </div>
-    <div class="inp-grid">
-      <div class="f-block"><label class="f-label">📍 Km Rodado</label><input class="inp" type="number" id="iKm" placeholder="0,00" step="0.01" min="0" oninput="preview()"></div>
-      <div></div>
-    </div>
-    <div class="f-label" style="margin-bottom:6px">⚡ Preview</div>
-    <div class="prev-grid">
-      <div class="prev-item"><div class="prev-lbl">Litros</div><div class="prev-val" id="pLit" style="color:var(--warn)">—</div></div>
-      <div class="prev-item"><div class="prev-lbl">Média km/L</div><div class="prev-val" id="pMed" style="color:var(--green)">—</div></div>
-      <div class="prev-item"><div class="prev-lbl">Líquido dia</div><div class="prev-val" id="pLiq" style="color:var(--green)">—</div></div>
-      <div class="prev-item"><div class="prev-lbl">Custo/km</div><div class="prev-val" id="pCkm" style="color:var(--red)">—</div></div>
-    </div>
-    <button class="btn-p" id="btnReg" onclick="registrar()">Registrar Dia</button>
+    <button class="btn-p" id="btnFat" onclick="registrarFaturamento()">Registrar Faturamento</button>
   </div>
 
+  <!-- ===== COMBUSTÍVEL ===== -->
+  <div class="gc ab">
+    <div style="font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:4px" id="formTitAb">⛽ Lançar Combustível</div>
+    <p style="font-size:0.76rem;color:var(--sub);margin-bottom:14px">Selecione os dias em que rodou com esse tanque e informe km total + valor abastecido.</p>
+
+    <div class="f-label" style="margin-bottom:6px">📅 Dias cobertos por este abastecimento</div>
+    <div class="date-chips" id="abDateChips"></div>
+
+    <div class="f-label" style="margin-bottom:6px">⛽ Combustível utilizado</div>
+    <div class="ftog-row">
+      <button class="ftog et" id="abEtBtn" onclick="setFuelAb('etanol')">🌿 Etanol</button>
+      <button class="ftog gas" id="abGasBtn" onclick="setFuelAb('gasolina')">🔶 Gasolina</button>
+    </div>
+
+    <div class="inp-grid">
+      <div class="f-block"><label class="f-label">⛽ Valor abastecido (R$)</label><input class="inp" type="number" id="abComb" placeholder="0,00" step="0.01" min="0" oninput="previewAb()"></div>
+      <div class="f-block"><label class="f-label">🔢 Preço do litro (R$)</label><input class="inp" type="number" id="abPreco" placeholder="ex: 6,20" step="0.01" min="0" oninput="previewAb()"></div>
+    </div>
+    <div class="inp-grid">
+      <div class="f-block"><label class="f-label">📍 Km total no período</label><input class="inp" type="number" id="abKm" placeholder="0,00" step="0.01" min="0" oninput="previewAb()"></div>
+      <div></div>
+    </div>
+
+    <div class="f-label" style="margin-bottom:6px">⚡ Preview</div>
+    <div class="prev-grid">
+      <div class="prev-item"><div class="prev-lbl">Litros</div><div class="prev-val" id="abPLit" style="color:var(--warn)">—</div></div>
+      <div class="prev-item"><div class="prev-lbl">Média km/L</div><div class="prev-val" id="abPMed" style="color:var(--green)">—</div></div>
+      <div class="prev-item"><div class="prev-lbl">Custo/km</div><div class="prev-val" id="abPCkm" style="color:var(--red)">—</div></div>
+      <div class="prev-item"><div class="prev-lbl">Dias selecionados</div><div class="prev-val" id="abPDias" style="color:var(--blue)">0</div></div>
+    </div>
+
+    <button class="btn-p ab" id="btnAb" onclick="registrarAbastecimento()">Registrar Combustível</button>
+  </div>
+
+  <!-- ===== LANÇAMENTOS DA SEMANA ===== -->
+  <div class="sec" style="margin-top:4px">📋 Faturamentos lançados</div>
   <div class="tbl-wrap">
-    <div class="tbl-head"><span>Data</span><span>Líquido</span><span>Comb.</span><span>Km</span><span style="text-align:right">Ações</span></div>
-    <div id="tblBody"><div class="empty">Nenhum dia registrado ainda.<br>Preencha o formulário acima! ☝️</div></div>
+    <div class="tbl-head"><span>Data</span><span>Bruto</span><span>Status</span><span></span><span style="text-align:right">Ações</span></div>
+    <div id="tblFat"><div class="empty">Nenhum faturamento registrado ainda.<br>Preencha o formulário acima! ☝️</div></div>
+  </div>
+
+  <div class="sec">⛽ Abastecimentos lançados</div>
+  <div class="tbl-wrap">
+    <div class="tbl2-head"><span>Período</span><span>Valor</span><span>Km</span><span>Média</span><span style="text-align:right">Ações</span></div>
+    <div id="tblAb"><div class="empty">Nenhum abastecimento registrado ainda.</div></div>
   </div>
 
   <div class="btn-row">
@@ -318,60 +354,127 @@ body>*{position:relative;z-index:1;}
     <div class="stats-row" id="cStats"></div>
     <div class="fuel-row" id="cFuels"></div>
     <div class="tbl-wrap">
-      <div class="tbl-head"><span>Data</span><span>Líquido</span><span>Comb.</span><span>Km</span><span>Tipo</span></div>
-      <div id="cTabela"></div>
+      <div class="tbl-head"><span>Data</span><span>Bruto</span><span></span><span></span><span></span></div>
+      <div id="cTabelaFat"></div>
     </div>
+    <div class="tbl-wrap">
+      <div class="tbl2-head"><span>Período Comb.</span><span>Valor</span><span>Km</span><span>Média</span><span></span></div>
+      <div id="cTabelaAb"></div>
+    </div>
+    <button class="btn-wa" onclick="whatsappConsulta()">📤 Compartilhar no WhatsApp</button>
   </div>
 </div>
 
 <script>
 var META = 1200;
-var dias = [], historico = [], despesas = [];
-var combustivel = 'gasolina';
-var editIdx = -1;
+var faturamentos = [];   // {data, bruto}
+var abastecimentos = []; // {id, datas:[...], comb, preco, km, litros, media, fuel}
+var historico = [];      // {id, periodo, tB,tC,tK,tL,tLit,tD,mc,ok,mEt,mGas, faturamentos:[], abastecimentos:[], despesas:[]}
+var despesas = [];
+var fuelAb = 'etanol';
+var abDatasSelecionadas = []; // array de strings 'YYYY-MM-DD'
+var editFatIdx = -1;
+var editAbIdx  = -1;
 var graficoInst = null;
 
-// STORAGE
+// ===================== STORAGE =====================
 function salvar() {
   try {
-    localStorage.setItem('th_dias',      JSON.stringify(dias));
-    localStorage.setItem('th_historico', JSON.stringify(historico));
-    localStorage.setItem('th_despesas',  JSON.stringify(despesas));
-    localStorage.setItem('th_meta',      String(META));
+    localStorage.setItem('th_faturamentos',   JSON.stringify(faturamentos));
+    localStorage.setItem('th_abastecimentos', JSON.stringify(abastecimentos));
+    localStorage.setItem('th_historico',      JSON.stringify(historico));
+    localStorage.setItem('th_despesas',       JSON.stringify(despesas));
+    localStorage.setItem('th_meta',           String(META));
   } catch(e) {}
 }
+
 function carregar() {
   try {
-    var d  = localStorage.getItem('th_dias');
+    var f  = localStorage.getItem('th_faturamentos');
+    var a  = localStorage.getItem('th_abastecimentos');
     var h  = localStorage.getItem('th_historico');
     var dp = localStorage.getItem('th_despesas');
     var m  = localStorage.getItem('th_meta');
-    dias      = d  ? JSON.parse(d)  : [];
+
+    if (f && a) {
+      // já está no formato novo
+      faturamentos   = JSON.parse(f);
+      abastecimentos = JSON.parse(a);
+    } else {
+      // MIGRAÇÃO de versão antiga (th_dias com bruto+comb juntos)
+      var d = localStorage.getItem('th_dias');
+      faturamentos = []; abastecimentos = [];
+      if (d) {
+        var antigos = JSON.parse(d);
+        for (var i=0; i<antigos.length; i++) {
+          var o = antigos[i];
+          faturamentos.push({ data: o.data, bruto: o.bruto || 0 });
+          if ((o.comb || 0) > 0) {
+            abastecimentos.push({
+              id: Date.now()+i,
+              datas: [o.data],
+              comb: o.comb || 0,
+              preco: o.preco || 0,
+              km: o.km || 0,
+              litros: o.litros || 0,
+              media: o.media || 0,
+              fuel: o.fuel || 'gasolina'
+            });
+          }
+        }
+      }
+    }
+
     historico = h  ? JSON.parse(h)  : [];
-    despesas  = dp ? JSON.parse(dp) : [];
-    META      = m  ? parseFloat(m)  : 1200;
-  } catch(e) { dias=[]; historico=[]; despesas=[]; META=1200; }
+    // Migra histórico antigo (cada semana tinha "dias")
+    for (var hi=0; hi<historico.length; hi++) {
+      var s = historico[hi];
+      if (!s.faturamentos && s.dias) {
+        s.faturamentos = []; s.abastecimentos = [];
+        for (var j=0; j<s.dias.length; j++) {
+          var o2 = s.dias[j];
+          s.faturamentos.push({ data:o2.data, bruto:o2.bruto||0 });
+          if ((o2.comb||0) > 0) {
+            s.abastecimentos.push({
+              id: Date.now()+hi*1000+j, datas:[o2.data],
+              comb:o2.comb||0, preco:o2.preco||0, km:o2.km||0,
+              litros:o2.litros||0, media:o2.media||0, fuel:o2.fuel||'gasolina'
+            });
+          }
+        }
+      }
+      if (!s.faturamentos) s.faturamentos = [];
+      if (!s.abastecimentos) s.abastecimentos = [];
+    }
+
+    despesas = dp ? JSON.parse(dp) : [];
+    META     = m  ? parseFloat(m)  : 1200;
+  } catch(e) {
+    faturamentos=[]; abastecimentos=[]; historico=[]; despesas=[]; META=1200;
+  }
 }
 
-// UTILS
+// ===================== UTILS =====================
 function fmt(v) { return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function fmtD(s) { if(!s) return '—'; var p=s.split('-'); return p[2]+'/'+p[1]; }
 function hoje() {
   var d=new Date(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
   return d.getFullYear()+'-'+m+'-'+dd;
 }
+var WEEKDAYS = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 
-// INIT
+// ===================== INIT =====================
 function init() {
   carregar();
-  document.getElementById('iData').value = hoje();
-  setFuel('gasolina');
+  document.getElementById('fData').value = hoje();
+  setFuelAb('etanol');
   atualizaMeta();
   renderDespesas();
+  renderAbDateChips();
   renderSemana();
 }
 
-// TABS
+// ===================== TABS =====================
 function showTab(i) {
   document.getElementById('pSemana').style.display    = i===0?'block':'none';
   document.getElementById('pHistorico').style.display = i===1?'block':'none';
@@ -381,7 +484,7 @@ function showTab(i) {
   if(i===2) initConsulta();
 }
 
-// META
+// ===================== META =====================
 function atualizaMeta() { document.getElementById('metaVal').textContent = 'R$ '+fmt(META); }
 function editMeta() {
   document.getElementById('metaVal').style.display = 'none';
@@ -396,90 +499,171 @@ function saveMeta() {
   salvar(); atualizaMeta(); renderSemana();
 }
 
-// COMBUSTÍVEL
-function setFuel(t) {
-  combustivel=t;
-  document.getElementById('fEtBtn').classList.toggle('on',t==='etanol');
-  document.getElementById('fGasBtn').classList.toggle('on',t==='gasolina');
-  preview();
+// ===================== DATE CHIPS (abastecimento) =====================
+// Gera chips para os dias da semana atual (segunda a domingo)
+function renderAbDateChips() {
+  var hj = new Date();
+  var dIdx = hj.getDay()===0?6:hj.getDay()-1; // 0=seg...6=dom
+  var html = '';
+  for (var x=0; x<=6; x++) {
+    var dt = new Date(hj);
+    dt.setDate(dt.getDate() + (x - dIdx));
+    var ds = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    var on = abDatasSelecionadas.indexOf(ds) >= 0 ? ' on' : '';
+    html += '<button class="date-chip'+on+'" data-date="'+ds+'" onclick="toggleAbDate(&quot;'+ds+'&quot;)"><span class="dc-d">'+String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'</span>'+WEEKDAYS[x]+'</button>';
+  }
+  document.getElementById('abDateChips').innerHTML = html;
+}
+function toggleAbDate(ds) {
+  var idx = abDatasSelecionadas.indexOf(ds);
+  if (idx >= 0) abDatasSelecionadas.splice(idx,1);
+  else abDatasSelecionadas.push(ds);
+  abDatasSelecionadas.sort();
+  renderAbDateChips();
+  previewAb();
 }
 
-// PREVIEW
-function preview() {
-  var bruto=parseFloat(document.getElementById('iBruto').value)||0;
-  var comb=parseFloat(document.getElementById('iComb').value)||0;
-  var preco=parseFloat(document.getElementById('iPreco').value)||0;
-  var km=parseFloat(document.getElementById('iKm').value)||0;
-  var lit=(preco>0&&comb>0)?comb/preco:0;
-  var med=(lit>0&&km>0)?km/lit:0;
-  var liq=bruto-comb;
-  var ckm=(km>0&&comb>0)?comb/km:0;
-  document.getElementById('pLit').textContent = lit>0?fmt(lit)+' L':'—';
-  document.getElementById('pMed').textContent = med>0?fmt(med)+' km/L':'—';
-  document.getElementById('pLiq').textContent = bruto>0?'R$ '+fmt(liq):'—';
-  document.getElementById('pCkm').textContent = ckm>0?'R$ '+fmt(ckm)+'/km':'—';
+// ===================== COMBUSTÍVEL (form) =====================
+function setFuelAb(t) {
+  fuelAb = t;
+  document.getElementById('abEtBtn').classList.toggle('on', t==='etanol');
+  document.getElementById('abGasBtn').classList.toggle('on', t==='gasolina');
+  previewAb();
+}
+function previewAb() {
+  var comb  = parseFloat(document.getElementById('abComb').value)  || 0;
+  var preco = parseFloat(document.getElementById('abPreco').value) || 0;
+  var km    = parseFloat(document.getElementById('abKm').value)    || 0;
+  var lit = (preco>0 && comb>0) ? comb/preco : 0;
+  var med = (lit>0 && km>0) ? km/lit : 0;
+  var ckm = (km>0 && comb>0) ? comb/km : 0;
+  document.getElementById('abPLit').textContent  = lit>0?fmt(lit)+' L':'—';
+  document.getElementById('abPMed').textContent  = med>0?fmt(med)+' km/L':'—';
+  document.getElementById('abPCkm').textContent  = ckm>0?'R$ '+fmt(ckm)+'/km':'—';
+  document.getElementById('abPDias').textContent = abDatasSelecionadas.length;
 }
 
-// CALC DIA
-function calcDia(bruto,comb,preco,km,fuel) {
-  var lit=(preco>0&&comb>0)?comb/preco:0;
-  var med=(lit>0&&km>0)?km/lit:0;
-  var liq=bruto-comb;
-  return{bruto:bruto,comb:comb,preco:preco,km:km,litros:lit,media:med,liquido:liq,fuel:fuel};
-}
+// ===================== FATURAMENTO: registrar/editar/excluir =====================
+function registrarFaturamento() {
+  var data  = document.getElementById('fData').value;
+  var bruto = parseFloat(document.getElementById('fBruto').value);
+  if (!data || isNaN(bruto)) { alert('Preencha Data e Bruto Uber!'); return; }
 
-// REGISTRAR
-function registrar() {
-  var data=document.getElementById('iData').value;
-  var bruto=parseFloat(document.getElementById('iBruto').value);
-  var comb=parseFloat(document.getElementById('iComb').value);
-  var preco=parseFloat(document.getElementById('iPreco').value)||0;
-  var km=parseFloat(document.getElementById('iKm').value)||0;
-  if(!data||isNaN(bruto)||isNaN(comb)){alert('Preencha pelo menos: Data, Bruto Uber e Combustível!');return;}
-  var entrada=Object.assign({data:data},calcDia(bruto,comb,preco,km,combustivel));
-  if(editIdx>=0){
-    dias[editIdx]=entrada; editIdx=-1;
-    document.getElementById('formTit').textContent='➕ Registrar Dia';
-    document.getElementById('btnReg').textContent='Registrar Dia';
-    document.getElementById('btnReg').classList.remove('edit');
-  } else { dias.push(entrada); }
-  dias.sort(function(a,b){return a.data.localeCompare(b.data);});
-  document.getElementById('iData').value=hoje();
-  document.getElementById('iBruto').value='';
-  document.getElementById('iComb').value='';
-  document.getElementById('iPreco').value='';
-  document.getElementById('iKm').value='';
-  document.getElementById('pLit').textContent='—';
-  document.getElementById('pMed').textContent='—';
-  document.getElementById('pLiq').textContent='—';
-  document.getElementById('pCkm').textContent='—';
+  var entrada = { data: data, bruto: bruto };
+
+  if (editFatIdx >= 0) {
+    faturamentos[editFatIdx] = entrada;
+    editFatIdx = -1;
+    document.getElementById('formTitFat').textContent = '💰 Lançar Faturamento (Uber/App)';
+    document.getElementById('btnFat').textContent = 'Registrar Faturamento';
+    document.getElementById('btnFat').classList.remove('edit');
+  } else {
+    // evita duplicar a mesma data — soma ao existente
+    var existente = -1;
+    for (var i=0;i<faturamentos.length;i++) if (faturamentos[i].data===data) { existente=i; break; }
+    if (existente >= 0) {
+      if (!confirm('Já existe faturamento para '+fmtD(data)+'. Deseja substituir o valor?')) return;
+      faturamentos[existente] = entrada;
+    } else {
+      faturamentos.push(entrada);
+    }
+  }
+
+  faturamentos.sort(function(a,b){ return a.data.localeCompare(b.data); });
+  document.getElementById('fData').value = hoje();
+  document.getElementById('fBruto').value = '';
   salvar();
   renderSemana();
 }
-
-// EDITAR / EXCLUIR
-function editarDia(i) {
-  var d=dias[i]; editIdx=i;
-  document.getElementById('iData').value=d.data;
-  document.getElementById('iBruto').value=d.bruto;
-  document.getElementById('iComb').value=d.comb;
-  document.getElementById('iPreco').value=d.preco||'';
-  document.getElementById('iKm').value=d.km||'';
-  setFuel(d.fuel||'gasolina'); preview();
-  document.getElementById('formTit').textContent='✏️ Editando Lançamento';
-  document.getElementById('btnReg').textContent='Salvar Edição';
-  document.getElementById('btnReg').classList.add('edit');
-  document.getElementById('formTit').scrollIntoView({behavior:'smooth',block:'start'});
+function editarFaturamento(i) {
+  var f = faturamentos[i];
+  editFatIdx = i;
+  document.getElementById('fData').value  = f.data;
+  document.getElementById('fBruto').value = f.bruto;
+  document.getElementById('formTitFat').textContent = '✏️ Editando Faturamento';
+  document.getElementById('btnFat').textContent = 'Salvar Edição';
+  document.getElementById('btnFat').classList.add('edit');
+  document.getElementById('formTitFat').scrollIntoView({behavior:'smooth',block:'start'});
 }
-function excluirDia(i) {
-  if(confirm('Excluir este lançamento?')){
-    dias.splice(i,1);
-    if(editIdx===i){editIdx=-1;document.getElementById('formTit').textContent='➕ Registrar Dia';document.getElementById('btnReg').textContent='Registrar Dia';document.getElementById('btnReg').classList.remove('edit');}
+function excluirFaturamento(i) {
+  if (confirm('Excluir este faturamento?')) {
+    faturamentos.splice(i,1);
+    if (editFatIdx===i) {
+      editFatIdx=-1;
+      document.getElementById('formTitFat').textContent = '💰 Lançar Faturamento (Uber/App)';
+      document.getElementById('btnFat').textContent = 'Registrar Faturamento';
+      document.getElementById('btnFat').classList.remove('edit');
+    }
     salvar(); renderSemana();
   }
 }
 
-// DESPESAS
+// ===================== COMBUSTÍVEL: registrar/editar/excluir =====================
+function registrarAbastecimento() {
+  var comb  = parseFloat(document.getElementById('abComb').value);
+  var preco = parseFloat(document.getElementById('abPreco').value) || 0;
+  var km    = parseFloat(document.getElementById('abKm').value)    || 0;
+
+  if (isNaN(comb) || comb<=0) { alert('Informe o valor abastecido!'); return; }
+  if (!abDatasSelecionadas.length) { alert('Selecione pelo menos um dia coberto por este abastecimento!'); return; }
+
+  var lit = (preco>0 && comb>0) ? comb/preco : 0;
+  var med = (lit>0 && km>0) ? km/lit : 0;
+
+  var entrada = {
+    id: editAbIdx>=0 ? abastecimentos[editAbIdx].id : Date.now(),
+    datas: abDatasSelecionadas.slice(),
+    comb: comb, preco: preco, km: km, litros: lit, media: med, fuel: fuelAb
+  };
+
+  if (editAbIdx >= 0) {
+    abastecimentos[editAbIdx] = entrada;
+    editAbIdx = -1;
+    document.getElementById('formTitAb').textContent = '⛽ Lançar Combustível';
+    document.getElementById('btnAb').textContent = 'Registrar Combustível';
+    document.getElementById('btnAb').classList.remove('edit');
+  } else {
+    abastecimentos.push(entrada);
+  }
+
+  document.getElementById('abComb').value  = '';
+  document.getElementById('abPreco').value = '';
+  document.getElementById('abKm').value    = '';
+  abDatasSelecionadas = [];
+  renderAbDateChips();
+  previewAb();
+  salvar();
+  renderSemana();
+}
+function editarAbastecimento(i) {
+  var a = abastecimentos[i];
+  editAbIdx = i;
+  abDatasSelecionadas = a.datas.slice();
+  document.getElementById('abComb').value  = a.comb;
+  document.getElementById('abPreco').value = a.preco || '';
+  document.getElementById('abKm').value    = a.km || '';
+  setFuelAb(a.fuel || 'gasolina');
+  renderAbDateChips();
+  previewAb();
+  document.getElementById('formTitAb').textContent = '✏️ Editando Combustível';
+  document.getElementById('btnAb').textContent = 'Salvar Edição';
+  document.getElementById('btnAb').classList.add('edit');
+  document.getElementById('formTitAb').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function excluirAbastecimento(i) {
+  if (confirm('Excluir este abastecimento?')) {
+    abastecimentos.splice(i,1);
+    if (editAbIdx===i) {
+      editAbIdx=-1;
+      document.getElementById('formTitAb').textContent = '⛽ Lançar Combustível';
+      document.getElementById('btnAb').textContent = 'Registrar Combustível';
+      document.getElementById('btnAb').classList.remove('edit');
+    }
+    salvar(); renderSemana();
+  }
+}
+
+// ===================== DESPESAS =====================
 function toggleDespForm(){var f=document.getElementById('despForm');f.style.display=f.style.display==='none'?'block':'none';}
 function addDesp(){
   var nome=document.getElementById('dNome').value.trim();
@@ -503,23 +687,57 @@ function renderDespesas(){
   }).join('');
 }
 
-// FECHAR / LIMPAR
+// ===================== TOTAIS (helper genérico) =====================
+function totalsDe(fatArr, abArr, despArr) {
+  var tB=0; for(var i=0;i<fatArr.length;i++) tB += fatArr[i].bruto || 0;
+  var tC=0, tK=0, tLit=0, mArr=[];
+  for (var j=0;j<abArr.length;j++) {
+    tC += abArr[j].comb || 0;
+    tK += abArr[j].km || 0;
+    tLit += abArr[j].litros || 0;
+    if (abArr[j].media>0) mArr.push(abArr[j].media);
+  }
+  var tD=0; for(var k=0;k<despArr.length;k++) tD += despArr[k].valor || 0;
+  var tL = tB - tC;
+  var mc = mArr.length ? mArr.reduce(function(s,v){return s+v;},0)/mArr.length : 0;
+  return {tB:tB,tC:tC,tK:tK,tL:tL,tLit:tLit,tD:tD,mc:mc};
+}
+function mediaFuel(abArr, tipo) {
+  var f = abArr.filter(function(a){ return a.fuel===tipo && a.media>0; });
+  if (!f.length) return null;
+  return { media: f.reduce(function(s,a){return s+a.media;},0)/f.length, n: f.length };
+}
+function periodoTexto(fatArr) {
+  if (!fatArr.length) return '—';
+  var dts = fatArr.map(function(f){return f.data;}).sort();
+  return dts.length>1 ? fmtD(dts[0])+' – '+fmtD(dts[dts.length-1]) : fmtD(dts[0]);
+}
+
+// ===================== FECHAR / LIMPAR SEMANA =====================
 function fecharSemana(){
-  if(!dias.length){alert('Nenhum dia para fechar!');return;}
-  var tB=0,tC=0,tK=0,tL=0,tLit=0,tD=0,mArr=[];
-  for(var i=0;i<dias.length;i++){tB+=dias[i].bruto;tC+=dias[i].comb;tK+=(dias[i].km||0);tL+=dias[i].liquido;tLit+=(dias[i].litros||0);if(dias[i].media>0)mArr.push(dias[i].media);}
-  for(var j=0;j<despesas.length;j++)tD+=despesas[j].valor;
-  var mc=mArr.length?mArr.reduce(function(s,v){return s+v;},0)/mArr.length:0;
-  var dts=dias.map(function(d){return d.data;}).sort();
-  var per=dts.length>1?fmtD(dts[0])+' – '+fmtD(dts[dts.length-1]):fmtD(dts[0]);
-  var mEt=mediaFuel(dias,'etanol'), mGas=mediaFuel(dias,'gasolina');
-  historico.unshift({id:Date.now(),periodo:per,tB:tB,tC:tC,tK:tK,tL:tL,tLit:tLit,tD:tD,mc:mc,ok:tL-tD>=META,mEt:mEt,mGas:mGas,dias:dias.slice(),despesas:despesas.slice()});
-  dias=[];
+  if (!faturamentos.length && !abastecimentos.length) { alert('Nada para fechar nesta semana!'); return; }
+  var t = totalsDe(faturamentos, abastecimentos, despesas);
+  var per = periodoTexto(faturamentos);
+  var mEt = mediaFuel(abastecimentos,'etanol'), mGas = mediaFuel(abastecimentos,'gasolina');
+  historico.unshift({
+    id:Date.now(), periodo:per,
+    tB:t.tB, tC:t.tC, tK:t.tK, tL:t.tL, tLit:t.tLit, tD:t.tD, mc:t.mc,
+    ok:(t.tL-t.tD)>=META, mEt:mEt, mGas:mGas,
+    faturamentos: faturamentos.slice(),
+    abastecimentos: abastecimentos.slice(),
+    despesas: despesas.slice()
+  });
+  faturamentos = []; abastecimentos = [];
   salvar(); renderSemana();
-  alert('✅ Semana fechada!\nPeríodo: '+per+'\nLíquido: R$ '+fmt(tL));
+  alert('✅ Semana fechada!\nPeríodo: '+per+'\nLíquido: R$ '+fmt(t.tL));
   showTab(1);
 }
-function limpar(){if(confirm('Apagar sem salvar no histórico?')){dias=[];salvar();renderSemana();}}
+function limpar(){
+  if(confirm('Apagar faturamentos e abastecimentos desta semana sem salvar no histórico?')){
+    faturamentos=[]; abastecimentos=[];
+    salvar(); renderSemana();
+  }
+}
 function excluirSemana(id){
   if(confirm('Remover esta semana do histórico?')){
     historico=historico.filter(function(s){return s.id!==id;});
@@ -528,73 +746,62 @@ function excluirSemana(id){
 }
 function toggleHist(id){var el=document.getElementById('hb-'+id);if(el)el.classList.toggle('open');}
 
-// MEDIA FUEL HELPER
-function mediaFuel(lista,tipo){
-  var f=lista.filter(function(d){return d.fuel===tipo&&d.media>0;});
-  if(!f.length)return null;
-  return{media:f.reduce(function(s,d){return s+d.media;},0)/f.length,n:f.length};
-}
-
-// MEDIA GERAL HISTÓRICA de km/L
+// ===================== MEDIA GERAL HISTÓRICA km/L =====================
 function medGeralKmL(){
   var arr=[];
   for(var i=0;i<historico.length;i++){
     var sem=historico[i];
-    if(sem.dias){for(var j=0;j<sem.dias.length;j++){if(sem.dias[j].media>0)arr.push(sem.dias[j].media);}}
+    if(sem.abastecimentos){for(var j=0;j<sem.abastecimentos.length;j++){if(sem.abastecimentos[j].media>0)arr.push(sem.abastecimentos[j].media);}}
   }
-  // inclui semana atual
-  for(var k=0;k<dias.length;k++){if(dias[k].media>0)arr.push(dias[k].media);}
+  for(var k=0;k<abastecimentos.length;k++){if(abastecimentos[k].media>0)arr.push(abastecimentos[k].media);}
   return arr.length?{med:arr.reduce(function(s,v){return s+v;},0)/arr.length,n:arr.length}:null;
 }
 
-// WHATSAPP
-function whatsapp(){
-  var tB=0,tC=0,tK=0,tL=0,tD=0,mArr=[];
-  for(var i=0;i<dias.length;i++){tB+=dias[i].bruto;tC+=dias[i].comb;tK+=(dias[i].km||0);tL+=dias[i].liquido;if(dias[i].media>0)mArr.push(dias[i].media);}
-  for(var j=0;j<despesas.length;j++)tD+=despesas[j].valor;
-  var mc=mArr.length?mArr.reduce(function(s,v){return s+v;},0)/mArr.length:0;
-  var lqR=tL-tD, pct=Math.round((lqR/META)*100);
-  var dts=dias.map(function(d){return d.data;}).sort();
-  var per=dts.length>1?fmtD(dts[0])+' a '+fmtD(dts[dts.length-1]):(dts[0]?fmtD(dts[0]):'esta semana');
-  var mEt=mediaFuel(dias,'etanol'), mGas=mediaFuel(dias,'gasolina');
-  var t='🚗 *RESUMO SEMANAL — THIAGO*\n📅 '+per+'\n\n';
-  t+='💰 *Bruto:* R$ '+fmt(tB)+'\n';
-  t+='⛽ *Combustível:* R$ '+fmt(tC)+'\n';
-  if(tD>0)t+='🏠 *Despesas:* R$ '+fmt(tD)+'\n';
-  t+='\n✅ *Líquido:* R$ '+fmt(tL)+'\n';
-  if(tD>0)t+='📊 *Líquido real:* R$ '+fmt(lqR)+'\n';
-  t+='🎯 *Meta (R$ '+fmt(META)+'):* '+pct+'%\n\n';
-  t+='📍 *Km rodado:* '+fmt(tK)+' km\n';
-  if(mc>0)t+='📊 *Consumo médio:* '+fmt(mc)+' km/L\n';
-  if(mEt)t+='🌿 *Etanol:* '+fmt(mEt.media)+' km/L\n';
-  if(mGas)t+='🔶 *Gasolina:* '+fmt(mGas.media)+' km/L\n';
-  t+='\n_App Controle do Thiago_ 🚗';
-  window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
+// ===================== TEXTO RESUMO (compartilhado entre semana e consulta) =====================
+function gerarResumoTexto(titulo, per, t, mEt, mGas) {
+  var lqR = t.tL - t.tD;
+  var pct = META>0 ? Math.round((lqR/META)*100) : 0;
+  var txt = '🚗 *'+titulo+'*\n📅 '+per+'\n\n';
+  txt += '💰 *Bruto:* R$ '+fmt(t.tB)+'\n';
+  txt += '⛽ *Combustível:* R$ '+fmt(t.tC)+'\n';
+  if (t.tD>0) txt += '🏠 *Despesas:* R$ '+fmt(t.tD)+'\n';
+  txt += '\n✅ *Líquido:* R$ '+fmt(t.tL)+'\n';
+  if (t.tD>0) txt += '📊 *Líquido real:* R$ '+fmt(lqR)+'\n';
+  if (META>0) txt += '🎯 *Meta (R$ '+fmt(META)+'):* '+pct+'%\n';
+  txt += '\n📍 *Km rodado:* '+fmt(t.tK)+' km\n';
+  if (t.mc>0) txt += '📊 *Consumo médio:* '+fmt(t.mc)+' km/L\n';
+  if (mEt)  txt += '🌿 *Etanol:* '+fmt(mEt.media)+' km/L\n';
+  if (mGas) txt += '🔶 *Gasolina:* '+fmt(mGas.media)+' km/L\n';
+  txt += '\n_App Controle do Thiago_ 🚗';
+  return txt;
 }
 
-// RENDER SEMANA
+// ===================== WHATSAPP (semana atual) =====================
+function whatsapp(){
+  var t = totalsDe(faturamentos, abastecimentos, despesas);
+  var per = faturamentos.length ? periodoTexto(faturamentos).replace(' – ',' a ') : 'esta semana';
+  var mEt = mediaFuel(abastecimentos,'etanol'), mGas = mediaFuel(abastecimentos,'gasolina');
+  var txt = gerarResumoTexto('RESUMO SEMANAL — THIAGO', per, t, mEt, mGas);
+  window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
+}
+
+// ===================== RENDER SEMANA =====================
 function renderSemana(){
-  var tB=0,tC=0,tK=0,tL=0,tLit=0,tD=0,mArr=[];
-  for(var i=0;i<dias.length;i++){
-    tB+=dias[i].bruto; tC+=dias[i].comb; tK+=(dias[i].km||0);
-    tL+=dias[i].liquido; tLit+=(dias[i].litros||0);
-    if(dias[i].media>0)mArr.push(dias[i].media);
-  }
-  for(var j=0;j<despesas.length;j++) tD+=despesas[j].valor;
-  var lqR=tL-tD;
-  var mc=mArr.length?mArr.reduce(function(s,v){return s+v;},0)/mArr.length:0;
-  var mLkm=tK>0?tL/tK:0, mCkm=tK>0?tC/tK:0;
+  var t = totalsDe(faturamentos, abastecimentos, despesas);
+  var lqR = t.tL - t.tD;
+  var mLkm = t.tK>0 ? t.tL/t.tK : 0;
+  var mCkm = t.tK>0 ? t.tC/t.tK : 0;
 
   // KPIs
-  document.getElementById('kLiq').textContent  ='R$ '+fmt(tL);
-  document.getElementById('kBruto').textContent='R$ '+fmt(tB);
-  document.getElementById('kComb').textContent ='R$ '+fmt(tC);
-  document.getElementById('kKm').textContent   =fmt(tK)+' km';
-  document.getElementById('kDesp').textContent ='R$ '+fmt(tD);
+  document.getElementById('kLiq').textContent  ='R$ '+fmt(t.tL);
+  document.getElementById('kBruto').textContent='R$ '+fmt(t.tB);
+  document.getElementById('kComb').textContent ='R$ '+fmt(t.tC);
+  document.getElementById('kKm').textContent   =fmt(t.tK)+' km';
+  document.getElementById('kDesp').textContent ='R$ '+fmt(t.tD);
   document.getElementById('kReal').textContent ='R$ '+fmt(lqR);
 
   // Stats básicos
-  document.getElementById('sLit').textContent =tLit>0?fmt(tLit)+' L':'—';
+  document.getElementById('sLit').textContent =t.tLit>0?fmt(t.tLit)+' L':'—';
   document.getElementById('sLkm').textContent =mLkm>0?'R$ '+fmt(mLkm)+'/km':'—';
   document.getElementById('sCkm').textContent =mCkm>0?'R$ '+fmt(mCkm)+'/km':'—';
 
@@ -604,10 +811,10 @@ function renderSemana(){
   var sMedSub  =document.getElementById('sMedSub');
   var sMedCard =document.getElementById('sMedCard');
   var geralObj =medGeralKmL();
-  if(mc>0){
-    sMedEl.textContent=fmt(mc)+' km/L';
+  if(t.mc>0){
+    sMedEl.textContent=fmt(t.mc)+' km/L';
     if(geralObj&&geralObj.n>=2){
-      var acima=mc>=geralObj.med;
+      var acima=t.mc>=geralObj.med;
       sMedEl.style.color    =acima?'var(--green)':'var(--red)';
       sMedCard.style.border =acima?'1px solid rgba(0,245,176,0.3)':'1px solid rgba(255,77,109,0.3)';
       sMedBadge.style.display='inline';
@@ -629,7 +836,7 @@ function renderSemana(){
   }
 
   // Fuel médias
-  var mEt=mediaFuel(dias,'etanol'), mGas=mediaFuel(dias,'gasolina');
+  var mEt=mediaFuel(abastecimentos,'etanol'), mGas=mediaFuel(abastecimentos,'gasolina');
   document.getElementById('fEt').textContent    =mEt?fmt(mEt.media)+' km/L':'—';
   document.getElementById('fEtSub').textContent =mEt?mEt.n+' abastecimento'+(mEt.n>1?'s':''):'sem registros';
   document.getElementById('fGas').textContent   =mGas?fmt(mGas.media)+' km/L':'—';
@@ -649,46 +856,70 @@ function renderSemana(){
   var pctCombHist=somaB>0?(somaC/somaB)*100:0;
   var combMedSem=semN>0?somaC/semN:0;
   var pctFrac=pctCombHist>0?pctCombHist/100:0.30;
-  var brutoNec=(1-pctFrac)>0?(META+tD)/(1-pctFrac):0;
+  var brutoNec=(1-pctFrac)>0?(META+t.tD)/(1-pctFrac):0;
   document.getElementById('metaBruto').style.display='block';
   document.getElementById('mBrutoNec').textContent=brutoNec>0?'R$ '+fmt(brutoNec):'—';
   document.getElementById('mPctComb').textContent=pctCombHist>0?fmt(pctCombHist)+'%':'~30% estimado';
-  document.getElementById('mDesp').textContent='R$ '+fmt(tD);
+  document.getElementById('mDesp').textContent='R$ '+fmt(t.tD);
   document.getElementById('mCombMed').textContent=combMedSem>0?'R$ '+fmt(combMedSem)+'/sem':'sem histórico';
 
   // Meta diária
-  document.getElementById('mdDias').textContent=dias.length;
+  document.getElementById('mdDias').textContent=faturamentos.length;
   var dHoje=new Date(), dIdx=dHoje.getDay()===0?6:dHoje.getDay()-1;
   var datas={};
-  for(var k=0;k<dias.length;k++) datas[dias[k].data]=true;
+  for(var k=0;k<faturamentos.length;k++) datas[faturamentos[k].data]=true;
   var diasR=0;
   for(var x=dIdx;x<=6;x++){
     var dt=new Date(dHoje); dt.setDate(dt.getDate()+(x-dIdx));
     var ds=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
     if(!datas[ds]) diasR++;
   }
-  var mD=diasR>0?Math.max(falta,0)/diasR:0;
+  var faltaBruto=Math.max(brutoNec-t.tB,0);
+  var mD=diasR>0?faltaBruto/diasR:0;
   document.getElementById('mdMeta').textContent=falta<=0?'✅ Bateu!':(diasR>0?'R$ '+fmt(mD)+'/dia':'—');
 
-  // Tabela
-  var tb=document.getElementById('tblBody');
-  if(!dias.length){tb.innerHTML='<div class="empty">Nenhum dia registrado ainda.<br>Preencha o formulário acima! ☝️</div>';return;}
-  var html='';
-  for(var n=0;n<dias.length;n++){
-    var d=dias[n];
-    var tag=d.fuel==='etanol'?'<span class="tag-et">🌿</span>':'<span class="tag-gas">🔶</span>';
-    html+='<div class="tbl-row">';
-    html+='<span class="td">'+fmtD(d.data)+'<br>'+tag+'</span>';
-    html+='<span class="tl">R$ '+fmt(d.liquido)+'</span>';
-    html+='<span class="tc">R$ '+fmt(d.comb)+'</span>';
-    html+='<span class="tk">'+(d.km>0?fmt(d.km)+' km':'—')+(d.media>0?'<br><span style="color:var(--sub);font-size:0.65rem">'+fmt(d.media)+' km/L</span>':'')+'</span>';
-    html+='<span class="ta"><button class="btn-te" onclick="editarDia('+n+')">✏️</button><button class="btn-td" onclick="excluirDia('+n+')">🗑️</button></span>';
-    html+='</div>';
+  // Tabela FATURAMENTO
+  var tbF=document.getElementById('tblFat');
+  if(!faturamentos.length){
+    tbF.innerHTML='<div class="empty">Nenhum faturamento registrado ainda.<br>Preencha o formulário acima! ☝️</div>';
+  } else {
+    var htmlF='';
+    for(var n=0;n<faturamentos.length;n++){
+      var f=faturamentos[n];
+      htmlF+='<div class="tbl-row">';
+      htmlF+='<span class="td">'+fmtD(f.data)+'</span>';
+      htmlF+='<span class="tl">R$ '+fmt(f.bruto)+'</span>';
+      htmlF+='<span class="td"></span><span class="td"></span>';
+      htmlF+='<span class="ta"><button class="btn-te" onclick="editarFaturamento('+n+')">✏️</button><button class="btn-td" onclick="excluirFaturamento('+n+')">🗑️</button></span>';
+      htmlF+='</div>';
+    }
+    tbF.innerHTML=htmlF;
   }
-  tb.innerHTML=html;
+
+  // Tabela ABASTECIMENTOS
+  var tbA=document.getElementById('tblAb');
+  if(!abastecimentos.length){
+    tbA.innerHTML='<div class="empty">Nenhum abastecimento registrado ainda.</div>';
+  } else {
+    var htmlA='';
+    for(var m=0;m<abastecimentos.length;m++){
+      var a=abastecimentos[m];
+      var datasOrd=a.datas.slice().sort();
+      var perTxt = datasOrd.length>1 ? fmtD(datasOrd[0])+'–'+fmtD(datasOrd[datasOrd.length-1]) : fmtD(datasOrd[0]);
+      var tag=a.fuel==='etanol'?'<span class="tag-et">🌿</span>':'<span class="tag-gas">🔶</span>';
+      htmlA+='<div class="tbl2-row">';
+      htmlA+='<span class="td">'+perTxt+'<br>'+tag+' '+a.datas.length+' dia'+(a.datas.length>1?'s':'')+'</span>';
+      htmlA+='<span class="tc">R$ '+fmt(a.comb)+'</span>';
+      htmlA+='<span class="tk">'+(a.km>0?fmt(a.km)+' km':'—')+'</span>';
+      htmlA+='<span class="td">'+(a.media>0?fmt(a.media)+' km/L':'—')+'</span>';
+      htmlA+='<span class="ta"><button class="btn-te" onclick="editarAbastecimento('+m+')">✏️</button><button class="btn-td" onclick="excluirAbastecimento('+m+')">🗑️</button></span>';
+      htmlA+='</div>';
+    }
+    tbA.innerHTML=htmlA;
+  }
 }
 
-// RENDER HISTÓRICO
+// ===================== RENDER HISTÓRICO =====================
 function renderHistorico(){
   renderGrafico();
   var el=document.getElementById('histLista');
@@ -699,10 +930,19 @@ function renderHistorico(){
     var etS=s.mEt?fmt(s.mEt.media)+' km/L':'—';
     var gasS=s.mGas?fmt(s.mGas.media)+' km/L':'—';
     var lqR=s.tL-(s.tD||0);
+
     var dH='';
-    for(var j=0;j<(s.dias||[]).length;j++){
-      var d=s.dias[j];
-      dH+='<div class="hd-row"><span>'+fmtD(d.data)+' '+(d.fuel==='etanol'?'🌿':'🔶')+'</span><span class="hd-liq">R$ '+fmt(d.liquido)+'</span><span style="color:var(--red)">R$ '+fmt(d.comb)+'</span><span style="color:var(--warn)">'+(d.km>0?fmt(d.km)+' km':'—')+'</span></div>';
+    for(var j=0;j<(s.faturamentos||[]).length;j++){
+      var f=s.faturamentos[j];
+      dH+='<div class="hd-row"><span>'+fmtD(f.data)+'</span><span class="hd-liq">R$ '+fmt(f.bruto)+'</span></div>';
+    }
+    var aH='';
+    for(var ai=0;ai<(s.abastecimentos||[]).length;ai++){
+      var ab=s.abastecimentos[ai];
+      var dOrd=ab.datas.slice().sort();
+      var pTxt=dOrd.length>1?fmtD(dOrd[0])+'–'+fmtD(dOrd[dOrd.length-1]):fmtD(dOrd[0]);
+      var tg=ab.fuel==='etanol'?'🌿':'🔶';
+      aH+='<div class="hd-row"><span>'+pTxt+' '+tg+'</span><span style="color:var(--red)">R$ '+fmt(ab.comb)+'</span><span style="color:var(--warn)">'+(ab.km>0?fmt(ab.km)+' km':'—')+'</span></div>';
     }
     var dpH='';
     if((s.despesas||[]).length){
@@ -725,14 +965,16 @@ function renderHistorico(){
     html+='<div class="hk"><div class="hk-label">🔶 Gasolina</div><div class="hk-val" style="color:var(--gasolina)">'+gasS+'</div></div>';
     if(s.tD>0){html+='<div class="hk"><div class="hk-label">Despesas</div><div class="hk-val" style="color:var(--purple)">R$ '+fmt(s.tD)+'</div></div>';html+='<div class="hk"><div class="hk-label">Liq. Real</div><div class="hk-val" style="color:var(--green)">R$ '+fmt(lqR)+'</div></div>';}
     html+='</div>';
-    html+='<div class="hist-days">'+dH+'</div>'+dpH;
+    html+='<div class="hist-days"><div class="hist-days-title">💰 Faturamento</div>'+dH+'</div>';
+    if(aH) html+='<div class="hist-days"><div class="hist-days-title">⛽ Combustível</div>'+aH+'</div>';
+    html+=dpH;
     html+='<button class="btn-del-sem" onclick="excluirSemana('+s.id+')">🗑️ Remover esta semana</button>';
     html+='</div></div>';
   }
   el.innerHTML=html;
 }
 
-// GRÁFICO
+// ===================== GRÁFICO =====================
 function renderGrafico(){
   var canvas=document.getElementById('grafico');
   if(!canvas)return;
@@ -754,7 +996,9 @@ function renderGrafico(){
   });
 }
 
-// CONSULTA
+// ===================== CONSULTA =====================
+var ultimaConsulta = null; // guarda resultado para o botão de whatsapp
+
 function initConsulta(){
   if(!document.getElementById('cDe').value){
     var hj=new Date(), diaSem=hj.getDay()===0?6:hj.getDay()-1;
@@ -765,75 +1009,113 @@ function initConsulta(){
     document.getElementById('cAte').value=f(dom);
   }
 }
+
 function consultarPeriodo(){
   var de=document.getElementById('cDe').value, ate=document.getElementById('cAte').value;
   if(!de||!ate){alert('Selecione as duas datas!');return;}
   if(de>ate){alert('Data inicial deve ser antes da data final!');return;}
-  var todos=[];
-  for(var i=0;i<dias.length;i++) todos.push(dias[i]);
-  for(var i=0;i<historico.length;i++){for(var j=0;j<(historico[i].dias||[]).length;j++) todos.push(historico[i].dias[j]);}
+
+  // Junta faturamentos: semana atual + histórico
+  var todosFat=[];
+  for(var i=0;i<faturamentos.length;i++) todosFat.push(faturamentos[i]);
+  for(var i=0;i<historico.length;i++){for(var j=0;j<(historico[i].faturamentos||[]).length;j++) todosFat.push(historico[i].faturamentos[j]);}
+
+  // Junta abastecimentos: semana atual + histórico
+  var todosAb=[];
+  for(var i=0;i<abastecimentos.length;i++) todosAb.push(abastecimentos[i]);
+  for(var i=0;i<historico.length;i++){for(var j=0;j<(historico[i].abastecimentos||[]).length;j++) todosAb.push(historico[i].abastecimentos[j]);}
+
+  // Filtra faturamentos por data dentro do período (remove duplicatas por data)
   var visto={};
-  var filtrados=todos.filter(function(d){
-    if(d.data<de||d.data>ate||visto[d.data])return false;
-    visto[d.data]=true; return true;
+  var fFat = todosFat.filter(function(f){
+    if(f.data<de||f.data>ate||visto[f.data]) return false;
+    visto[f.data]=true; return true;
   });
-  filtrados.sort(function(a,b){return a.data.localeCompare(b.data);});
+  fFat.sort(function(a,b){return a.data.localeCompare(b.data);});
+
+  // Filtra abastecimentos: incluído se QUALQUER data dele estiver no período
+  var vistoAb={};
+  var fAb = todosAb.filter(function(a){
+    if(vistoAb[a.id]) return false;
+    var dentro=false;
+    for(var k=0;k<a.datas.length;k++){ if(a.datas[k]>=de && a.datas[k]<=ate){dentro=true;break;} }
+    if(dentro) vistoAb[a.id]=true;
+    return dentro;
+  });
+  fAb.sort(function(a,b){ return a.datas[0].localeCompare(b.datas[0]); });
+
   var res=document.getElementById('cResultado');
-  if(!filtrados.length){
+  if(!fFat.length && !fAb.length){
     res.style.display='block';
     document.getElementById('cResumo').innerHTML='<div style="text-align:center;padding:20px;color:var(--sub)">Nenhum registro encontrado neste período.</div>';
     document.getElementById('cKpis').innerHTML='';
     document.getElementById('cStats').innerHTML='';
     document.getElementById('cFuels').innerHTML='';
-    document.getElementById('cTabela').innerHTML='';
+    document.getElementById('cTabelaFat').innerHTML='';
+    document.getElementById('cTabelaAb').innerHTML='';
+    ultimaConsulta = null;
     return;
   }
-  var tB=0,tC=0,tK=0,tL=0,tLit=0,mArr=[];
-  for(var i=0;i<filtrados.length;i++){
-    tB+=filtrados[i].bruto||0; tC+=filtrados[i].comb||0; tK+=filtrados[i].km||0;
-    tL+=filtrados[i].liquido||0; tLit+=filtrados[i].litros||0;
-    if(filtrados[i].media>0)mArr.push(filtrados[i].media);
-  }
-  var mc=mArr.length?mArr.reduce(function(s,v){return s+v;},0)/mArr.length:0;
-  var mLkm=tK>0?tL/tK:0, mCkm=tK>0?tC/tK:0;
-  var fEtArr=filtrados.filter(function(d){return d.fuel==='etanol'&&d.media>0;});
-  var fGaArr=filtrados.filter(function(d){return d.fuel==='gasolina'&&d.media>0;});
-  var mEt=fEtArr.length?fEtArr.reduce(function(s,d){return s+d.media;},0)/fEtArr.length:0;
-  var mGa=fGaArr.length?fGaArr.reduce(function(s,d){return s+d.media;},0)/fGaArr.length:0;
+
+  var t = totalsDe(fFat, fAb, []);
+  var mLkm=t.tK>0?t.tL/t.tK:0, mCkm=t.tK>0?t.tC/t.tK:0;
+  var mEt=mediaFuel(fAb,'etanol'), mGas=mediaFuel(fAb,'gasolina');
+  var nDias = fFat.length;
+
+  // Guarda para o botão whatsapp
+  ultimaConsulta = { de:de, ate:ate, t:t, mEt:mEt, mGas:mGas };
 
   document.getElementById('cResumo').innerHTML=
     '<div class="sec">📊 Resultado: '+fmtD(de)+' a '+fmtD(ate)+'</div>'+
     '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">'+
-    '<div><div style="font-size:0.7rem;color:var(--sub)">Dias no período</div><div style="font-family:\'DM Mono\',monospace;font-size:1.4rem;font-weight:600;color:var(--blue)">'+filtrados.length+' dias</div></div>'+
-    '<div style="text-align:right"><div style="font-size:0.7rem;color:var(--sub)">Líquido total</div><div style="font-family:\'DM Mono\',monospace;font-size:1.4rem;font-weight:600;color:var(--green)">R$ '+fmt(tL)+'</div></div>'+
+    '<div><div style="font-size:0.7rem;color:var(--sub)">Dias com faturamento</div><div style="font-family:"DM Mono",monospace;font-size:1.4rem;font-weight:600;color:var(--blue)">'+nDias+' dias</div></div>'+
+    '<div style="text-align:right"><div style="font-size:0.7rem;color:var(--sub)">Líquido total</div><div style="font-family:"DM Mono",monospace;font-size:1.4rem;font-weight:600;color:var(--green)">R$ '+fmt(t.tL)+'</div></div>'+
     '</div>';
 
   document.getElementById('cKpis').innerHTML=
-    '<div class="kpi g"><div class="kpi-icon">💰</div><div class="kpi-label">Líquido Total</div><div class="kpi-val g">R$ '+fmt(tL)+'</div></div>'+
-    '<div class="kpi"><div class="kpi-icon">🚗</div><div class="kpi-label">Total Bruto</div><div class="kpi-val wh">R$ '+fmt(tB)+'</div></div>'+
-    '<div class="kpi r"><div class="kpi-icon">⛽</div><div class="kpi-label">Combustível</div><div class="kpi-val r">R$ '+fmt(tC)+'</div></div>'+
-    '<div class="kpi w"><div class="kpi-icon">📍</div><div class="kpi-label">Km Rodado</div><div class="kpi-val w">'+fmt(tK)+' km</div></div>';
+    '<div class="kpi g"><div class="kpi-icon">💰</div><div class="kpi-label">Líquido Total</div><div class="kpi-val g">R$ '+fmt(t.tL)+'</div></div>'+
+    '<div class="kpi"><div class="kpi-icon">🚗</div><div class="kpi-label">Total Bruto</div><div class="kpi-val wh">R$ '+fmt(t.tB)+'</div></div>'+
+    '<div class="kpi r"><div class="kpi-icon">⛽</div><div class="kpi-label">Combustível</div><div class="kpi-val r">R$ '+fmt(t.tC)+'</div></div>'+
+    '<div class="kpi w"><div class="kpi-icon">📍</div><div class="kpi-label">Km Rodado</div><div class="kpi-val w">'+fmt(t.tK)+' km</div></div>';
 
   document.getElementById('cStats').innerHTML=
-    '<div class="stat"><div class="stat-label">📊 Média km/L</div><div class="stat-val">'+(mc>0?fmt(mc)+' km/L':'—')+'</div></div>'+
-    '<div class="stat"><div class="stat-label">🔋 Total Litros</div><div class="stat-val">'+(tLit>0?fmt(tLit)+' L':'—')+'</div></div>'+
+    '<div class="stat"><div class="stat-label">📊 Média km/L</div><div class="stat-val">'+(t.mc>0?fmt(t.mc)+' km/L':'—')+'</div></div>'+
+    '<div class="stat"><div class="stat-label">🔋 Total Litros</div><div class="stat-val">'+(t.tLit>0?fmt(t.tLit)+' L':'—')+'</div></div>'+
     '<div class="stat"><div class="stat-label">💸 Líquido/km</div><div class="stat-val">'+(mLkm>0?'R$ '+fmt(mLkm)+'/km':'—')+'</div></div>'+
     '<div class="stat"><div class="stat-label">⛽ Custo/km</div><div class="stat-val">'+(mCkm>0?'R$ '+fmt(mCkm)+'/km':'—')+'</div></div>'+
-    '<div class="stat"><div class="stat-label">💰 Média líquido/dia</div><div class="stat-val" style="color:var(--green)">R$ '+fmt(tL/filtrados.length)+'</div></div>'+
-    '<div class="stat"><div class="stat-label">⛽ Média comb./dia</div><div class="stat-val" style="color:var(--red)">R$ '+fmt(tC/filtrados.length)+'</div></div>';
+    '<div class="stat"><div class="stat-label">💰 Média líquido/dia</div><div class="stat-val" style="color:var(--green)">'+(nDias>0?'R$ '+fmt(t.tL/nDias):'—')+'</div></div>'+
+    '<div class="stat"><div class="stat-label">⛽ Média comb./dia</div><div class="stat-val" style="color:var(--red)">'+(nDias>0?'R$ '+fmt(t.tC/nDias):'—')+'</div></div>';
 
   document.getElementById('cFuels').innerHTML=
-    '<div class="fuel-card et"><div class="fuel-icon">🌿</div><div class="fuel-name">Etanol</div><div class="fuel-avg">'+(mEt>0?fmt(mEt)+' km/L':'—')+'</div><div class="fuel-sub">'+(fEtArr.length>0?fEtArr.length+' abastecimento'+(fEtArr.length>1?'s':''):'sem registros')+'</div></div>'+
-    '<div class="fuel-card gas"><div class="fuel-icon">🔶</div><div class="fuel-name">Gasolina</div><div class="fuel-avg">'+(mGa>0?fmt(mGa)+' km/L':'—')+'</div><div class="fuel-sub">'+(fGaArr.length>0?fGaArr.length+' abastecimento'+(fGaArr.length>1?'s':''):'sem registros')+'</div></div>';
+    '<div class="fuel-card et"><div class="fuel-icon">🌿</div><div class="fuel-name">Etanol</div><div class="fuel-avg">'+(mEt?fmt(mEt.media)+' km/L':'—')+'</div><div class="fuel-sub">'+(mEt?mEt.n+' abastecimento'+(mEt.n>1?'s':''):'sem registros')+'</div></div>'+
+    '<div class="fuel-card gas"><div class="fuel-icon">🔶</div><div class="fuel-name">Gasolina</div><div class="fuel-avg">'+(mGas?fmt(mGas.media)+' km/L':'—')+'</div><div class="fuel-sub">'+(mGas?mGas.n+' abastecimento'+(mGas.n>1?'s':''):'sem registros')+'</div></div>';
 
-  var tblHtml='';
-  for(var n=0;n<filtrados.length;n++){
-    var d=filtrados[n];
-    var tag=d.fuel==='etanol'?'<span class="tag-et">🌿</span>':'<span class="tag-gas">🔶</span>';
-    tblHtml+='<div class="tbl-row"><span class="td">'+fmtD(d.data)+'<br>'+tag+'</span><span class="tl">R$ '+fmt(d.liquido)+'</span><span class="tc">R$ '+fmt(d.comb)+'</span><span class="tk">'+(d.km>0?fmt(d.km)+' km':'—')+(d.media>0?'<br><span style="color:var(--sub);font-size:0.65rem">'+fmt(d.media)+' km/L</span>':'')+'</span><span class="td">'+(d.fuel==='etanol'?'🌿 Et':'🔶 Gas')+'</span></div>';
+  var tblF='';
+  for(var n=0;n<fFat.length;n++){
+    var f=fFat[n];
+    tblF+='<div class="tbl-row"><span class="td">'+fmtD(f.data)+'</span><span class="tl">R$ '+fmt(f.bruto)+'</span><span class="td"></span><span class="td"></span><span class="td"></span></div>';
   }
-  document.getElementById('cTabela').innerHTML=tblHtml;
+  document.getElementById('cTabelaFat').innerHTML = tblF || '<div class="empty">Nenhum faturamento no período.</div>';
+
+  var tblA='';
+  for(var m=0;m<fAb.length;m++){
+    var a=fAb[m];
+    var dOrd=a.datas.slice().sort();
+    var pTxt=dOrd.length>1?fmtD(dOrd[0])+'–'+fmtD(dOrd[dOrd.length-1]):fmtD(dOrd[0]);
+    var tag=a.fuel==='etanol'?'<span class="tag-et">🌿</span>':'<span class="tag-gas">🔶</span>';
+    tblA+='<div class="tbl2-row"><span class="td">'+pTxt+' '+tag+'</span><span class="tc">R$ '+fmt(a.comb)+'</span><span class="tk">'+(a.km>0?fmt(a.km)+' km':'—')+'</span><span class="td">'+(a.media>0?fmt(a.media)+' km/L':'—')+'</span><span></span></div>';
+  }
+  document.getElementById('cTabelaAb').innerHTML = tblA || '<div class="empty">Nenhum abastecimento no período.</div>';
+
   res.style.display='block';
+}
+
+// ===================== WHATSAPP (consulta) =====================
+function whatsappConsulta(){
+  if (!ultimaConsulta) { alert('Faça uma consulta primeiro!'); return; }
+  var per = fmtD(ultimaConsulta.de)+' a '+fmtD(ultimaConsulta.ate);
+  var txt = gerarResumoTexto('CONSULTA DE PERÍODO — THIAGO', per, ultimaConsulta.t, ultimaConsulta.mEt, ultimaConsulta.mGas);
+  window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
 }
 
 init();
