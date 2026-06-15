@@ -503,14 +503,15 @@ function saveMeta() {
 // Gera chips para os dias da semana atual (segunda a domingo)
 function renderAbDateChips() {
   var hj = new Date();
-  var dIdx = hj.getDay()===0?6:hj.getDay()-1; // 0=seg...6=dom
   var html = '';
-  for (var x=0; x<=6; x++) {
+  // Últimos 7 dias corridos, terminando hoje (janela rolante)
+  for (var i=6; i>=0; i--) {
     var dt = new Date(hj);
-    dt.setDate(dt.getDate() + (x - dIdx));
+    dt.setDate(dt.getDate() - i);
     var ds = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
     var on = abDatasSelecionadas.indexOf(ds) >= 0 ? ' on' : '';
-    html += '<button class="date-chip'+on+'" data-date="'+ds+'" onclick="toggleAbDate(&quot;'+ds+'&quot;)"><span class="dc-d">'+String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'</span>'+WEEKDAYS[x]+'</button>';
+    var wd = WEEKDAYS[ dt.getDay()===0?6:dt.getDay()-1 ];
+    html += '<button class="date-chip'+on+'" data-date="'+ds+'" onclick="toggleAbDate(&quot;'+ds+'&quot;)"><span class="dc-d">'+String(dt.getDate()).padStart(2,'0')+'/'+String(dt.getMonth()+1).padStart(2,'0')+'</span>'+wd+'</button>';
   }
   document.getElementById('abDateChips').innerHTML = html;
 }
@@ -599,6 +600,37 @@ function excluirFaturamento(i) {
 }
 
 // ===================== COMBUSTÍVEL: registrar/editar/excluir =====================
+// Encontra a qual "semana" (atual ou histórico já fechado) um conjunto de datas pertence,
+// com base em onde existem faturamentos lançados para essas datas.
+function encontrarDestinoAbastecimento(datas) {
+  // 1) Se QUALQUER data já existe na semana atual -> destino é a semana atual
+  for (var i=0; i<datas.length; i++) {
+    for (var j=0; j<faturamentos.length; j++) {
+      if (faturamentos[j].data === datas[i]) return { tipo:'atual' };
+    }
+  }
+  // 2) Procura nas semanas já fechadas (histórico)
+  for (var h=0; h<historico.length; h++) {
+    var fats = historico[h].faturamentos || [];
+    for (var i=0; i<datas.length; i++) {
+      for (var j=0; j<fats.length; j++) {
+        if (fats[j].data === datas[i]) return { tipo:'historico', idx:h };
+      }
+    }
+  }
+  // 3) Não encontrado em lugar nenhum -> assume semana atual
+  return { tipo:'atual' };
+}
+
+// Recalcula todos os totais de uma semana do histórico após inclusão/edição de abastecimento
+function recalcularSemanaHistorico(sem) {
+  var t = totalsDe(sem.faturamentos||[], sem.abastecimentos||[], sem.despesas||[]);
+  sem.tB=t.tB; sem.tC=t.tC; sem.tK=t.tK; sem.tL=t.tL; sem.tLit=t.tLit; sem.tD=t.tD; sem.mc=t.mc;
+  sem.ok=(t.tL-t.tD)>=META;
+  sem.mEt=mediaFuel(sem.abastecimentos||[],'etanol');
+  sem.mGas=mediaFuel(sem.abastecimentos||[],'gasolina');
+}
+
 function registrarAbastecimento() {
   var comb  = parseFloat(document.getElementById('abComb').value);
   var preco = parseFloat(document.getElementById('abPreco').value) || 0;
@@ -623,7 +655,16 @@ function registrarAbastecimento() {
     document.getElementById('btnAb').textContent = 'Registrar Combustível';
     document.getElementById('btnAb').classList.remove('edit');
   } else {
-    abastecimentos.push(entrada);
+    var destino = encontrarDestinoAbastecimento(entrada.datas);
+    if (destino.tipo === 'historico') {
+      var sem = historico[destino.idx];
+      if (!sem.abastecimentos) sem.abastecimentos = [];
+      sem.abastecimentos.push(entrada);
+      recalcularSemanaHistorico(sem);
+      alert('⛽ Abastecimento lançado na semana '+sem.periodo+' (já fechada).');
+    } else {
+      abastecimentos.push(entrada);
+    }
   }
 
   document.getElementById('abComb').value  = '';
@@ -634,6 +675,7 @@ function registrarAbastecimento() {
   previewAb();
   salvar();
   renderSemana();
+  if (document.getElementById('pHistorico').style.display !== 'none') renderHistorico();
 }
 function editarAbastecimento(i) {
   var a = abastecimentos[i];
