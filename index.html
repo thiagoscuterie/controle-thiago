@@ -600,35 +600,62 @@ function excluirFaturamento(i) {
 }
 
 // ===================== COMBUSTÍVEL: registrar/editar/excluir =====================
-// Encontra a qual "semana" (atual ou histórico já fechado) um conjunto de datas pertence,
-// com base em onde existem faturamentos lançados para essas datas.
-function encontrarDestinoAbastecimento(datas) {
-  // 1) Se QUALQUER data já existe na semana atual -> destino é a semana atual
-  for (var i=0; i<datas.length; i++) {
-    for (var j=0; j<faturamentos.length; j++) {
-      if (faturamentos[j].data === datas[i]) return { tipo:'atual' };
-    }
-  }
-  // 2) Procura nas semanas já fechadas (histórico)
-  for (var h=0; h<historico.length; h++) {
-    var fats = historico[h].faturamentos || [];
-    for (var i=0; i<datas.length; i++) {
-      for (var j=0; j<fats.length; j++) {
-        if (fats[j].data === datas[i]) return { tipo:'historico', idx:h };
-      }
-    }
-  }
-  // 3) Não encontrado em lugar nenhum -> assume semana atual
-  return { tipo:'atual' };
-}
-
-// Recalcula todos os totais de uma semana do histórico após inclusão/edição de abastecimento
+// Recalcula totais de uma semana do histórico
 function recalcularSemanaHistorico(sem) {
   var t = totalsDe(sem.faturamentos||[], sem.abastecimentos||[], sem.despesas||[]);
   sem.tB=t.tB; sem.tC=t.tC; sem.tK=t.tK; sem.tL=t.tL; sem.tLit=t.tLit; sem.tD=t.tD; sem.mc=t.mc;
   sem.ok=(t.tL-t.tD)>=META;
   sem.mEt=mediaFuel(sem.abastecimentos||[],'etanol');
   sem.mGas=mediaFuel(sem.abastecimentos||[],'gasolina');
+}
+
+// Dado um array de datas selecionadas, separa quais pertencem a cada semana
+// Retorna: [{tipo:'atual', datas:[]}, {tipo:'historico', idx:N, datas:[], periodo:'...'}]
+function distribuirDatasPorSemana(datas) {
+  var grupos = [];
+
+  for (var d=0; d<datas.length; d++) {
+    var data = datas[d];
+    var alocado = false;
+
+    // Verifica semana atual (tem faturamento nessa data?)
+    for (var j=0; j<faturamentos.length; j++) {
+      if (faturamentos[j].data === data) {
+        // Adiciona ao grupo "atual"
+        var gAtual = null;
+        for (var g=0; g<grupos.length; g++) { if (grupos[g].tipo==='atual') { gAtual=grupos[g]; break; } }
+        if (!gAtual) { gAtual={tipo:'atual',datas:[]}; grupos.push(gAtual); }
+        gAtual.datas.push(data);
+        alocado = true; break;
+      }
+    }
+    if (alocado) continue;
+
+    // Verifica semanas fechadas no histórico
+    for (var h=0; h<historico.length; h++) {
+      var fats = historico[h].faturamentos || [];
+      for (var j=0; j<fats.length; j++) {
+        if (fats[j].data === data) {
+          var gHist = null;
+          for (var g=0; g<grupos.length; g++) { if (grupos[g].tipo==='historico' && grupos[g].idx===h) { gHist=grupos[g]; break; } }
+          if (!gHist) { gHist={tipo:'historico',idx:h,periodo:historico[h].periodo,datas:[]}; grupos.push(gHist); }
+          gHist.datas.push(data);
+          alocado = true; break;
+        }
+      }
+      if (alocado) break;
+    }
+
+    // Data sem faturamento -> vai para semana atual
+    if (!alocado) {
+      var gAtual = null;
+      for (var g=0; g<grupos.length; g++) { if (grupos[g].tipo==='atual') { gAtual=grupos[g]; break; } }
+      if (!gAtual) { gAtual={tipo:'atual',datas:[]}; grupos.push(gAtual); }
+      gAtual.datas.push(data);
+    }
+  }
+
+  return grupos;
 }
 
 function registrarAbastecimento() {
@@ -639,25 +666,28 @@ function registrarAbastecimento() {
   if (isNaN(comb) || comb<=0) { alert('Informe o valor abastecido!'); return; }
   if (!abDatasSelecionadas.length) { alert('Selecione pelo menos um dia coberto por este abastecimento!'); return; }
 
+  var totalDias = abDatasSelecionadas.length;
   var lit = (preco>0 && comb>0) ? comb/preco : 0;
-  var med = (lit>0 && km>0) ? km/lit : 0;
-
-  var entrada = {
-    id: editAbIdx>=0 ? abastecimentos[editAbIdx].id : Date.now(),
-    datas: abDatasSelecionadas.slice(),
-    comb: comb, preco: preco, km: km, litros: lit, media: med, fuel: fuelAb
-  };
+  var grupos = distribuirDatasPorSemana(abDatasSelecionadas.slice());
 
   if (editAbIdx >= 0) {
-    abastecimentos[editAbIdx] = entrada;
+    // Edição simples — não distribui, apenas atualiza
+    var medEd = (lit>0 && km>0) ? km/lit : 0;
+    abastecimentos[editAbIdx] = {
+      id: abastecimentos[editAbIdx].id,
+      datas: abDatasSelecionadas.slice(),
+      comb: comb, preco: preco, km: km, litros: lit, media: medEd, fuel: fuelAb
+    };
     editAbIdx = -1;
     document.getElementById('formTitAb').textContent = '⛽ Lançar Combustível';
     document.getElementById('btnAb').textContent = 'Registrar Combustível';
     document.getElementById('btnAb').classList.remove('edit');
-  } else {
-    var destino = encontrarDestinoAbastecimento(entrada.datas);
-    if (destino.tipo === 'historico') {
-      var sem = historico[destino.idx];
+  } else if (grupos.length === 1) {
+    // Todos os dias na mesma semana — lança integral
+    var med = (lit>0 && km>0) ? km/lit : 0;
+    var entrada = { id:Date.now(), datas:abDatasSelecionadas.slice(), comb:comb, preco:preco, km:km, litros:lit, media:med, fuel:fuelAb };
+    if (grupos[0].tipo === 'historico') {
+      var sem = historico[grupos[0].idx];
       if (!sem.abastecimentos) sem.abastecimentos = [];
       sem.abastecimentos.push(entrada);
       recalcularSemanaHistorico(sem);
@@ -665,6 +695,30 @@ function registrarAbastecimento() {
     } else {
       abastecimentos.push(entrada);
     }
+  } else {
+    // Dias distribuídos em semanas diferentes — divide proporcionalmente
+    var msgs = [];
+    for (var g=0; g<grupos.length; g++) {
+      var grp = grupos[g];
+      var frac = grp.datas.length / totalDias;
+      var combG  = Math.round(comb * frac * 100) / 100;
+      var kmG    = Math.round(km   * frac * 100) / 100;
+      var litG   = (preco>0 && combG>0) ? combG/preco : 0;
+      var medG   = (litG>0 && kmG>0) ? kmG/litG : 0;
+      var entG   = { id:Date.now()+g, datas:grp.datas.slice(), comb:combG, preco:preco, km:kmG, litros:litG, media:medG, fuel:fuelAb };
+
+      if (grp.tipo === 'historico') {
+        var sem = historico[grp.idx];
+        if (!sem.abastecimentos) sem.abastecimentos = [];
+        sem.abastecimentos.push(entG);
+        recalcularSemanaHistorico(sem);
+        msgs.push(grp.datas.length+' dia(s) → '+sem.periodo+' (R$ '+fmt(combG)+')');
+      } else {
+        abastecimentos.push(entG);
+        msgs.push(grp.datas.length+' dia(s) → semana atual (R$ '+fmt(combG)+')');
+      }
+    }
+    alert('⛽ Combustível distribuído proporcionalmente:\n'+msgs.join('\n'));
   }
 
   document.getElementById('abComb').value  = '';
