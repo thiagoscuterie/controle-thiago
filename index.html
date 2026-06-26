@@ -179,6 +179,12 @@ body>*{position:relative;z-index:1;}
 .hd-row:last-child{border-bottom:none;}
 .hd-liq{color:var(--green);font-weight:600;font-family:'DM Mono',monospace;}
 .btn-del-sem{display:block;width:100%;margin-top:12px;padding:12px;background:rgba(255,77,109,0.07);color:var(--red);border:1px solid rgba(255,77,109,0.25);border-radius:12px;font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;-webkit-appearance:none;}
+.hd-row-ab{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.hd-row-ab:last-child{border-bottom:none;}
+.hd-ab-info{display:flex;gap:8px;align-items:center;flex:1;flex-wrap:wrap;font-size:0.76rem;color:var(--sub);}
+.hd-ab-acts{display:flex;gap:5px;flex-shrink:0;}
+.btn-he{background:rgba(255,159,67,0.1);border:1px solid rgba(255,159,67,0.3);color:var(--orange);cursor:pointer;font-size:0.68rem;padding:4px 7px;border-radius:7px;-webkit-appearance:none;}
+.btn-hd{background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;font-size:0.68rem;padding:4px 7px;border-radius:7px;-webkit-appearance:none;}
 .empty-hist{text-align:center;padding:48px 20px;color:var(--sub);font-size:0.85rem;line-height:1.8;}
 
 /* CONSULTA */
@@ -611,6 +617,51 @@ function recalcularSemanaHistorico(sem) {
 
 // Dado um array de datas selecionadas, separa quais pertencem a cada semana
 // Retorna: [{tipo:'atual', datas:[]}, {tipo:'historico', idx:N, datas:[], periodo:'...'}]
+// ---- EDITAR ABASTECIMENTO NO HISTÓRICO ----
+function editarAbHist(semId, abIdx) {
+  var semIdx = -1;
+  for (var i=0; i<historico.length; i++) { if (historico[i].id===semId) { semIdx=i; break; } }
+  if (semIdx < 0) return;
+  var ab = (historico[semIdx].abastecimentos||[])[abIdx];
+  if (!ab) return;
+
+  // Carrega os dados no formulário de abastecimento
+  document.getElementById('abComb').value  = ab.comb;
+  document.getElementById('abPreco').value = ab.preco || '';
+  document.getElementById('abKm').value    = ab.km    || '';
+  abDatasSelecionadas = ab.datas.slice();
+  fuelAb = ab.fuel || 'etanol';
+  setFuelAb(fuelAb);
+  renderAbDateChips();
+  previewAb();
+
+  editAbHistSemId = semId;
+  editAbHistIdx   = abIdx;
+  editAbIdx = -2; // marca como "editando histórico"
+
+  document.getElementById('formTitAb').textContent = '✏️ Editando abastecimento (semana '+historico[semIdx].periodo+')';
+  document.getElementById('btnAb').textContent = 'Salvar Edição';
+  document.getElementById('btnAb').classList.add('edit');
+
+  // Sobe para o formulário
+  document.getElementById('formTitAb').scrollIntoView({behavior:'smooth', block:'start'});
+  showTab(0);
+}
+
+// ---- EXCLUIR ABASTECIMENTO NO HISTÓRICO ----
+function excluirAbHist(semId, abIdx) {
+  if (!confirm('Excluir este abastecimento da semana fechada?')) return;
+  var semIdx = -1;
+  for (var i=0; i<historico.length; i++) { if (historico[i].id===semId) { semIdx=i; break; } }
+  if (semIdx < 0) return;
+  var sem = historico[semIdx];
+  if (!sem.abastecimentos) return;
+  sem.abastecimentos.splice(abIdx, 1);
+  recalcularSemanaHistorico(sem);
+  salvar();
+  renderHistorico();
+}
+
 function distribuirDatasPorSemana(datas) {
   var grupos = [];
 
@@ -670,8 +721,25 @@ function registrarAbastecimento() {
   var lit = (preco>0 && comb>0) ? comb/preco : 0;
   var grupos = distribuirDatasPorSemana(abDatasSelecionadas.slice());
 
-  if (editAbIdx >= 0) {
-    // Edição simples — não distribui, apenas atualiza
+  if (editAbIdx === -2) {
+    // Edição de abastecimento em semana já fechada
+    var semIdx = -1;
+    for (var i=0; i<historico.length; i++) { if (historico[i].id===editAbHistSemId) { semIdx=i; break; } }
+    if (semIdx >= 0) {
+      var medEd = (lit>0 && km>0) ? km/lit : 0;
+      historico[semIdx].abastecimentos[editAbHistIdx] = {
+        id: historico[semIdx].abastecimentos[editAbHistIdx].id,
+        datas: abDatasSelecionadas.slice(),
+        comb: comb, preco: preco, km: km, litros: lit, media: medEd, fuel: fuelAb
+      };
+      recalcularSemanaHistorico(historico[semIdx]);
+    }
+    editAbIdx = -1; editAbHistSemId = -1; editAbHistIdx = -1;
+    document.getElementById('formTitAb').textContent = '⛽ Lançar Combustível';
+    document.getElementById('btnAb').textContent = 'Registrar Combustível';
+    document.getElementById('btnAb').classList.remove('edit');
+  } else if (editAbIdx >= 0) {
+    // Edição simples na semana atual
     var medEd = (lit>0 && km>0) ? km/lit : 0;
     abastecimentos[editAbIdx] = {
       id: abastecimentos[editAbIdx].id,
@@ -1033,12 +1101,18 @@ function renderHistorico(){
       dH+='<div class="hd-row"><span>'+fmtD(f.data)+'</span><span class="hd-liq">R$ '+fmt(f.bruto)+'</span></div>';
     }
     var aH='';
+    if((s.abastecimentos||[]).length){
+      aH+='<div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:6px;margin-top:4px">⛽ ABASTECIMENTOS</div>';
+    }
     for(var ai=0;ai<(s.abastecimentos||[]).length;ai++){
       var ab=s.abastecimentos[ai];
       var dOrd=ab.datas.slice().sort();
       var pTxt=dOrd.length>1?fmtD(dOrd[0])+'–'+fmtD(dOrd[dOrd.length-1]):fmtD(dOrd[0]);
       var tg=ab.fuel==='etanol'?'🌿':'🔶';
-      aH+='<div class="hd-row"><span>'+pTxt+' '+tg+'</span><span style="color:var(--red)">R$ '+fmt(ab.comb)+'</span><span style="color:var(--warn)">'+(ab.km>0?fmt(ab.km)+' km':'—')+'</span></div>';
+      aH+='<div class="hd-row-ab">';
+      aH+='<div class="hd-ab-info"><span>'+pTxt+' '+tg+'</span><span style="color:var(--red)">R$ '+fmt(ab.comb)+'</span><span style="color:var(--warn)">'+(ab.km>0?fmt(ab.km)+' km':'—')+'</span>'+(ab.media>0?'<span style="color:var(--sub)">'+fmt(ab.media)+' km/L</span>':'')+'</div>';
+      aH+='<div class="hd-ab-acts"><button class="btn-he" onclick="editarAbHist('+s.id+','+ai+')">✏️</button><button class="btn-hd" onclick="excluirAbHist('+s.id+','+ai+')">🗑️</button></div>';
+      aH+='</div>';
     }
     var dpH='';
     if((s.despesas||[]).length){
