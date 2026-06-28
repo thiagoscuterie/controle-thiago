@@ -463,9 +463,32 @@ function carregar() {
 // ===================== UTILS =====================
 function fmt(v) { return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function fmtD(s) { if(!s) return '—'; var p=s.split('-'); return p[2]+'/'+p[1]; }
+// Retorna o "dia de trabalho" atual.
+// Antes das 04:30 → ainda é o dia anterior (turno do Uber começa às 04:00)
 function hoje() {
-  var d=new Date(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+  var d = new Date();
+  var hora   = d.getHours();
+  var minuto = d.getMinutes();
+  // Se for antes das 04:30, o dia de trabalho ainda é o anterior
+  if (hora < 4 || (hora === 4 && minuto < 30)) {
+    d.setDate(d.getDate() - 1);
+  }
+  var m  = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
   return d.getFullYear()+'-'+m+'-'+dd;
+}
+
+// Retorna o Date real do "dia de trabalho" (com ajuste de 04:30)
+function hojeDate() {
+  var d = new Date();
+  var hora   = d.getHours();
+  var minuto = d.getMinutes();
+  if (hora < 4 || (hora === 4 && minuto < 30)) {
+    d.setDate(d.getDate() - 1);
+  }
+  // Zera horas para comparação de datas
+  d.setHours(0,0,0,0);
+  return d;
 }
 var WEEKDAYS = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 
@@ -508,9 +531,9 @@ function saveMeta() {
 // ===================== DATE CHIPS (abastecimento) =====================
 // Gera chips para os dias da semana atual (segunda a domingo)
 function renderAbDateChips() {
-  var hj = new Date();
+  var hj = hojeDate(); // respeita corte de 04:30
   var html = '';
-  // Últimos 7 dias corridos, terminando hoje (janela rolante)
+  // Últimos 7 dias corridos, terminando no "dia de trabalho" atual
   for (var i=6; i>=0; i--) {
     var dt = new Date(hj);
     dt.setDate(dt.getDate() - i);
@@ -1029,7 +1052,7 @@ function renderSemana(){
 
   // Meta diária
   document.getElementById('mdDias').textContent=faturamentos.length;
-  var dHoje=new Date(), dIdx=dHoje.getDay()===0?6:dHoje.getDay()-1;
+  var dHoje=hojeDate(), dIdx=dHoje.getDay()===0?6:dHoje.getDay()-1;
   var datas={};
   for(var k=0;k<faturamentos.length;k++) datas[faturamentos[k].data]=true;
   var diasR=0;
@@ -1171,7 +1194,7 @@ var ultimaConsulta = null; // guarda resultado para o botão de whatsapp
 
 function initConsulta(){
   if(!document.getElementById('cDe').value){
-    var hj=new Date(), diaSem=hj.getDay()===0?6:hj.getDay()-1;
+    var hj=hojeDate(), diaSem=hj.getDay()===0?6:hj.getDay()-1;
     var seg=new Date(hj); seg.setDate(hj.getDate()-diaSem);
     var dom=new Date(seg); dom.setDate(seg.getDate()+6);
     var f=function(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
