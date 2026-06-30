@@ -50,7 +50,8 @@ body>*{position:relative;z-index:1;}
 .meta-hint{font-size:0.7rem;color:var(--warn);margin-top:5px;font-family:'DM Mono',monospace;}
 .meta-bruto{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);}
 .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.mini-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 10px;}
+.mini-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 10px 10px;}
+.mini-sub{font-size:0.62rem;color:var(--red);margin-top:4px;font-family:'DM Mono',monospace;opacity:0.85;}
 .mini-label{font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:var(--sub);font-weight:600;}
 .mini-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;margin-top:3px;}
 
@@ -85,13 +86,13 @@ body>*{position:relative;z-index:1;}
 
 /* FUEL */
 .fuel-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.fuel-card{border-radius:16px;padding:14px;}
+.fuel-card{border-radius:14px;padding:10px 12px;}
 .fuel-card.et{background:linear-gradient(135deg,rgba(64,224,160,0.12),rgba(64,224,160,0.04));border:1px solid rgba(64,224,160,0.25);}
 .fuel-card.gas{background:linear-gradient(135deg,rgba(255,159,67,0.12),rgba(255,159,67,0.04));border:1px solid rgba(255,159,67,0.25);}
-.fuel-icon{font-size:1.3rem;margin-bottom:6px;}
+.fuel-icon{font-size:1.05rem;margin-bottom:3px;}
 .fuel-name{font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;}
 .fuel-card.et .fuel-name{color:var(--etanol);}.fuel-card.gas .fuel-name{color:var(--gasolina);}
-.fuel-avg{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:600;margin-top:4px;}
+.fuel-avg{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:600;margin-top:2px;}
 .fuel-card.et .fuel-avg{color:var(--etanol);}.fuel-card.gas .fuel-avg{color:var(--gasolina);}
 .fuel-sub{font-size:0.64rem;color:var(--sub);margin-top:3px;}
 
@@ -223,9 +224,9 @@ body>*{position:relative;z-index:1;}
       <div class="sec" style="margin-bottom:8px">📊 Para bater a meta você precisa faturar</div>
       <div class="mini-grid">
         <div class="mini-item"><div class="mini-label">Bruto necessário</div><div class="mini-val" id="mBrutoNec" style="color:var(--orange)">—</div></div>
-        <div class="mini-item"><div class="mini-label">% comb. histórico</div><div class="mini-val" id="mPctComb" style="color:var(--warn)">—</div></div>
+        <div class="mini-item"><div class="mini-label">⛽ Comb. estimado p/ meta</div><div class="mini-val" id="mCombMeta" style="color:var(--red)">—</div><div class="mini-sub" id="mCombMed">—</div></div>
         <div class="mini-item"><div class="mini-label">Despesas fixas</div><div class="mini-val" id="mDesp" style="color:var(--purple)">—</div></div>
-        <div class="mini-item"><div class="mini-label">Média comb./semana</div><div class="mini-val" id="mCombMed" style="color:var(--red)">—</div></div>
+        <div class="mini-item"><div class="mini-label">% comb. histórico</div><div class="mini-val" id="mPctComb" style="color:var(--warn)">—</div></div>
       </div>
     </div>
   </div>
@@ -1044,11 +1045,13 @@ function renderSemana(){
   var combMedSem=semN>0?somaC/semN:0;
   var pctFrac=pctCombHist>0?pctCombHist/100:0.30;
   var brutoNec=(1-pctFrac)>0?(META+t.tD)/(1-pctFrac):0;
+  var combParaMeta = brutoNec * pctFrac;
   document.getElementById('metaBruto').style.display='block';
   document.getElementById('mBrutoNec').textContent=brutoNec>0?'R$ '+fmt(brutoNec):'—';
+  document.getElementById('mCombMeta').textContent=combParaMeta>0?'R$ '+fmt(combParaMeta):'—';
   document.getElementById('mPctComb').textContent=pctCombHist>0?fmt(pctCombHist)+'%':'~30% estimado';
   document.getElementById('mDesp').textContent='R$ '+fmt(t.tD);
-  document.getElementById('mCombMed').textContent=combMedSem>0?'R$ '+fmt(combMedSem)+'/sem':'sem histórico';
+  document.getElementById('mCombMed').textContent=combMedSem>0?'média sem: R$ '+fmt(combMedSem):'sem histórico';
 
   // Meta diária
   document.getElementById('mdDias').textContent=faturamentos.length;
