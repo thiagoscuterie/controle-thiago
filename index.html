@@ -225,7 +225,7 @@ body>*{position:relative;z-index:1;}
       <div class="mini-grid">
         <div class="mini-item"><div class="mini-label">Bruto necessário</div><div class="mini-val" id="mBrutoNec" style="color:var(--orange)">—</div></div>
         <div class="mini-item"><div class="mini-label">⛽ Comb. estimado p/ meta</div><div class="mini-val" id="mCombMeta" style="color:var(--red)">—</div><div class="mini-sub" id="mCombMed">—</div></div>
-        <div class="mini-item"><div class="mini-label">Despesas fixas</div><div class="mini-val" id="mDesp" style="color:var(--purple)">—</div></div>
+        <div class="mini-item"><div class="mini-label">Despesas fixas</div><div class="mini-val" id="mDesp" style="color:var(--purple)">—</div><div class="mini-sub" id="mDespDia">—</div></div>
         <div class="mini-item"><div class="mini-label">% comb. histórico</div><div class="mini-val" id="mPctComb" style="color:var(--warn)">—</div></div>
       </div>
     </div>
@@ -498,6 +498,9 @@ function init() {
   carregar();
   document.getElementById('fData').value = hoje();
   setFuelAb('etanol');
+  // Pré-preenche com o último preço do litro usado
+  var ultimoPreco = localStorage.getItem('th_ultimo_preco');
+  if (ultimoPreco) document.getElementById('abPreco').value = ultimoPreco;
   atualizaMeta();
   renderDespesas();
   renderAbDateChips();
@@ -813,9 +816,13 @@ function registrarAbastecimento() {
     alert('⛽ Combustível distribuído proporcionalmente:\n'+msgs.join('\n'));
   }
 
-  document.getElementById('abComb').value  = '';
-  document.getElementById('abPreco').value = '';
-  document.getElementById('abKm').value    = '';
+  // Salva o último preço do litro para pré-preencher no próximo lançamento
+  if (preco > 0) {
+    localStorage.setItem('th_ultimo_preco', String(preco));
+  }
+  document.getElementById('abComb').value = '';
+  document.getElementById('abKm').value   = '';
+  // Mantém o preço do litro preenchido
   abDatasSelecionadas = [];
   renderAbDateChips();
   previewAb();
@@ -1051,6 +1058,7 @@ function renderSemana(){
   document.getElementById('mCombMeta').textContent=combParaMeta>0?'R$ '+fmt(combParaMeta):'—';
   document.getElementById('mPctComb').textContent=pctCombHist>0?fmt(pctCombHist)+'%':'~30% estimado';
   document.getElementById('mDesp').textContent='R$ '+fmt(t.tD);
+  document.getElementById('mDespDia').textContent=t.tD>0?'R$ '+fmt(t.tD/7)+'/dia':'sem despesas';
   document.getElementById('mCombMed').textContent=combMedSem>0?'média sem: R$ '+fmt(combMedSem):'sem histórico';
 
   // Meta diária
