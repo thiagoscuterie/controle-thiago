@@ -270,9 +270,21 @@ body>*{position:relative;z-index:1;}
   <!-- IDs ocultos para compatibilidade com o JS -->
   <span id="kDesp" style="display:none">0</span>
 
+  <!-- Linha: Média km/L + Total Litros -->
+  <div class="trio-bar" style="margin-bottom:12px">
+    <div class="trio-item" id="sMedCard">
+      <div class="trio-label">📊 Média km/L <span class="badge" id="sMedBadge" style="display:none"></span></div>
+      <div class="trio-val" id="sMed" style="color:var(--green)">—</div>
+      <div class="mini-sub" id="sMedSub"></div>
+    </div>
+    <div class="trio-sep"></div>
+    <div class="trio-item">
+      <div class="trio-label">🔋 Total Litros</div>
+      <div class="trio-val" id="sLit" style="color:var(--purple)">—</div>
+    </div>
+  </div>
+  <!-- Linha: Líquido/km + Custo/km -->
   <div class="stats-row">
-    <div class="stat" id="sMedCard"><div class="stat-label">📊 Média km/L <span class="badge" id="sMedBadge" style="display:none"></span></div><div class="stat-val" id="sMed">—</div><div class="stat-sub" id="sMedSub"></div></div>
-    <div class="stat"><div class="stat-label">🔋 Total Litros</div><div class="stat-val" id="sLit">—</div></div>
     <div class="stat"><div class="stat-label">💸 Líquido/km</div><div class="stat-val" id="sLkm">—</div></div>
     <div class="stat"><div class="stat-label">⛽ Custo/km</div><div class="stat-val" id="sCkm">—</div></div>
   </div>
