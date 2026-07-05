@@ -239,9 +239,21 @@ body>*{position:relative;z-index:1;}
     </div>
   </div>
 
-  <div class="md-grid">
-    <div class="md-item"><div class="md-label">📅 Dias trabalhados</div><div class="md-val" id="mdDias" style="color:var(--blue)">0</div></div>
-    <div class="md-item"><div class="md-label">🎯 Bruto/dia restante</div><div class="md-val" id="mdMeta" style="color:var(--warn)">—</div><div style="margin-top:6px;height:4px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden"><div id="mdMetaBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--warn),#ffb300);border-radius:99px;transition:width 0.6s ease"></div></div><div style="font-size:0.6rem;color:var(--sub);margin-top:3px" id="mdMetaPct">0% do dia</div></div>
+  <div class="gc" style="padding:12px 14px;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+      <div>
+        <div class="md-label">🎯 Bruto/dia restante</div>
+        <div class="md-val" id="mdMeta" style="color:var(--warn);margin-top:2px">—</div>
+      </div>
+      <div style="text-align:right">
+        <div class="md-label">📅 Dias trabalhados</div>
+        <div class="md-val" id="mdDias" style="color:var(--blue);margin-top:2px">0</div>
+      </div>
+    </div>
+    <div style="position:relative;height:60px">
+      <canvas id="graficoSemanal"></canvas>
+    </div>
+    <div id="graficoSemanalVazio" style="display:none;text-align:center;font-size:0.7rem;color:var(--sub);padding:6px 0">Lance o primeiro dia para ver o gráfico</div>
   </div>
 
   <!-- Linha dos 3 valores principais -->
@@ -420,6 +432,7 @@ var abDatasSelecionadas = []; // array de strings 'YYYY-MM-DD'
 var editFatIdx = -1;
 var editAbIdx  = -1;
 var graficoInst = null;
+var graficoSemanalInst = null;
 
 // ===================== STORAGE =====================
 function salvar() {
@@ -531,6 +544,84 @@ function hojeDate() {
 var WEEKDAYS = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 
 // ===================== INIT =====================
+function renderGraficoSemanal() {
+  var canvas = document.getElementById('graficoSemanal');
+  if (!canvas) return;
+
+  // Tamanho fixo pequeno
+  var pw = canvas.parentElement ? canvas.parentElement.offsetWidth : 280;
+  canvas.width  = pw;
+  canvas.height = 60;
+
+  var hj = hojeDate();
+  var labels = [], values = [], cores = [];
+  var mDia = typeof mD !== 'undefined' && mD > 0 ? mD : 0;
+
+  for (var i=6; i>=0; i--) {
+    var dt = new Date(hj);
+    dt.setDate(dt.getDate() - i);
+    var ds = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    var wd = WEEKDAYS[dt.getDay()===0?6:dt.getDay()-1];
+    var total = 0;
+    for (var f=0; f<faturamentos.length; f++) {
+      if (faturamentos[f].data === ds) total += faturamentos[f].bruto||0;
+    }
+    labels.push(wd);
+    values.push(total);
+    cores.push(total===0 ? 'rgba(255,255,255,0.07)' : (mDia>0 && total>=mDia ? 'rgba(0,245,176,0.75)' : 'rgba(255,209,102,0.75)'));
+  }
+
+  if (graficoSemanalInst) { graficoSemanalInst.destroy(); graficoSemanalInst = null; }
+
+  graficoSemanalInst = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: cores,
+        borderWidth: 0,
+        borderRadius: 3,
+        barPercentage: 0.7,
+      }]
+    },
+    options: {
+      responsive: false,
+      animation: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      },
+      scales: {
+        x: {
+          ticks: { color:'#5a6680', font:{ size:8 }, maxRotation:0, padding:1 },
+          grid: { display:false },
+          border: { display:false }
+        },
+        y: { display:false, beginAtZero:true }
+      },
+      layout: { padding:{ top:14, bottom:0, left:2, right:2 } }
+    },
+    plugins: [{
+      id: 'miniLabels',
+      afterDatasetsDraw: function(chart) {
+        var ctx2 = chart.ctx;
+        chart.data.datasets[0].data.forEach(function(val, idx) {
+          if (val <= 0) return;
+          var bar = chart.getDatasetMeta(0).data[idx];
+          ctx2.save();
+          ctx2.fillStyle = 'rgba(240,244,255,0.85)';
+          ctx2.font = '600 8px "DM Mono",monospace';
+          ctx2.textAlign = 'center';
+          ctx2.textBaseline = 'bottom';
+          ctx2.fillText(Math.round(val), bar.x, bar.y - 1);
+          ctx2.restore();
+        });
+      }
+    }]
+  });
+}
+
 function init() {
   carregar();
   document.getElementById('fData').value = hoje();
@@ -1112,16 +1203,10 @@ function renderSemana(){
   var faltaBruto=Math.max(brutoNec-t.tB,0);
   var mD=diasR>0?faltaBruto/diasR:0;
   document.getElementById('mdMeta').textContent=falta<=0?'✅ Bateu!':(diasR>0?'R$ '+fmt(mD)+'/dia':'—');
-  // Mini barra de progresso diária: % do bruto de hoje em relação à meta diária
-  var brutoHoje=0;
-  var hjStr=hoje();
-  for(var fi=0;fi<faturamentos.length;fi++){ if(faturamentos[fi].data===hjStr) brutoHoje+=faturamentos[fi].bruto||0; }
-  var metaDiariaRef = mD > 0 ? mD : (brutoNec/7);
-  var pctDia = metaDiariaRef > 0 ? Math.min((brutoHoje/metaDiariaRef)*100, 100) : 0;
-  var barEl = document.getElementById('mdMetaBar');
-  var pctEl = document.getElementById('mdMetaPct');
-  if(barEl){ barEl.style.width = pctDia+'%'; barEl.style.background = pctDia>=100?'linear-gradient(90deg,var(--green),#00ffcc)':'linear-gradient(90deg,var(--warn),#ffb300)'; }
-  if(pctEl){ pctEl.textContent = brutoHoje>0 ? Math.round(pctDia)+'% da meta diária (R$ '+fmt(brutoHoje)+' hoje)' : 'nenhum lançamento hoje'; pctEl.style.color = pctDia>=100?'var(--green)':'var(--sub)'; }
+
+
+  // Gráfico semanal
+  renderGraficoSemanal();
 
   // Tabela FATURAMENTO
   var tbF=document.getElementById('tblFat');
