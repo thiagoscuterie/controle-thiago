@@ -241,7 +241,7 @@ body>*{position:relative;z-index:1;}
 
   <div class="md-grid">
     <div class="md-item"><div class="md-label">📅 Dias trabalhados</div><div class="md-val" id="mdDias" style="color:var(--blue)">0</div></div>
-    <div class="md-item"><div class="md-label">🎯 Bruto/dia restante</div><div class="md-val" id="mdMeta" style="color:var(--warn)">—</div></div>
+    <div class="md-item"><div class="md-label">🎯 Bruto/dia restante</div><div class="md-val" id="mdMeta" style="color:var(--warn)">—</div><div style="margin-top:6px;height:4px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden"><div id="mdMetaBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--warn),#ffb300);border-radius:99px;transition:width 0.6s ease"></div></div><div style="font-size:0.6rem;color:var(--sub);margin-top:3px" id="mdMetaPct">0% do dia</div></div>
   </div>
 
   <!-- Linha dos 3 valores principais -->
@@ -1112,6 +1112,16 @@ function renderSemana(){
   var faltaBruto=Math.max(brutoNec-t.tB,0);
   var mD=diasR>0?faltaBruto/diasR:0;
   document.getElementById('mdMeta').textContent=falta<=0?'✅ Bateu!':(diasR>0?'R$ '+fmt(mD)+'/dia':'—');
+  // Mini barra de progresso diária: % do bruto de hoje em relação à meta diária
+  var brutoHoje=0;
+  var hjStr=hoje();
+  for(var fi=0;fi<faturamentos.length;fi++){ if(faturamentos[fi].data===hjStr) brutoHoje+=faturamentos[fi].bruto||0; }
+  var metaDiariaRef = mD > 0 ? mD : (brutoNec/7);
+  var pctDia = metaDiariaRef > 0 ? Math.min((brutoHoje/metaDiariaRef)*100, 100) : 0;
+  var barEl = document.getElementById('mdMetaBar');
+  var pctEl = document.getElementById('mdMetaPct');
+  if(barEl){ barEl.style.width = pctDia+'%'; barEl.style.background = pctDia>=100?'linear-gradient(90deg,var(--green),#00ffcc)':'linear-gradient(90deg,var(--warn),#ffb300)'; }
+  if(pctEl){ pctEl.textContent = brutoHoje>0 ? Math.round(pctDia)+'% da meta diária (R$ '+fmt(brutoHoje)+' hoje)' : 'nenhum lançamento hoje'; pctEl.style.color = pctDia>=100?'var(--green)':'var(--sub)'; }
 
   // Tabela FATURAMENTO
   var tbF=document.getElementById('tblFat');
@@ -1122,7 +1132,8 @@ function renderSemana(){
     for(var n=0;n<faturamentos.length;n++){
       var f=faturamentos[n];
       htmlF+='<div class="tbl-row">';
-      htmlF+='<span class="td">'+fmtD(f.data)+'</span>';
+      var wdF=WEEKDAYS[new Date(f.data+'T12:00:00').getDay()===0?6:new Date(f.data+'T12:00:00').getDay()-1];
+      htmlF+='<span class="td">'+fmtD(f.data)+'<br><span style="font-size:0.68rem;color:var(--green);font-weight:600">'+wdF+'</span></span>';
       htmlF+='<span class="tl">R$ '+fmt(f.bruto)+'</span>';
       htmlF+='<span class="td"></span><span class="td"></span>';
       htmlF+='<span class="ta"><button class="btn-te" onclick="editarFaturamento('+n+')">✏️</button><button class="btn-td" onclick="excluirFaturamento('+n+')">🗑️</button></span>';
