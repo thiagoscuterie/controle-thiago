@@ -132,9 +132,9 @@ body>*{position:relative;z-index:1;}
 .prev-val{font-family:'DM Mono',monospace;font-size:0.95rem;font-weight:600;margin-top:2px;}
 
 /* DATE CHIPS (seleção múltipla de dias p/ abastecimento) */
-.date-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
-.date-chip{padding:8px 4px;border-radius:10px;border:1px solid var(--border2);background:var(--glass);color:var(--sub);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;-webkit-appearance:none;min-width:50px;line-height:1.3;}
-.date-chip .dc-d{font-family:'DM Mono',monospace;font-size:0.85rem;display:block;}
+.date-chips{display:flex;flex-wrap:nowrap;gap:4px;margin-bottom:12px;}
+.date-chip{flex:1;padding:5px 2px;border-radius:8px;border:1px solid var(--border2);background:var(--glass);color:var(--sub);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.62rem;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;-webkit-appearance:none;min-width:0;line-height:1.3;}
+.date-chip .dc-d{font-family:'DM Mono',monospace;font-size:0.72rem;display:block;}
 .date-chip.on{border-color:rgba(255,159,67,0.45);background:rgba(255,159,67,0.12);color:var(--gasolina);}
 
 .btn-p{width:100%;padding:15px;border:none;border-radius:14px;font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all 0.2s;-webkit-appearance:none;background:linear-gradient(135deg,var(--green2),var(--green));color:#050a10;box-shadow:0 4px 20px rgba(0,245,176,0.25);}
@@ -198,6 +198,52 @@ body>*{position:relative;z-index:1;}
 
 /* CONSULTA */
 .btn-consultar{width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,rgba(116,192,252,0.3),rgba(116,192,252,0.15));color:var(--blue);font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;-webkit-appearance:none;margin-top:4px;}
+
+/* ===== MELHORIAS VISUAIS ===== */
+
+/* Trio bar com linha colorida no topo */
+.trio-bar{position:relative;overflow:hidden;}
+.trio-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green2),var(--green),#80ffda);border-radius:99px;}
+
+/* Stats row — linha azul */
+.stats-row .stat:first-child{position:relative;overflow:hidden;}
+.stats-row .stat:first-child::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);}
+.stats-row .stat:last-child{position:relative;overflow:hidden;}
+.stats-row .stat:last-child::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+
+/* KPI grid — já tem, mas garante bordas */
+.kpi-grid .kpi:nth-child(1){border-color:rgba(255,77,109,0.2);}
+.kpi-grid .kpi:nth-child(2){border-color:rgba(255,209,102,0.2);}
+
+/* Card do gráfico diário — linha gradiente roxa/verde */
+.gc-chart{position:relative;overflow:hidden;}
+.gc-chart::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--blue),var(--green));border-radius:99px;}
+
+/* Fuel cards — sombra suave */
+.fuel-card.et{ box-shadow:0 2px 12px rgba(64,224,160,0.08); }
+.fuel-card.gas{ box-shadow:0 2px 12px rgba(255,159,67,0.08); }
+
+/* Duo bar (média km/L + litros) — linha verde */
+.duo-bar{position:relative;overflow:hidden;}
+.duo-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--purple));border-radius:99px;}
+
+/* Meta bar — borda verde brilhante */
+.gc.ag{box-shadow:0 2px 16px rgba(0,245,176,0.06);}
+
+/* Tabelas — linha no header */
+.tbl-wrap{position:relative;}
+.tbl-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);z-index:1;}
+
+/* Mini-item panel — separador visual */
+.mini-item{position:relative;overflow:hidden;}
+.mini-item:first-child::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent);}
+.mini-item:nth-child(2)::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);}
+.mini-item:nth-child(3)::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--purple),transparent);}
+.mini-item:nth-child(4)::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--warn),transparent);}
+
+/* Histórico card — linha roxa */
+.hist-card{position:relative;overflow:hidden;}
+.hist-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--purple),transparent);z-index:1;}
 </style>
 </head>
 <body>
@@ -239,7 +285,7 @@ body>*{position:relative;z-index:1;}
     </div>
   </div>
 
-  <div class="gc" style="padding:12px 14px;margin-bottom:12px">
+  <div class="gc gc-chart" style="padding:12px 14px;margin-bottom:12px">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
       <div>
         <div class="md-label">🎯 Bruto/dia restante</div>
@@ -283,7 +329,7 @@ body>*{position:relative;z-index:1;}
   <span id="kDesp" style="display:none">0</span>
 
   <!-- Linha: Média km/L + Total Litros -->
-  <div class="trio-bar" style="margin-bottom:12px">
+  <div class="trio-bar duo-bar" style="margin-bottom:12px">
     <div class="trio-item" id="sMedCard">
       <div class="trio-label">📊 Média km/L <span class="badge" id="sMedBadge" style="display:none"></span></div>
       <div class="trio-val" id="sMed" style="color:var(--green)">—</div>
