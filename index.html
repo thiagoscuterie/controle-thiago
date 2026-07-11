@@ -579,6 +579,16 @@ function mediaFuel(abArr,tipo){
 function init(){
   carregar();
 
+
+  // DIAGNOSTICO
+  try {
+    var allKeys2=[];
+    for(var ki2=0;ki2<localStorage.length;ki2++) allKeys2.push(localStorage.key(ki2));
+    var parts=['CHAVES:'+allKeys2.join('|'),'fat:'+faturamentos.length,'ab:'+abastecimentos.length,'hist:'+historico.length];
+    allKeys2.forEach(function(k){try{var p=JSON.parse(localStorage.getItem(k));parts.push(k+'='+(Array.isArray(p)?p.length:'v'));}catch(e){parts.push(k+'=str');}});
+    alert(parts.join(' / '));
+  } catch(e2){ alert('ERR:'+e2.message); }
+
   document.getElementById('fData').value=hoje();
   setFuelAb('etanol');
   var up=localStorage.getItem('th_ultimo_preco');
@@ -677,6 +687,15 @@ function registrarFaturamento(){
     document.getElementById('btnFat').classList.remove('edit');
   } else { faturamentos.push(entrada); }
   faturamentos.sort(function(a,b){return a.data.localeCompare(b.data);});
+  // DIAGNOSTICO
+  try {
+    var allKeys2=[];
+    for(var ki2=0;ki2<localStorage.length;ki2++) allKeys2.push(localStorage.key(ki2));
+    var parts=['CHAVES:'+allKeys2.join('|'),'fat:'+faturamentos.length,'ab:'+abastecimentos.length,'hist:'+historico.length];
+    allKeys2.forEach(function(k){try{var p=JSON.parse(localStorage.getItem(k));parts.push(k+'='+(Array.isArray(p)?p.length:'v'));}catch(e){parts.push(k+'=str');}});
+    alert(parts.join(' / '));
+  } catch(e2){ alert('ERR:'+e2.message); }
+
   document.getElementById('fData').value=hoje();
   document.getElementById('fBruto').value='';
   salvar(); renderSemana();
