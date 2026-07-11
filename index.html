@@ -215,10 +215,6 @@ body>*{position:relative;z-index:1;}
 .hd-liq{color:var(--green);font-weight:600;font-family:'DM Mono',monospace;}
 .btn-del-sem{display:block;width:100%;margin-top:12px;padding:12px;background:rgba(255,77,109,0.07);color:var(--red);border:1px solid rgba(255,77,109,0.25);border-radius:12px;font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;-webkit-appearance:none;}
 .empty-hist{text-align:center;padding:48px 20px;color:var(--sub);font-size:0.85rem;line-height:1.8;}
-
-/* ===== VEÍCULO ===== */
-.veiculo-sel{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(116,192,252,0.3);border-radius:12px;color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;padding:11px 14px;outline:none;-webkit-appearance:none;appearance:none;font-weight:600;}
-.veiculo-badge{display:inline-block;background:rgba(116,192,252,0.12);border:1px solid rgba(116,192,252,0.25);color:var(--blue);font-size:0.62rem;padding:2px 8px;border-radius:99px;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;margin-left:6px;vertical-align:middle;}
 </style>
 </head>
 <body>
@@ -340,20 +336,6 @@ body>*{position:relative;z-index:1;}
     <div class="f-label" style="margin-bottom:6px">📅 Dias cobertos por este abastecimento</div>
     <div class="date-chips" id="abDateChips"></div>
 
-    <div class="f-block" style="margin-bottom:10px">
-      <label class="f-label">🚗 Veículo utilizado</label>
-      <select class="veiculo-sel" id="abVeiculo" onchange="salvarVeiculo()">
-        <option value="Voyage 1.0">🚗 Voyage 1.0</option>
-        <option value="Polo 1.0">🚗 Polo 1.0</option>
-        <option value="Argo 1.0">🚗 Argo 1.0</option>
-        <option value="Onix 1.0">🚗 Onix 1.0</option>
-        <option value="HB20S 1.0">🚗 HB20S 1.0</option>
-        <option value="Cronos 1.0">🚗 Cronos 1.0</option>
-        <option value="Tera 1.0">🚗 Tera 1.0</option>
-        <option value="Pulse 1.3">🚗 Pulse 1.3</option>
-      </select>
-    </div>
-
     <div class="f-label" style="margin-bottom:6px">⛽ Combustível utilizado</div>
     <div class="ftog-row">
       <button class="ftog et" id="abEtBtn" onclick="setFuelAb('etanol')">🌿 Etanol</button>
@@ -413,20 +395,6 @@ body>*{position:relative;z-index:1;}
       <div class="f-block"><label class="f-label">📅 Data inicial</label><input class="inp" type="date" id="cDe"></div>
       <div class="f-block"><label class="f-label">📅 Data final</label><input class="inp" type="date" id="cAte"></div>
     </div>
-    <div class="f-block" style="margin-bottom:10px">
-      <label class="f-label">🚗 Filtrar por veículo (opcional)</label>
-      <select class="veiculo-sel" id="cVeiculo" style="color:var(--sub)">
-        <option value="">Todos os veículos</option>
-        <option value="Voyage 1.0">Voyage 1.0</option>
-        <option value="Polo 1.0">Polo 1.0</option>
-        <option value="Argo 1.0">Argo 1.0</option>
-        <option value="Onix 1.0">Onix 1.0</option>
-        <option value="HB20S 1.0">HB20S 1.0</option>
-        <option value="Cronos 1.0">Cronos 1.0</option>
-        <option value="Tera 1.0">Tera 1.0</option>
-        <option value="Pulse 1.3">Pulse 1.3</option>
-      </select>
-    </div>
     <button class="btn-p" onclick="consultarPeriodo()">🔍 Consultar</button>
   </div>
   <div id="cResultado" style="display:none">
@@ -453,26 +421,18 @@ var WEEKDAYS=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 // ===== STORAGE =====
 function salvar(){
   try{
-    // Salva nas chaves que o dispositivo já usa
-    localStorage.setItem('th_faturamentos',  JSON.stringify(faturamentos));
-    localStorage.setItem('th_abastecimentos',JSON.stringify(abastecimentos));
-    localStorage.setItem('th_historico',     JSON.stringify(historico));
-    localStorage.setItem('th_despesas',      JSON.stringify(despesas));
-    localStorage.setItem('th_meta',          String(META));
-    // Mantém chaves antigas em sincronia
-    localStorage.setItem('th_fat',  JSON.stringify(faturamentos));
-    localStorage.setItem('th_ab',   JSON.stringify(abastecimentos));
-    localStorage.setItem('th_hist', JSON.stringify(historico));
-    localStorage.setItem('th_desp', JSON.stringify(despesas));
+    localStorage.setItem('th_fat', JSON.stringify(faturamentos));
+    localStorage.setItem('th_ab',  JSON.stringify(abastecimentos));
+    localStorage.setItem('th_hist',JSON.stringify(historico));
+    localStorage.setItem('th_desp',JSON.stringify(despesas));
+    localStorage.setItem('th_meta',String(META));
   }catch(e){}
 }
 function carregar(){
   try{
-    var kf=['th_faturamentos','th_fat','thiago_fat','thiago_dias','ThiagoMotorista_dias'];
-    // th_dias é formato antigo (tem comb embutido) — lê separado para extrair abastecimentos
-    var kfDias=['th_dias'];
-    var kh=['th_historico','th_hist','thiago_historico','ThiagoMotorista_historico'];
-    var kd=['th_despesas','th_desp','th_despesa','thiago_despesas'];
+    var kf=['th_fat','th_faturamentos','th_dias','thiago_fat','thiago_dias','ThiagoMotorista_dias'];
+    var kh=['th_hist','th_historico','thiago_hist','thiago_historico','ThiagoMotorista_historico'];
+    var kd=['th_desp','th_despesas','th_despesa','thiago_despesas'];
     var km=['th_meta','thiago_meta','ThiagoMotorista_meta'];
     function tryGet(keys,def){
       for(var i=0;i<keys.length;i++){var v=localStorage.getItem(keys[i]);if(v)return JSON.parse(v);}
@@ -491,8 +451,7 @@ function carregar(){
     for(var ki=0;ki<localStorage.length;ki++) allKeys.push(localStorage.key(ki));
     console.log('[Controle] chaves localStorage:', allKeys.join(', '));
 
-    // Normaliza faturamentos — se vazio tenta th_dias
-    if(!rawFat.length){ rawFat=tryGet(kfDias,[]); }
+    // Normaliza faturamentos
     faturamentos = rawFat.map(function(d){ return {data:d.data||'', bruto:d.bruto||0}; });
 
     // Normaliza abastecimentos — garante campo datas[] e todos os campos numéricos
@@ -505,8 +464,7 @@ function carregar(){
       var lit   = ab.litros|| ab.litrosReais || (preco>0&&comb>0?comb/preco:0);
       var med   = ab.media || ab.medConsumo  || (lit>0&&km>0?km/lit:0);
       var fuel  = ab.fuel  || ab.combustivel || 'etanol';
-      var veic2 = ab.veiculo || 'Voyage 1.0';
-      return {id:ab.id||Date.now(),datas:dts,comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuel,veiculo:veic2};
+      return {id:ab.id||Date.now(),datas:dts,comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuel};
     });
 
     // Se não tinha abastecimentos separados mas faturamentos antigos tinham comb embutido
@@ -533,7 +491,7 @@ function carregar(){
           var km=ab.km||ab.kmLiq||0;
           var lit=ab.litros||ab.litrosReais||(preco>0&&comb>0?comb/preco:0);
           var med=ab.media||ab.medConsumo||(lit>0&&km>0?km/lit:0);
-          return {id:ab.id||Date.now(),datas:dts,comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:ab.fuel||ab.combustivel||'etanol',veiculo:ab.veiculo||'Voyage 1.0'};
+          return {id:ab.id||Date.now(),datas:dts,comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:ab.fuel||ab.combustivel||'etanol'};
         }),
         despesas:s.despesas||[]
       };
@@ -582,15 +540,10 @@ function mediaFuel(abArr,tipo){
 function init(){
   carregar();
 
-
   document.getElementById('fData').value=hoje();
   setFuelAb('etanol');
   var up=localStorage.getItem('th_ultimo_preco');
   if(up) document.getElementById('abPreco').value=up;
-  // Carrega último veículo
-  var uv=localStorage.getItem('th_ultimo_veiculo')||'Voyage 1.0';
-  var selV=document.getElementById('abVeiculo');
-  if(selV){ for(var oi=0;oi<selV.options.length;oi++){if(selV.options[oi].value===uv){selV.selectedIndex=oi;break;}} }
   atualizaMeta(); renderDespesas(); renderAbDateChips(); renderSemana();
 }
 
@@ -620,15 +573,6 @@ function saveMeta(){
 }
 
 // ===== FUEL AB =====
-function salvarVeiculo(){
-  var v=document.getElementById('abVeiculo').value;
-  localStorage.setItem('th_ultimo_veiculo',v);
-}
-
-function veiculoAtual(){
-  return localStorage.getItem('th_ultimo_veiculo')||'Voyage 1.0';
-}
-
 function setFuelAb(t){
   fuelAb=t;
   document.getElementById('abEtBtn').classList.toggle('on',t==='etanol');
@@ -747,13 +691,12 @@ function registrarAbastecimento(){
   if(preco>0) localStorage.setItem('th_ultimo_preco',String(preco));
   var totalDias=abDatasSelecionadas.length;
   var lit=(preco>0&&comb>0)?comb/preco:0;
-  var veic=document.getElementById('abVeiculo')?document.getElementById('abVeiculo').value:veiculoAtual();
 
   if(editAbIdx===-2){
     var semIdx=-1; for(var i=0;i<historico.length;i++){if(historico[i].id===editAbHistSemId){semIdx=i;break;}}
     if(semIdx>=0){
       var medEd=(lit>0&&km>0)?km/lit:0;
-      historico[semIdx].abastecimentos[editAbHistIdx]={id:historico[semIdx].abastecimentos[editAbHistIdx].id,datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:medEd,fuel:fuelAb,veiculo:veic};
+      historico[semIdx].abastecimentos[editAbHistIdx]={id:historico[semIdx].abastecimentos[editAbHistIdx].id,datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:medEd,fuel:fuelAb};
       recalcularSemanaHistorico(historico[semIdx]);
     }
     editAbIdx=-1;editAbHistSemId=-1;editAbHistIdx=-1;
@@ -762,7 +705,7 @@ function registrarAbastecimento(){
     document.getElementById('btnAb').classList.remove('edit');
   } else if(editAbIdx>=0){
     var medEd=(lit>0&&km>0)?km/lit:0;
-    abastecimentos[editAbIdx]={id:abastecimentos[editAbIdx].id,datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:medEd,fuel:fuelAb,veiculo:veic};
+    abastecimentos[editAbIdx]={id:abastecimentos[editAbIdx].id,datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:medEd,fuel:fuelAb};
     editAbIdx=-1;
     document.getElementById('formTitAb').textContent='⛽ Lançar Combustível';
     document.getElementById('btnAb').textContent='Registrar Combustível';
@@ -771,7 +714,7 @@ function registrarAbastecimento(){
     var grupos=distribuirDatasPorSemana(abDatasSelecionadas.slice());
     if(grupos.length===1){
       var med=(lit>0&&km>0)?km/lit:0;
-      var ent={id:Date.now(),datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuelAb,veiculo:veic};
+      var ent={id:Date.now(),datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuelAb};
       if(grupos[0].tipo==='historico'){
         var sem=historico[grupos[0].idx]; if(!sem.abastecimentos)sem.abastecimentos=[];
         sem.abastecimentos.push(ent); recalcularSemanaHistorico(sem);
@@ -783,7 +726,7 @@ function registrarAbastecimento(){
         var grp=grupos[g], frac=grp.datas.length/totalDias;
         var combG=Math.round(comb*frac*100)/100, kmG=Math.round(km*frac*100)/100;
         var litG=(preco>0&&combG>0)?combG/preco:0, medG=(litG>0&&kmG>0)?kmG/litG:0;
-        var entG={id:Date.now()+g,datas:grp.datas.slice(),comb:combG,preco:preco,km:kmG,litros:litG,media:medG,fuel:fuelAb,veiculo:veic};
+        var entG={id:Date.now()+g,datas:grp.datas.slice(),comb:combG,preco:preco,km:kmG,litros:litG,media:medG,fuel:fuelAb};
         if(grp.tipo==='historico'){
           var sem=historico[grp.idx]; if(!sem.abastecimentos)sem.abastecimentos=[];
           sem.abastecimentos.push(entG); recalcularSemanaHistorico(sem);
@@ -985,30 +928,15 @@ function renderSemana(){
   // Média km/L com comparação histórica
   var histMedArr=[];
   for(var hi=0;hi<historico.length;hi++){if(historico[hi].mc>0)histMedArr.push(historico[hi].mc);}
-  var histMedGeral=histMedArrV.length?histMedArrV.reduce(function(s,v){return s+v;},0)/histMedArrV.length:(histMedArr.length?histMedArr.reduce(function(s,v){return s+v;},0)/histMedArr.length:0);
-  // Médias por veículo
-  var veicAtual=veiculoAtual();
-  var veicAbArr=abastecimentos.filter(function(a){return (a.veiculo||'Voyage 1.0')===veicAtual;});
-  var tVeic=totalsDe([],veicAbArr,[]);
-  var veicMed=veicAbArr.filter(function(a){return a.media>0;});
-  var veicMedVal=veicMed.length?veicMed.reduce(function(s,a){return s+a.media;},0)/veicMed.length:0;
-
-  // Média histórica só deste veículo
-  var histMedArrV=[];
-  for(var hi=0;hi<historico.length;hi++){
-    var habs=(historico[hi].abastecimentos||[]).filter(function(a){return (a.veiculo||'Voyage 1.0')===veicAtual;});
-    var hm=habs.filter(function(a){return a.media>0;});
-    if(hm.length) histMedArrV.push(hm.reduce(function(s,a){return s+a.media;},0)/hm.length);
-  }
-
+  var histMedGeral=histMedArr.length?histMedArr.reduce(function(s,v){return s+v;},0)/histMedArr.length:0;
   var sMedEl=document.getElementById('sMed'), badge=document.getElementById('sMedBadge');
   sMedEl.textContent=t.mc>0?fmt(t.mc)+' km/L':'—';
   if(t.mc>0&&histMedGeral>0){
     sMedEl.style.color=t.mc>=histMedGeral?'var(--green)':'var(--red)';
     badge.style.display='inline'; badge.className='badge '+(t.mc>=histMedGeral?'up':'dn');
     badge.textContent=t.mc>=histMedGeral?'▲ ACIMA':'▼ ABAIXO';
-    document.getElementById('sMedSub').textContent=veicAtual+': '+fmt(histMedGeral)+' km/L';
-  } else { sMedEl.style.color=''; badge.style.display='none'; document.getElementById('sMedSub').textContent=histMedGeral>0?veicAtual+': '+fmt(histMedGeral)+' km/L':''; }
+    document.getElementById('sMedSub').textContent='Média geral: '+fmt(histMedGeral)+' km/L';
+  } else { sMedEl.style.color=''; badge.style.display='none'; document.getElementById('sMedSub').textContent=histMedGeral>0?'Média geral: '+fmt(histMedGeral)+' km/L':''; }
   document.getElementById('sLit').textContent=t.tLit>0?fmt(t.tLit)+' L':'—';
   var mBkm=t.tK>0?t.tB/t.tK:0;
   document.getElementById('sBkm').textContent=mBkm>0?'R$ '+fmt(mBkm)+'/km':'—';
@@ -1084,9 +1012,8 @@ function renderSemana(){
       var dOrd=ab.datas.slice().sort();
       var pTxt=dOrd.length>1?fmtD(dOrd[0])+'–'+fmtD(dOrd[dOrd.length-1]):fmtD(dOrd[0]);
       var tg=ab.fuel==='etanol'?'<span class="tag-et">🌿</span>':'<span class="tag-gas">🔶</span>';
-      var veicTag=ab.veiculo?'<br><span style="font-size:0.62rem;color:var(--blue)">'+ab.veiculo+'</span>':'';
       hA+='<div class="tbl2-row">';
-      hA+='<span class="td">'+pTxt+veicTag+'<br>'+tg+'</span>';
+      hA+='<span class="td">'+pTxt+'<br>'+tg+'</span>';
       hA+='<span class="tc">R$ '+fmt(ab.comb)+'</span>';
       hA+='<span class="tk">'+(ab.km>0?fmt(ab.km)+' km':'—')+'</span>';
       hA+='<span class="td">'+(ab.media>0?fmt(ab.media)+' km/L':'—')+'</span>';
@@ -1177,12 +1104,7 @@ function consultarPeriodo(){
   var visto={};
   var filtFat=todosFat.filter(function(f){if(f.data>=de&&f.data<=ate&&!visto[f.data]){visto[f.data]=true;return true;}return false;});
   filtFat.sort(function(a,b){return a.data.localeCompare(b.data);});
-  var filtVeic=document.getElementById('cVeiculo')?document.getElementById('cVeiculo').value:'';
-  var filtAb=todosAb.filter(function(ab){
-    var noperiodo=ab.datas.some(function(d){return d>=de&&d<=ate;});
-    var vok=!filtVeic||(ab.veiculo||'Voyage 1.0')===filtVeic;
-    return noperiodo&&vok;
-  });
+  var filtAb=todosAb.filter(function(ab){return ab.datas.some(function(d){return d>=de&&d<=ate;});});
   ultimaConsulta={de:de,ate:ate,filtFat:filtFat,filtAb:filtAb};
   var res=document.getElementById('cResultado');
   if(!filtFat.length&&!filtAb.length){
