@@ -537,6 +537,16 @@ function mediaFuel(abArr,tipo){
 // ===== INIT =====
 function init(){
   carregar();
+  // DIAGNÓSTICO TEMPORÁRIO — remover depois
+  try {
+    var diagAb = JSON.parse(localStorage.getItem('th_ab') || localStorage.getItem('thiago_abastecimentos') || '[]');
+    if(diagAb.length) {
+      var ab0 = diagAb[0];
+      alert('AB[0] keys: ' + Object.keys(ab0).join(', ') + '\ndatas: ' + JSON.stringify(ab0.datas) + '\ndata: ' + ab0.data + '\ncomb: ' + ab0.comb + '\nfuel: ' + ab0.fuel);
+    } else {
+      alert('Nenhum abastecimento encontrado. Keys: ' + Object.keys(localStorage).join(', '));
+    }
+  } catch(e) { alert('Erro diagnóstico: ' + e.message); }
   document.getElementById('fData').value=hoje();
   setFuelAb('etanol');
   var up=localStorage.getItem('th_ultimo_preco');
