@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Controle Thiago">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- v2.7 -->
 <title>Controle do Thiago</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&family=DM+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -424,10 +428,10 @@ function salvar(){
 }
 function carregar(){
   try{
-    var kf=['th_fat','thiago_dias','ThiagoMotorista_dias'];
-    var kh=['th_hist','thiago_historico','ThiagoMotorista_historico'];
-    var kd=['th_desp','thiago_despesas'];
-    var km=['th_meta','thiago_meta'];
+    var kf=['th_fat','th_dias','thiago_fat','thiago_dias','ThiagoMotorista_fat','ThiagoMotorista_dias'];
+    var kh=['th_hist','th_historico','thiago_hist','thiago_historico','ThiagoMotorista_hist','ThiagoMotorista_historico'];
+    var kd=['th_desp','th_despesas','thiago_desp','thiago_despesas'];
+    var km=['th_meta','thiago_meta','ThiagoMotorista_meta'];
     function tryGet(keys,def){
       for(var i=0;i<keys.length;i++){var v=localStorage.getItem(keys[i]);if(v)return JSON.parse(v);}
       return def;
@@ -438,6 +442,12 @@ function carregar(){
     despesas   = tryGet(kd,[]);
     var m      = tryGet(km,null);
     META       = m?parseFloat(m):1200;
+    // Log para debug
+    console.log('[Controle] fat:'+rawFat.length+' ab:'+rawAb.length+' hist:'+rawHist.length+' desp:'+despesas.length+' meta:'+META);
+    // Lista todas as chaves disponíveis no localStorage
+    var allKeys=[];
+    for(var ki=0;ki<localStorage.length;ki++) allKeys.push(localStorage.key(ki));
+    console.log('[Controle] chaves localStorage:', allKeys.join(', '));
 
     // Normaliza faturamentos (compatibilidade com formato antigo que tinha tudo junto)
     if(rawFat.length && rawFat[0].comb !== undefined){
