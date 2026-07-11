@@ -449,22 +449,29 @@ function carregar(){
     for(var ki=0;ki<localStorage.length;ki++) allKeys.push(localStorage.key(ki));
     console.log('[Controle] chaves localStorage:', allKeys.join(', '));
 
-    // Normaliza faturamentos (compatibilidade com formato antigo que tinha tudo junto)
-    if(rawFat.length && rawFat[0].comb !== undefined){
-      // Formato antigo: cada entrada tinha bruto+comb — separar
-      faturamentos = rawFat.map(function(d){
-        return {data:d.data, bruto:d.bruto||0};
+    // Normaliza faturamentos
+    faturamentos = rawFat.map(function(d){ return {data:d.data||'', bruto:d.bruto||0}; });
+
+    // Normaliza abastecimentos — garante campo datas[] e todos os campos numéricos
+    abastecimentos = rawAb.map(function(ab){
+      // Formato antigo: datas era um array de strings, ou era só uma data
+      var dts = ab.datas || (ab.data ? [ab.data] : []);
+      var comb  = ab.comb  || ab.custReal || ab.valorComb || 0;
+      var preco = ab.preco || ab.precoL   || 0;
+      var km    = ab.km    || ab.kmLiq    || ab.kmRodado  || 0;
+      var lit   = ab.litros|| ab.litrosReais || (preco>0&&comb>0?comb/preco:0);
+      var med   = ab.media || ab.medConsumo  || (lit>0&&km>0?km/lit:0);
+      var fuel  = ab.fuel  || ab.combustivel || 'etanol';
+      return {id:ab.id||Date.now(),datas:dts,comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuel};
+    });
+
+    // Se não tinha abastecimentos separados mas faturamentos antigos tinham comb embutido
+    if(!abastecimentos.length && rawFat.length && rawFat[0].comb !== undefined){
+      abastecimentos = rawFat.filter(function(d){return (d.comb||0)>0;}).map(function(d){
+        var lit=(d.precoL>0&&d.comb>0)?d.comb/d.precoL:0;
+        var med=(lit>0&&(d.km||0)>0)?(d.km||0)/lit:0;
+        return {id:Date.now()+Math.random(),datas:[d.data],comb:d.comb||0,preco:d.precoL||0,km:d.km||0,litros:lit,media:med,fuel:d.fuel||d.combustivel||'etanol'};
       });
-      if(!rawAb.length){
-        abastecimentos = rawFat.filter(function(d){return d.comb>0;}).map(function(d){
-          var lit=(d.precoL>0&&d.comb>0)?d.comb/d.precoL:0;
-          var med=(lit>0&&(d.km||0)>0)?(d.km||0)/lit:0;
-          return {id:Date.now()+Math.random(),datas:[d.data],comb:d.comb||0,preco:d.precoL||0,km:d.km||0,litros:lit,media:med,fuel:d.fuel||d.combustivel||'etanol'};
-        });
-      } else { abastecimentos=rawAb; }
-    } else {
-      faturamentos = rawFat;
-      abastecimentos = rawAb;
     }
 
     historico = rawHist.map(function(s){
@@ -476,7 +483,14 @@ function carregar(){
         mc:s.mc||s.medConsumo||0, ok:s.ok||s.metaAtingida||false,
         mEt:s.mEt||s.medEtanol||null, mGas:s.mGas||s.medGasolina||null,
         faturamentos:s.faturamentos||(s.dias||[]).map(function(d){return{data:d.data,bruto:d.bruto||0};}),
-        abastecimentos:s.abastecimentos||[],
+        abastecimentos:(s.abastecimentos||[]).map(function(ab){
+          var dts=ab.datas||(ab.data?[ab.data]:[]);
+          var comb=ab.comb||ab.custReal||0, preco=ab.preco||ab.precoL||0;
+          var km=ab.km||ab.kmLiq||0;
+          var lit=ab.litros||ab.litrosReais||(preco>0&&comb>0?comb/preco:0);
+          var med=ab.media||ab.medConsumo||(lit>0&&km>0?km/lit:0);
+          return {id:ab.id||Date.now(),datas:dts,comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:ab.fuel||ab.combustivel||'etanol'};
+        }),
         despesas:s.despesas||[]
       };
     });
