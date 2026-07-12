@@ -451,11 +451,17 @@ var WEEKDAYS=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 // ===== STORAGE =====
 function salvar(){
   try{
-    localStorage.setItem('th_fat', JSON.stringify(faturamentos));
-    localStorage.setItem('th_ab',  JSON.stringify(abastecimentos));
-    localStorage.setItem('th_hist',JSON.stringify(historico));
-    localStorage.setItem('th_desp',JSON.stringify(despesas));
-    localStorage.setItem('th_meta',String(META));
+    // Salva nas chaves que o dispositivo já reconhece
+    localStorage.setItem('th_faturamentos',  JSON.stringify(faturamentos));
+    localStorage.setItem('th_abastecimentos',JSON.stringify(abastecimentos));
+    localStorage.setItem('th_historico',     JSON.stringify(historico));
+    localStorage.setItem('th_despesas',      JSON.stringify(despesas));
+    localStorage.setItem('th_meta',          String(META));
+    // Mantém chaves antigas sincronizadas também
+    localStorage.setItem('th_fat',  JSON.stringify(faturamentos));
+    localStorage.setItem('th_ab',   JSON.stringify(abastecimentos));
+    localStorage.setItem('th_hist', JSON.stringify(historico));
+    localStorage.setItem('th_desp', JSON.stringify(despesas));
   }catch(e){}
 }
 function carregar(){
