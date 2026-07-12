@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="color-scheme" content="dark">
 <meta name="apple-mobile-web-app-title" content="Controle Thiago">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -22,7 +23,8 @@
   --etanol:#40e0a0;--gasolina:#ff9f43;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding:16px 14px 60px;}
+html{background:#080b12 !important;color-scheme:dark;}
+body{background:#080b12 !important;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;padding:16px 14px 60px;}
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 80% 10%,rgba(0,245,176,0.10) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 10% 80%,rgba(180,120,255,0.08) 0%,transparent 55%);}
 body>*{position:relative;z-index:1;}
 
@@ -217,6 +219,10 @@ body>*{position:relative;z-index:1;}
 .empty-hist{text-align:center;padding:48px 20px;color:var(--sub);font-size:0.85rem;line-height:1.8;}
 
 .veiculo-sel{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(116,192,252,0.3);border-radius:12px;color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;padding:11px 14px;outline:none;-webkit-appearance:none;appearance:none;font-weight:600;margin-bottom:10px;}
+
+/* Força tema escuro em todos os elementos */
+*{color-scheme:dark;}
+input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:#f0f4ff;}
 </style>
 </head>
 <body>
@@ -340,7 +346,7 @@ body>*{position:relative;z-index:1;}
 
     <div class="f-block" style="margin-bottom:2px">
       <label class="f-label">🚗 Veículo</label>
-      <select class="veiculo-sel" id="abVeiculo" onchange="localStorage.setItem('th_ultimo_veiculo',this.value)">
+      <select class="veiculo-sel" id="abVeiculo" onchange="localStorage.setItem('th_ultimo_veiculo',this.value);console.log('Veiculo selecionado:',this.value)">
         <option value="Voyage 1.0">Voyage 1.0</option>
         <option value="Polo 1.0">Polo 1.0</option>
         <option value="Argo 1.0">Argo 1.0</option>
@@ -500,7 +506,8 @@ function carregar(){
       var lit   = ab.litros|| ab.litrosReais || (preco>0&&comb>0?comb/preco:0);
       var med   = ab.media || ab.medConsumo  || (lit>0&&km>0?km/lit:0);
       var fuel  = ab.fuel  || ab.combustivel || 'etanol';
-      return {id:ab.id||Date.now(),datas:dts,comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuel};
+      var veic=ab.veiculo||'Voyage 1.0';
+      return {id:ab.id||Date.now(),datas:dts,comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuel,veiculo:veic};
     });
 
     // Se não tinha abastecimentos separados mas faturamentos antigos tinham comb embutido
@@ -508,7 +515,7 @@ function carregar(){
       abastecimentos = rawFat.filter(function(d){return (d.comb||0)>0;}).map(function(d){
         var lit=(d.precoL>0&&d.comb>0)?d.comb/d.precoL:0;
         var med=(lit>0&&(d.km||0)>0)?(d.km||0)/lit:0;
-        return {id:Date.now()+Math.random(),datas:[d.data],comb:d.comb||0,preco:d.precoL||0,km:d.km||0,litros:lit,media:med,fuel:d.fuel||d.combustivel||'etanol'};
+        return {id:Date.now()+Math.random(),datas:[d.data],comb:d.comb||0,preco:d.precoL||0,km:d.km||0,litros:lit,media:med,fuel:d.fuel||d.combustivel||'etanol',veiculo:'Voyage 1.0'};
       });
     }
 
@@ -730,7 +737,9 @@ function registrarAbastecimento(){
   if(preco>0) localStorage.setItem('th_ultimo_preco',String(preco));
   var totalDias=abDatasSelecionadas.length;
   var lit=(preco>0&&comb>0)?comb/preco:0;
-  var veicAtual=document.getElementById('abVeiculo')?document.getElementById('abVeiculo').value:(localStorage.getItem('th_ultimo_veiculo')||'Voyage 1.0');
+  var selAbV=document.getElementById('abVeiculo');
+  var veicAtual=selAbV&&selAbV.value?selAbV.value:(localStorage.getItem('th_ultimo_veiculo')||'Voyage 1.0');
+  localStorage.setItem('th_ultimo_veiculo',veicAtual);
 
   if(editAbIdx===-2){
     var semIdx=-1; for(var i=0;i<historico.length;i++){if(historico[i].id===editAbHistSemId){semIdx=i;break;}}
