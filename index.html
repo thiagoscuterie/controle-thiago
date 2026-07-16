@@ -974,9 +974,23 @@ function renderSemana(){
   document.getElementById('fGas').textContent=mGas?fmt(mGas.media)+' km/L':'—';
   document.getElementById('fGasSub').textContent=mGas?mGas.n+' abastecimento'+(mGas.n>1?'s':''):'sem registros';
 
-  // Média km/L com comparação histórica
+  // Média km/L — últimos 30 dias
+  var hoje30=new Date(); hoje30.setDate(hoje30.getDate()-30);
+  var corte30=hoje30.getFullYear()+'-'+String(hoje30.getMonth()+1).padStart(2,'0')+'-'+String(hoje30.getDate()).padStart(2,'0');
   var histMedArr=[];
-  for(var hi=0;hi<historico.length;hi++){if(historico[hi].mc>0)histMedArr.push(historico[hi].mc);}
+  // Abastecimentos da semana atual nos últimos 30 dias
+  for(var ai=0;ai<abastecimentos.length;ai++){
+    var ab30=abastecimentos[ai];
+    if(ab30.media>0 && ab30.datas.some(function(d){return d>=corte30;})) histMedArr.push(ab30.media);
+  }
+  // Abastecimentos do histórico fechado nos últimos 30 dias
+  for(var hi=0;hi<historico.length;hi++){
+    var habs30=historico[hi].abastecimentos||[];
+    for(var ai2=0;ai2<habs30.length;ai2++){
+      var hab=habs30[ai2];
+      if(hab.media>0 && hab.datas.some(function(d){return d>=corte30;})) histMedArr.push(hab.media);
+    }
+  }
   var histMedGeral=histMedArr.length?histMedArr.reduce(function(s,v){return s+v;},0)/histMedArr.length:0;
   var sMedEl=document.getElementById('sMed'), badge=document.getElementById('sMedBadge');
   sMedEl.textContent=t.mc>0?fmt(t.mc)+' km/L':'—';
