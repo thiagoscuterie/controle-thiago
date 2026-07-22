@@ -296,6 +296,15 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
     <div class="trio-item"><div class="trio-label">📍 Km Rodado</div><div class="trio-val" id="kKm" style="color:var(--warn)">0 km</div></div>
   </div>
   <span id="kDesp" style="display:none">0</span>
+  <div id="kmLimiteBar" style="display:none;margin-bottom:12px">
+    <div class="trio-bar">
+      <div class="trio-item"><div class="trio-label">📋 KM disponível</div><div class="trio-val" id="kmDisp" style="color:var(--blue)">—</div></div>
+      <div class="trio-sep"></div>
+      <div class="trio-item"><div class="trio-label">🚗 KM rodado</div><div class="trio-val" id="kmRodSem" style="color:var(--warn)">—</div></div>
+      <div class="trio-sep"></div>
+      <div class="trio-item"><div class="trio-label">✅ KM restante</div><div class="trio-val" id="kmRest" style="color:var(--green)">—</div></div>
+    </div>
+  </div>
 
   <!-- DUO BAR -->
   <div class="duo-bar">
@@ -320,6 +329,10 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
         <div class="f-block"><label class="f-label">Nome</label><input class="inp" type="text" id="dNome" placeholder="ex: Aluguel do carro"></div>
         <div class="f-block"><label class="f-label">Valor (R$)</label><input class="inp" type="number" id="dValor" placeholder="0,00" step="0.01" min="0"></div>
         <button style="background:var(--purple);color:#fff;border:none;border-radius:10px;padding:12px 10px;font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;align-self:end" onclick="addDesp()">OK</button>
+      </div>
+      <div class="f-block" style="margin-top:8px" id="dKmWrap">
+        <label class="f-label">📍 Limite de KM semanal (opcional)</label>
+        <input class="inp" type="number" id="dKmLimite" placeholder="ex: 1500" step="1" min="0">
       </div>
     </div>
     <button class="btn-add-desp" onclick="toggleDespForm()">+ Adicionar despesa</button>
@@ -840,8 +853,11 @@ function addDesp(){
   var nome=document.getElementById('dNome').value.trim();
   var valor=parseFloat(document.getElementById('dValor').value);
   if(!nome||isNaN(valor)||valor<=0){alert('Preencha nome e valor!');return;}
-  despesas.push({id:Date.now(),nome:nome,valor:valor});
-  document.getElementById('dNome').value=''; document.getElementById('dValor').value='';
+  var kmLim=parseFloat(document.getElementById('dKmLimite').value)||0;
+  despesas.push({id:Date.now(),nome:nome,valor:valor,kmLimite:kmLim});
+  document.getElementById('dNome').value='';
+  document.getElementById('dValor').value='';
+  document.getElementById('dKmLimite').value='';
   document.getElementById('despForm').style.display='none';
   salvar(); renderDespesas(); renderSemana();
 }
@@ -871,6 +887,14 @@ function fecharSemana(){
     abastecimentos:abastecimentos.slice(),
     despesas:despesas.slice()
   });
+  // Acumula saldo de KM
+  var kmLimSem=getKmLimite();
+  if(kmLimSem>0){
+    var saldoAnt=getSaldoKm();
+    var disponivel=kmLimSem+saldoAnt;
+    var novoSaldo=disponivel-t.tK; // positivo=sobrou, negativo=estourou
+    setSaldoKm(novoSaldo);
+  }
   faturamentos=[]; abastecimentos=[];
   salvar(); renderSemana();
   alert('✅ Semana fechada!\nPeríodo: '+per+'\nLíquido: R$ '+fmt(t.tL));
@@ -955,6 +979,35 @@ function whatsapp(){
 }
 
 // ===== RENDER SEMANA =====
+// ===== KM LIMITE =====
+function getKmLimite(){
+  // Pega o maior limite de KM entre as despesas (pode ter só uma com limite)
+  var lim=0;
+  for(var i=0;i<despesas.length;i++){ if((despesas[i].kmLimite||0)>lim) lim=despesas[i].kmLimite; }
+  return lim;
+}
+function getSaldoKm(){
+  return parseFloat(localStorage.getItem('th_saldo_km')||'0');
+}
+function setSaldoKm(v){
+  localStorage.setItem('th_saldo_km',String(Math.round(v*100)/100));
+}
+
+function renderKmLimite(kmRodado){
+  var lim=getKmLimite();
+  var bar=document.getElementById('kmLimiteBar');
+  if(!lim){ bar.style.display='none'; return; }
+  bar.style.display='block';
+  var saldo=getSaldoKm();
+  var disponivel=lim+saldo; // limite semanal + saldo acumulado
+  var restante=disponivel-kmRodado;
+  var restEl=document.getElementById('kmRest');
+  document.getElementById('kmDisp').textContent=fmt(disponivel)+' km';
+  document.getElementById('kmRodSem').textContent=fmt(kmRodado)+' km';
+  restEl.textContent=(restante>=0?'+':'')+fmt(restante)+' km';
+  restEl.style.color=restante>=0?'var(--green)':'var(--red)';
+}
+
 function renderSemana(){
   var t=totalsDe(faturamentos,abastecimentos,despesas);
   var lqR=t.tL-t.tD;
