@@ -496,7 +496,8 @@ function carregar(){
     var rawFat = tryGet(kf,[]);
     var rawAb  = tryGet(['th_abastecimentos','th_ab','thiago_abastecimentos','ThiagoMotorista_abastecimentos'],[]);
     var rawHist= tryGet(kh,[]);
-    despesas   = tryGet(kd,[]);
+    var rawDesp = tryGet(kd,[]);
+    despesas = rawDesp.map(function(d){ return {id:d.id||Date.now(),nome:d.nome||'',valor:d.valor||0,kmLimite:d.kmLimite||0}; });
     var m      = tryGet(km,null);
     META       = m?parseFloat(m):1200;
     // Log para debug
@@ -853,11 +854,12 @@ function addDesp(){
   var nome=document.getElementById('dNome').value.trim();
   var valor=parseFloat(document.getElementById('dValor').value);
   if(!nome||isNaN(valor)||valor<=0){alert('Preencha nome e valor!');return;}
-  var kmLim=parseFloat(document.getElementById('dKmLimite').value)||0;
+  var kmEl=document.getElementById('dKmLimite');
+  var kmLim=kmEl?parseFloat(kmEl.value)||0:0;
   despesas.push({id:Date.now(),nome:nome,valor:valor,kmLimite:kmLim});
   document.getElementById('dNome').value='';
   document.getElementById('dValor').value='';
-  document.getElementById('dKmLimite').value='';
+  if(kmEl) kmEl.value='';
   document.getElementById('despForm').style.display='none';
   salvar(); renderDespesas(); renderSemana();
 }
@@ -869,7 +871,8 @@ function renderDespesas(){
   var el=document.getElementById('despLista');
   if(!despesas.length){el.innerHTML='<p style="font-size:0.78rem;color:var(--sub);padding:4px 0">Nenhuma despesa cadastrada.</p>';return;}
   el.innerHTML=despesas.map(function(d){
-    return '<div class="desp-item"><div class="desp-dot"></div><span class="desp-nome">'+d.nome+'</span><span class="desp-valor">R$ '+fmt(d.valor)+'</span><button class="btn-dd" onclick="excluirDesp('+d.id+')">✕</button></div>';
+    var kmTag=d.kmLimite>0?'<span style="font-size:0.62rem;color:var(--blue);margin-left:6px">📍'+d.kmLimite+' km/sem</span>':'';
+    return '<div class="desp-item"><div class="desp-dot"></div><span class="desp-nome">'+d.nome+kmTag+'</span><span class="desp-valor">R$ '+fmt(d.valor)+'</span><button class="btn-dd" onclick="excluirDesp('+d.id+')">✕</button></div>';
   }).join('');
 }
 
