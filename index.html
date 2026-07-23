@@ -282,6 +282,20 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
     <div class="trio-item"><div class="trio-label">✅ Líq. Real</div><div class="trio-val g2" id="kReal">R$ 0,00</div></div>
   </div>
 
+
+
+  <!-- Linha 2: KM disponível | KM rodado | KM restante (sempre visível) -->
+  <div class="trio-bar" style="margin-bottom:12px">
+    <div class="trio-item"><div class="trio-label">📋 KM disponível</div><div class="trio-val" id="kmDisp" style="color:var(--blue)">—</div></div>
+    <div class="trio-sep"></div>
+    <div class="trio-item"><div class="trio-label">🚗 KM rodado</div><div class="trio-val" id="kmRodSem" style="color:var(--warn)">—</div></div>
+    <div class="trio-sep"></div>
+    <div class="trio-item"><div class="trio-label">✅ KM restante</div><div class="trio-val" id="kmRest" style="color:var(--green)">—</div></div>
+  </div>
+  <span id="kDesp" style="display:none">0</span>
+  <span id="kmLimiteBarRow"></span>
+
+  <!-- Linha 3: Bruto/km | Custo/km | Líquido/km -->
   <div class="trio-bar" style="margin-bottom:12px">
     <div class="trio-item"><div class="trio-label">🚗 Bruto/km</div><div class="trio-val wh" id="sBkm">—</div></div>
     <div class="trio-sep"></div>
@@ -290,28 +304,16 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
     <div class="trio-item"><div class="trio-label">💰 Líquido/km</div><div class="trio-val g" id="sLkm">—</div></div>
   </div>
 
+  <!-- Linha 4: Combustível | Média km/L | Total Litros -->
   <div class="trio-bar" style="margin-bottom:12px">
     <div class="trio-item"><div class="trio-label">⛽ Combustível</div><div class="trio-val" id="kComb" style="color:var(--red)">R$ 0,00</div></div>
     <div class="trio-sep"></div>
-    <div class="trio-item"><div class="trio-label">📍 Km Rodado</div><div class="trio-val" id="kKm" style="color:var(--warn)">0 km</div></div>
-  </div>
-  <span id="kDesp" style="display:none">0</span>
-  <div id="kmLimiteBar" style="display:none;margin-bottom:12px">
-    <div class="trio-bar">
-      <div class="trio-item"><div class="trio-label">📋 KM disponível</div><div class="trio-val" id="kmDisp" style="color:var(--blue)">—</div></div>
-      <div class="trio-sep"></div>
-      <div class="trio-item"><div class="trio-label">🚗 KM rodado</div><div class="trio-val" id="kmRodSem" style="color:var(--warn)">—</div></div>
-      <div class="trio-sep"></div>
-      <div class="trio-item"><div class="trio-label">✅ KM restante</div><div class="trio-val" id="kmRest" style="color:var(--green)">—</div></div>
-    </div>
-  </div>
-
-  <!-- DUO BAR -->
-  <div class="duo-bar">
     <div class="trio-item" id="sMedCard"><div class="trio-label">📊 Média km/L <span class="badge" id="sMedBadge" style="display:none"></span></div><div class="trio-val" id="sMed" style="color:var(--green)">—</div><div class="mini-sub" id="sMedSub"></div></div>
     <div class="trio-sep"></div>
     <div class="trio-item"><div class="trio-label">🔋 Total Litros</div><div class="trio-val" id="sLit" style="color:var(--purple)">—</div></div>
   </div>
+
+
 
 
 
@@ -998,9 +1000,16 @@ function setSaldoKm(v){
 
 function renderKmLimite(kmRodado){
   var lim=getKmLimite();
-  var bar=document.getElementById('kmLimiteBar');
-  if(!lim){ bar.style.display='none'; return; }
+  var bar=document.getElementById('kmLimiteBarRow');
+  // Sempre mostra a linha de KM
   bar.style.display='block';
+  if(!lim){
+    document.getElementById('kmDisp').textContent='—';
+    document.getElementById('kmRodSem').textContent=fmt(kmRodado)+' km';
+    document.getElementById('kmRest').textContent='—';
+    document.getElementById('kmRest').style.color='var(--sub)';
+    return;
+  }
   var saldo=getSaldoKm();
   var disponivel=lim+saldo; // limite semanal + saldo acumulado
   var restante=disponivel-kmRodado;
