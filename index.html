@@ -487,9 +487,9 @@ function salvar(){
 }
 function carregar(){
   try{
-    var kf=['th_fat','th_faturamentos','th_dias','thiago_fat','thiago_dias','ThiagoMotorista_dias'];
-    var kh=['th_hist','th_historico','thiago_hist','thiago_historico','ThiagoMotorista_historico'];
-    var kd=['th_desp','th_despesas','th_despesa','thiago_despesas'];
+    var kf=['th_faturamentos','th_fat','th_dias','thiago_fat','thiago_dias','ThiagoMotorista_dias'];
+    var kh=['th_historico','th_hist','thiago_historico','ThiagoMotorista_historico'];
+    var kd=['th_despesas','th_desp','th_despesa','thiago_despesas'];
     var km=['th_meta','thiago_meta','ThiagoMotorista_meta'];
     function tryGet(keys,def){
       for(var i=0;i<keys.length;i++){var v=localStorage.getItem(keys[i]);if(v)return JSON.parse(v);}
