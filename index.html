@@ -223,6 +223,8 @@ body>*{position:relative;z-index:1;}
 /* Força tema escuro em todos os elementos */
 *{color-scheme:dark;}
 input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:#f0f4ff;}
+
+.veiculo-sel{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(116,192,252,0.3);border-radius:12px;color:var(--blue);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;padding:11px 14px;outline:none;-webkit-appearance:none;appearance:none;font-weight:600;margin-bottom:10px;}
 </style>
 </head>
 <body>
@@ -290,19 +292,25 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
     <div class="trio-item"><div class="trio-label">💰 Líquido/km</div><div class="trio-val g" id="sLkm">—</div></div>
   </div>
 
+  <!-- Linha 2: KM disponível | KM rodado | KM restante -->
   <div class="trio-bar" style="margin-bottom:12px">
-    <div class="trio-item"><div class="trio-label">⛽ Combustível</div><div class="trio-val" id="kComb" style="color:var(--red)">R$ 0,00</div></div>
+    <div class="trio-item"><div class="trio-label">📋 KM disponível</div><div class="trio-val" id="kmDisp" style="color:var(--blue)">—</div></div>
     <div class="trio-sep"></div>
-    <div class="trio-item"><div class="trio-label">📍 Km Rodado</div><div class="trio-val" id="kKm" style="color:var(--warn)">0 km</div></div>
+    <div class="trio-item"><div class="trio-label">🚗 KM rodado</div><div class="trio-val" id="kmRodSem" style="color:var(--warn)">—</div></div>
+    <div class="trio-sep"></div>
+    <div class="trio-item"><div class="trio-label">✅ KM restante</div><div class="trio-val" id="kmRest" style="color:var(--green)">—</div></div>
   </div>
   <span id="kDesp" style="display:none">0</span>
 
-  <!-- DUO BAR -->
-  <div class="duo-bar">
+  <!-- Linha 4: Combustível | Média km/L | Total Litros -->
+  <div class="trio-bar" style="margin-bottom:12px">
+    <div class="trio-item"><div class="trio-label">⛽ Combustível</div><div class="trio-val" id="kComb" style="color:var(--red)">R$ 0,00</div></div>
+    <div class="trio-sep"></div>
     <div class="trio-item" id="sMedCard"><div class="trio-label">📊 Média km/L <span class="badge" id="sMedBadge" style="display:none"></span></div><div class="trio-val" id="sMed" style="color:var(--green)">—</div><div class="mini-sub" id="sMedSub"></div></div>
     <div class="trio-sep"></div>
     <div class="trio-item"><div class="trio-label">🔋 Total Litros</div><div class="trio-val" id="sLit" style="color:var(--purple)">—</div></div>
   </div>
+  <span id="kKm" style="display:none">0</span>
 
 
 
@@ -320,6 +328,10 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
         <div class="f-block"><label class="f-label">Nome</label><input class="inp" type="text" id="dNome" placeholder="ex: Aluguel do carro"></div>
         <div class="f-block"><label class="f-label">Valor (R$)</label><input class="inp" type="number" id="dValor" placeholder="0,00" step="0.01" min="0"></div>
         <button style="background:var(--purple);color:#fff;border:none;border-radius:10px;padding:12px 10px;font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;align-self:end" onclick="addDesp()">OK</button>
+      </div>
+      <div class="f-block" style="margin-top:8px">
+        <label class="f-label">📍 Limite de KM semanal (opcional)</label>
+        <input class="inp" type="number" id="dKmLimite" placeholder="ex: 1500" step="1" min="0">
       </div>
     </div>
     <button class="btn-add-desp" onclick="toggleDespForm()">+ Adicionar despesa</button>
@@ -347,6 +359,20 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
     <div class="f-block" style="margin-bottom:2px">
       <label class="f-label">🚗 Veículo</label>
       <select class="veiculo-sel" id="abVeiculo" onchange="localStorage.setItem('th_ultimo_veiculo',this.value);console.log('Veiculo selecionado:',this.value)">
+        <option value="Voyage 1.0">Voyage 1.0</option>
+        <option value="Polo 1.0">Polo 1.0</option>
+        <option value="Argo 1.0">Argo 1.0</option>
+        <option value="Onix 1.0">Onix 1.0</option>
+        <option value="HB20S 1.0">HB20S 1.0</option>
+        <option value="Cronos 1.0">Cronos 1.0</option>
+        <option value="Tera 1.0">Tera 1.0</option>
+        <option value="Pulse 1.3">Pulse 1.3</option>
+      </select>
+    </div>
+
+    <div class="f-block" style="margin-bottom:10px">
+      <label class="f-label">🚗 Veículo</label>
+      <select class="veiculo-sel" id="abVeiculo" onchange="localStorage.setItem('th_ultimo_veiculo',this.value)">
         <option value="Voyage 1.0">Voyage 1.0</option>
         <option value="Polo 1.0">Polo 1.0</option>
         <option value="Argo 1.0">Argo 1.0</option>
@@ -416,6 +442,20 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
     <div class="inp-grid">
       <div class="f-block"><label class="f-label">📅 Data inicial</label><input class="inp" type="date" id="cDe"></div>
       <div class="f-block"><label class="f-label">📅 Data final</label><input class="inp" type="date" id="cAte"></div>
+    </div>
+    <div class="f-block" style="margin-bottom:10px">
+      <label class="f-label">🚗 Filtrar por veículo (opcional)</label>
+      <select class="veiculo-sel" id="cVeiculo">
+        <option value="">Todos os veículos</option>
+        <option value="Voyage 1.0">Voyage 1.0</option>
+        <option value="Polo 1.0">Polo 1.0</option>
+        <option value="Argo 1.0">Argo 1.0</option>
+        <option value="Onix 1.0">Onix 1.0</option>
+        <option value="HB20S 1.0">HB20S 1.0</option>
+        <option value="Cronos 1.0">Cronos 1.0</option>
+        <option value="Tera 1.0">Tera 1.0</option>
+        <option value="Pulse 1.3">Pulse 1.3</option>
+      </select>
     </div>
     <div class="f-block" style="margin-bottom:10px">
       <label class="f-label">🚗 Filtrar por veículo (opcional)</label>
@@ -579,6 +619,29 @@ function mediaFuel(abArr,tipo){
   return{media:f.reduce(function(s,d){return s+d.media;},0)/f.length,n:f.length};
 }
 
+// ===== VEÍCULO =====
+function getVeiculoAtual(){
+  return localStorage.getItem('th_ultimo_veiculo')||'Voyage 1.0';
+}
+
+// ===== KM LIMITE =====
+function getKmLimite(){
+  var lim=0;
+  for(var i=0;i<despesas.length;i++){ if((despesas[i].kmLimite||0)>lim) lim=despesas[i].kmLimite||0; }
+  return lim;
+}
+function getSaldoKm(){ return parseFloat(localStorage.getItem('th_saldo_km')||'0'); }
+function setSaldoKm(v){ localStorage.setItem('th_saldo_km',String(Math.round(v*100)/100)); }
+function renderKmLimite(kmRodado){
+  var lim=getKmLimite(), saldo=getSaldoKm();
+  var disponivel=lim>0?lim+saldo:0, restante=lim>0?disponivel-kmRodado:0;
+  var restEl=document.getElementById('kmRest');
+  document.getElementById('kmDisp').textContent=lim>0?fmt(disponivel)+' km':'—';
+  document.getElementById('kmRodSem').textContent=kmRodado>0?fmt(kmRodado)+' km':'—';
+  if(lim>0){ restEl.textContent=(restante>=0?'+':'')+fmt(restante)+' km'; restEl.style.color=restante>=0?'var(--green)':'var(--red)'; }
+  else{ restEl.textContent='—'; restEl.style.color='var(--sub)'; }
+}
+
 // ===== INIT =====
 function init(){
   carregar();
@@ -650,6 +713,9 @@ function previewAb(){
   var preco=parseFloat(document.getElementById('abPreco').value)||0;
   var km=parseFloat(document.getElementById('abKm').value)||0;
   var lit=(preco>0&&comb>0)?comb/preco:0;
+  var selAbV=document.getElementById('abVeiculo');
+  var veicAtual=selAbV&&selAbV.value?selAbV.value:getVeiculoAtual();
+  localStorage.setItem('th_ultimo_veiculo',veicAtual);
   var med=(lit>0&&km>0)?km/lit:0;
   var ckm=(km>0&&comb>0)?comb/km:0;
   document.getElementById('abPLit').textContent=lit>0?fmt(lit)+' L':'—';
@@ -745,7 +811,7 @@ function registrarAbastecimento(){
     var semIdx=-1; for(var i=0;i<historico.length;i++){if(historico[i].id===editAbHistSemId){semIdx=i;break;}}
     if(semIdx>=0){
       var medEd=(lit>0&&km>0)?km/lit:0;
-      historico[semIdx].abastecimentos[editAbHistIdx]={id:historico[semIdx].abastecimentos[editAbHistIdx].id,datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:medEd,fuel:fuelAb,veiculo:veicAtual};
+      historico[semIdx].abastecimentos[editAbHistIdx]={id:historico[semIdx].abastecimentos[editAbHistIdx].id,datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:medEd,fuel:fuelAb,veiculo:veicAtual,veiculo:veicAtual};
       recalcularSemanaHistorico(historico[semIdx]);
     }
     editAbIdx=-1;editAbHistSemId=-1;editAbHistIdx=-1;
@@ -754,7 +820,7 @@ function registrarAbastecimento(){
     document.getElementById('btnAb').classList.remove('edit');
   } else if(editAbIdx>=0){
     var medEd=(lit>0&&km>0)?km/lit:0;
-    abastecimentos[editAbIdx]={id:abastecimentos[editAbIdx].id,datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:medEd,fuel:fuelAb,veiculo:veicAtual};
+    abastecimentos[editAbIdx]={id:abastecimentos[editAbIdx].id,datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:medEd,fuel:fuelAb,veiculo:veicAtual,veiculo:veicAtual};
     editAbIdx=-1;
     document.getElementById('formTitAb').textContent='⛽ Lançar Combustível';
     document.getElementById('btnAb').textContent='Registrar Combustível';
@@ -763,7 +829,7 @@ function registrarAbastecimento(){
     var grupos=distribuirDatasPorSemana(abDatasSelecionadas.slice());
     if(grupos.length===1){
       var med=(lit>0&&km>0)?km/lit:0;
-      var ent={id:Date.now(),datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuelAb,veiculo:veicAtual};
+      var ent={id:Date.now(),datas:abDatasSelecionadas.slice(),comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuelAb,veiculo:veicAtual,veiculo:veicAtual};
       if(grupos[0].tipo==='historico'){
         var sem=historico[grupos[0].idx]; if(!sem.abastecimentos)sem.abastecimentos=[];
         sem.abastecimentos.push(ent); recalcularSemanaHistorico(sem);
@@ -775,7 +841,7 @@ function registrarAbastecimento(){
         var grp=grupos[g], frac=grp.datas.length/totalDias;
         var combG=Math.round(comb*frac*100)/100, kmG=Math.round(km*frac*100)/100;
         var litG=(preco>0&&combG>0)?combG/preco:0, medG=(litG>0&&kmG>0)?kmG/litG:0;
-        var entG={id:Date.now()+g,datas:grp.datas.slice(),comb:combG,preco:preco,km:kmG,litros:litG,media:medG,fuel:fuelAb,veiculo:veicAtual};
+        var entG={id:Date.now()+g,datas:grp.datas.slice(),comb:combG,preco:preco,km:kmG,litros:litG,media:medG,fuel:fuelAb,veiculo:veicAtual,veiculo:veicAtual};
         if(grp.tipo==='historico'){
           var sem=historico[grp.idx]; if(!sem.abastecimentos)sem.abastecimentos=[];
           sem.abastecimentos.push(entG); recalcularSemanaHistorico(sem);
@@ -840,8 +906,11 @@ function addDesp(){
   var nome=document.getElementById('dNome').value.trim();
   var valor=parseFloat(document.getElementById('dValor').value);
   if(!nome||isNaN(valor)||valor<=0){alert('Preencha nome e valor!');return;}
-  despesas.push({id:Date.now(),nome:nome,valor:valor});
+  var kmEl=document.getElementById('dKmLimite');
+  var kmLim=kmEl?parseFloat(kmEl.value)||0:0;
+  despesas.push({id:Date.now(),nome:nome,valor:valor,kmLimite:kmLim});
   document.getElementById('dNome').value=''; document.getElementById('dValor').value='';
+  if(kmEl) kmEl.value='';
   document.getElementById('despForm').style.display='none';
   salvar(); renderDespesas(); renderSemana();
 }
@@ -853,7 +922,8 @@ function renderDespesas(){
   var el=document.getElementById('despLista');
   if(!despesas.length){el.innerHTML='<p style="font-size:0.78rem;color:var(--sub);padding:4px 0">Nenhuma despesa cadastrada.</p>';return;}
   el.innerHTML=despesas.map(function(d){
-    return '<div class="desp-item"><div class="desp-dot"></div><span class="desp-nome">'+d.nome+'</span><span class="desp-valor">R$ '+fmt(d.valor)+'</span><button class="btn-dd" onclick="excluirDesp('+d.id+')">✕</button></div>';
+    var kmTag=d.kmLimite>0?'<span style="font-size:0.62rem;color:var(--blue);margin-left:6px">📍'+d.kmLimite+' km/sem</span>':'';
+    return '<div class="desp-item"><div class="desp-dot"></div><span class="desp-nome">'+d.nome+kmTag+'</span><span class="desp-valor">R$ '+fmt(d.valor)+'</span><button class="btn-dd" onclick="excluirDesp('+d.id+')">✕</button></div>';
   }).join('');
 }
 
@@ -871,6 +941,13 @@ function fecharSemana(){
     abastecimentos:abastecimentos.slice(),
     despesas:despesas.slice()
   });
+  // Acumula saldo de KM
+  var kmLimFech=getKmLimite();
+  if(kmLimFech>0){
+    var saldoAnt=getSaldoKm();
+    var novoSaldo=(kmLimFech+saldoAnt)-t.tK;
+    setSaldoKm(novoSaldo);
+  }
   faturamentos=[]; abastecimentos=[];
   salvar(); renderSemana();
   alert('✅ Semana fechada!\nPeríodo: '+per+'\nLíquido: R$ '+fmt(t.tL));
@@ -965,6 +1042,7 @@ function renderSemana(){
   document.getElementById('kReal').textContent='R$ '+fmt(lqR);
   document.getElementById('kComb').textContent='R$ '+fmt(t.tC);
   document.getElementById('kKm').textContent=fmt(t.tK)+' km';
+  renderKmLimite(t.tK);
   document.getElementById('kDesp').textContent=t.tD;
 
   // Médias combustível
