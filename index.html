@@ -128,6 +128,7 @@ body>*{position:relative;z-index:1;}
 .desp-nome{flex:1;font-size:0.83rem;}
 .desp-valor{font-family:'DM Mono',monospace;font-size:0.95rem;font-weight:600;color:var(--purple);}
 .btn-dd{background:none;border:1px solid rgba(255,77,109,0.3);color:var(--red);cursor:pointer;font-size:0.7rem;padding:3px 6px;border-radius:6px;-webkit-appearance:none;}
+.btn-de{background:none;border:1px solid rgba(255,159,67,0.3);color:var(--orange);cursor:pointer;font-size:0.7rem;padding:3px 6px;border-radius:6px;-webkit-appearance:none;margin-right:4px;}
 .desp-form{margin-top:10px;display:none;}
 .desp-inputs{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end;}
 .btn-add-desp{background:transparent;border:1px dashed rgba(177,151,252,0.3);color:var(--purple);border-radius:10px;padding:9px;width:100%;font-size:0.78rem;cursor:pointer;margin-top:8px;font-weight:600;-webkit-appearance:none;}
@@ -922,6 +923,21 @@ function addDesp(){
   document.getElementById('despForm').style.display='none';
   salvar(); renderDespesas(); renderSemana();
 }
+function editarDesp(id){
+  var d=despesas.find(function(x){return x.id===id;});
+  if(!d) return;
+  // Preenche o form com os dados atuais
+  document.getElementById('dNome').value=d.nome;
+  document.getElementById('dValor').value=d.valor;
+  var kmEl=document.getElementById('dKmLimite');
+  if(kmEl) kmEl.value=d.kmLimite||'';
+  // Remove a despesa atual e abre o form para salvar como nova
+  despesas=despesas.filter(function(x){return x.id!==id;});
+  salvar(); renderDespesas();
+  // Abre o form
+  document.getElementById('despForm').style.display='block';
+  document.getElementById('dNome').focus();
+}
 function excluirDesp(id){
   despesas=despesas.filter(function(d){return d.id!==id;});
   salvar(); renderDespesas(); renderSemana();
@@ -931,7 +947,7 @@ function renderDespesas(){
   if(!despesas.length){el.innerHTML='<p style="font-size:0.78rem;color:var(--sub);padding:4px 0">Nenhuma despesa cadastrada.</p>';return;}
   el.innerHTML=despesas.map(function(d){
     var kmTag=d.kmLimite>0?'<span style="font-size:0.62rem;color:var(--blue);margin-left:6px">📍'+d.kmLimite+' km/sem</span>':'';
-    return '<div class="desp-item"><div class="desp-dot"></div><span class="desp-nome">'+d.nome+kmTag+'</span><span class="desp-valor">R$ '+fmt(d.valor)+'</span><button class="btn-dd" onclick="excluirDesp('+d.id+')">✕</button></div>';
+    return '<div class="desp-item"><div class="desp-dot"></div><span class="desp-nome">'+d.nome+kmTag+'</span><span class="desp-valor">R$ '+fmt(d.valor)+'</span><button class="btn-de" onclick="editarDesp('+d.id+')">✏️</button><button class="btn-dd" onclick="excluirDesp('+d.id+')">✕</button></div>';
   }).join('');
 }
 
