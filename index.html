@@ -318,7 +318,7 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
   <div class="trio-bar" style="margin-bottom:12px">
     <div class="trio-item" id="sMedCard"><div class="trio-label">📊 Média km/L <span class="badge" id="sMedBadge" style="display:none"></span></div><div class="trio-val" id="sMed" style="color:var(--green)">—</div><div class="mini-sub" id="sMedSub"></div></div>
     <div class="trio-sep"></div>
-    <div class="trio-item"><div class="trio-label">⛽ Combustível</div><div class="trio-val" id="kComb" style="color:var(--red)">—</div></div>
+    <div class="trio-item"><div class="trio-label">⛽ Combustível</div><div class="trio-val" id="kComb" style="color:var(--red)">—</div><div style="font-size:0.62rem;color:var(--sub);margin-top:3px;font-family:'DM Mono',monospace" id="kCombPct"></div></div>
     <div class="trio-sep"></div>
     <div class="trio-item"><div class="trio-label">🔋 Total Litros</div><div class="trio-val" id="sLit" style="color:var(--purple)">—</div></div>
   </div>
@@ -1074,6 +1074,9 @@ function renderSemana(){
   document.getElementById('kLiq').textContent='R$ '+fmt(t.tL);
   document.getElementById('kReal').textContent='R$ '+fmt(lqR);
   document.getElementById('kComb').textContent='R$ '+fmt(t.tC);
+  var pctComb=t.tB>0?Math.round((t.tC/t.tB)*100):0;
+  var pctEl=document.getElementById('kCombPct');
+  if(pctEl) pctEl.textContent=pctComb>0?pctComb+'% do bruto':'';
   document.getElementById('kKm').textContent=fmt(t.tK)+' km';
   renderKmLimite(t.tK);
   document.getElementById('kDesp').textContent=t.tD;
