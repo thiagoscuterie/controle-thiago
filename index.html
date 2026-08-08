@@ -64,7 +64,7 @@ body>*{position:relative;z-index:1;}
 /* TRIO BAR */
 .trio-bar{display:flex;align-items:stretch;background:var(--glass);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;position:relative;}
 .trio-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green2),var(--green),#80ffda);border-radius:99px;}
-.trio-item{flex:1;padding:12px 8px;text-align:center;}
+.trio-item{flex:1;padding:12px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;}
 .trio-sep{width:1px;background:var(--border);flex-shrink:0;margin:10px 0;}
 .trio-label{font-size:0.6rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:4px;}
 .trio-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;line-height:1.2;}
@@ -316,7 +316,7 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
 
   <!-- Linha 4: Média km/L | Combustível | Total Litros -->
   <div class="trio-bar" style="margin-bottom:12px">
-    <div class="trio-item" id="sMedCard"><div class="trio-label">📊 Média km/L <span class="badge" id="sMedBadge" style="display:none"></span></div><div class="trio-val" id="sMed" style="color:var(--green)">—</div><div class="mini-sub" id="sMedSub"></div></div>
+    <div class="trio-item" id="sMedCard"><div class="trio-label">📊 Média km/L</div><span class="badge" id="sMedBadge" style="display:none;margin-bottom:2px"></span><div class="trio-val" id="sMed" style="color:var(--green)">—</div><div class="mini-sub" id="sMedSub"></div></div>
     <div class="trio-sep"></div>
     <div class="trio-item"><div class="trio-label">⛽ Combustível</div><div class="trio-val" id="kComb" style="color:var(--red)">—</div><div style="font-size:0.82rem;font-weight:600;margin-top:4px;font-family:'DM Mono',monospace" id="kCombPct"></div></div>
     <div class="trio-sep"></div>
