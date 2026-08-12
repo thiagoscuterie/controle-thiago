@@ -1225,7 +1225,7 @@ function renderHistorico(){
       abH='<div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:6px;margin-top:8px">⛽ ABASTECIMENTOS</div>';
       abH+=(s.abastecimentos||[]).map(function(ab,ai){
         var dOrd=ab.datas.slice().sort();
-        var pTxt=dOrd.length>1?fmtD(dOrd[0])+'–'+fmtD(dOrd[dOrd.length-1]):fmtD(dOrd[0]);
+        var pTxt=dOrd.length>1?fmtD(dOrd[0])+'<br>'+fmtD(dOrd[dOrd.length-1]):fmtD(dOrd[0]);
         var tg=ab.fuel==='etanol'?'🌿':'🔶';
         var vn=ab.veiculo?'<span style="font-size:0.6rem;color:var(--blue);margin-left:4px">'+ab.veiculo+'</span>':'';
         return '<div class="hd-row-ab"><div class="hd-ab-info"><span>'+pTxt+' '+tg+'</span><span style="color:var(--red)">R$ '+fmt(ab.comb)+'</span>'+(ab.km>0?'<span style="color:var(--warn)">'+fmt(ab.km)+' km</span>':'')+(ab.media>0?'<span style="color:var(--sub)">'+fmt(ab.media)+' km/L</span>':'')+'</div><div class="hd-ab-acts"><button class="btn-he" onclick="editarAbHist('+s.id+','+ai+')">✏️</button><button class="btn-hd" onclick="excluirAbHist('+s.id+','+ai+')">🗑️</button></div></div>';
@@ -1240,7 +1240,7 @@ function renderHistorico(){
       '<div class="hist-body" id="hb-'+s.id+'">'+
       '<div class="hist-kgrid">'+
       '<div class="hk"><div class="hk-label">Bruto</div><div class="hk-val" style="color:var(--text)">R$ '+fmt(s.tB)+'</div></div>'+
-      '<div class="hk"><div class="hk-label">Combustível</div><div class="hk-val" style="color:var(--red)">R$ '+fmt(s.tC)+'</div></div>'+
+      '<div class="hk"><div class="hk-label">Combustível</div><div class="hk-val" style="color:var(--red)">R$ '+fmt(s.tC)+'</div>'+(s.tB>0?'<div style="font-size:0.65rem;font-weight:600;margin-top:3px;color:'+(Math.round(s.tC/s.tB*100)<=25?'var(--green)':'var(--red)')+'">'+Math.round(s.tC/s.tB*100)+'%</div>':'')+'</div>'+
       '<div class="hk"><div class="hk-label">Km</div><div class="hk-val" style="color:var(--warn)">'+(s.tK>0?fmt(s.tK)+' km':'—')+'</div></div>'+
       '<div class="hk"><div class="hk-label">Litros</div><div class="hk-val" style="color:var(--purple)">'+(s.tLit>0?fmt(s.tLit)+' L':'—')+'</div></div>'+
       '<div class="hk"><div class="hk-label">🌿 Etanol</div><div class="hk-val" style="color:var(--etanol)">'+etS+'</div></div>'+
