@@ -1195,10 +1195,10 @@ function renderSemana(){
       var vTag=ab.veiculo?'<br><span style="font-size:0.6rem;color:var(--blue)">'+ab.veiculo+'</span>':'';
       hA+='<div class="tbl2-row">';
       hA+='<span class="td">'+pTxt+vTag+'<br>'+tg+'</span>';
-      hA+='<span class="tc">R$ '+fmt(ab.comb)+'</span>';
+      hA+='<span class="tc">R$ '+fmt(ab.comb)+(ab.litros>0?'<br><span style="font-size:0.68rem;color:var(--purple)">'+fmt(ab.litros)+' L</span>':'')+'</span>';
       hA+='<span class="tk">'+(ab.km>0?fmt(ab.km)+' km':'—')+'</span>';
       hA+='<span class="td">'+(ab.media>0?fmt(ab.media)+' km/L':'—')+'</span>';
-      hA+='<span class="ta"><button class="btn-te" onclick="editarAbSemana('+n+')">✏️</button><button class="btn-td" onclick="excluirAbSemana('+n+')">🗑️</button></span>';
+      hA+='<span class="ta" style="flex-direction:column;gap:4px"><button class="btn-te" onclick="editarAbSemana('+n+')">✏️</button><button class="btn-td" onclick="excluirAbSemana('+n+')">🗑️</button></span>';
       hA+='</div>';
     }
     tbA.innerHTML=hA;
