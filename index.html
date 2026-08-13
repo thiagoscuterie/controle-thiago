@@ -1135,8 +1135,10 @@ function renderSemana(){
   document.getElementById('metaHint').textContent=falta>0?'Faltam R$ '+fmt(falta)+' para a meta':'🎉 Meta atingida!';
 
   // Bruto necessário
-  var somaB=0,somaC=0,cnt=0;
-  for(var hi=0;hi<historico.length;hi++){if(historico[hi].tB>0){somaB+=historico[hi].tB;somaC+=historico[hi].tC;cnt++;}}
+  // Últimas 8 semanas fechadas — cálculo ponderado (total/total, não média das médias)
+  var ult8=historico.filter(function(s){return s.tB>0;}).slice(0,8);
+  var somaB=0,somaC=0,cnt=ult8.length;
+  for(var hi=0;hi<ult8.length;hi++){somaB+=ult8[hi].tB;somaC+=ult8[hi].tC;}
   var pctCombHist=somaB>0?(somaC/somaB)*100:0;
   var combMedSem=cnt>0?somaC/cnt:0;
   var pctFrac=pctCombHist>0?pctCombHist/100:0.30;
