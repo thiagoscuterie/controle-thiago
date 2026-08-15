@@ -429,10 +429,24 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
 
 <!-- ===== HISTÓRICO ===== -->
 <div id="pHistorico" style="display:none">
-  <div class="gc">
-    <div style="font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:800;margin-bottom:12px">📈 Líquido por Semana</div>
+
+  <!-- RESUMO MENSAL -->
+  <div class="gc" style="margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <button onclick="navMes(-1)" style="background:var(--glass2);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:6px 14px;font-size:1rem;cursor:pointer;-webkit-appearance:none">‹</button>
+      <div id="mesTitulo" style="font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:800;color:var(--purple)">—</div>
+      <button onclick="navMes(1)" style="background:var(--glass2);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:6px 14px;font-size:1rem;cursor:pointer;-webkit-appearance:none">›</button>
+    </div>
+    <div id="mesResumo"><div style="text-align:center;color:var(--sub);font-size:0.85rem;padding:10px">Nenhum dado para este mês.</div></div>
+  </div>
+
+  <!-- GRÁFICO MENSAL -->
+  <div class="gc" style="margin-bottom:12px">
+    <div style="font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:800;margin-bottom:12px">📈 Líquido por Mês</div>
     <div class="chart-wrap"><canvas id="grafico"></canvas></div>
   </div>
+
+  <!-- SEMANAS -->
   <div id="histLista"><div class="empty-hist">Nenhuma semana fechada ainda. 📚</div></div>
 </div>
 
@@ -1212,7 +1226,86 @@ function renderSemana(){
 }
 
 // ===== RENDER HISTORICO =====
+// ===== RESUMO MENSAL =====
+var mesAtualIdx = 0; // índice no array de meses disponíveis
+
+function getMesesDisponiveis(){
+  var meses = {};
+  historico.forEach(function(s){
+    (s.faturamentos||[]).forEach(function(f){
+      if(f.data){
+        var m = f.data.slice(0,7); // "2026-07"
+        meses[m] = true;
+      }
+    });
+  });
+  // Ordena decrescente (mais recente primeiro)
+  return Object.keys(meses).sort().reverse();
+}
+
+function navMes(dir){
+  var meses = getMesesDisponiveis();
+  if(!meses.length) return;
+  mesAtualIdx = Math.max(0, Math.min(meses.length-1, mesAtualIdx+dir));
+  renderMesAtual();
+}
+
+function renderMesAtual(){
+  var meses = getMesesDisponiveis();
+  if(!meses.length){
+    document.getElementById('mesTitulo').textContent = 'Sem dados';
+    document.getElementById('mesResumo').innerHTML = '<div style="text-align:center;color:var(--sub);font-size:0.85rem;padding:10px">Nenhum dado ainda.</div>';
+    return;
+  }
+  if(mesAtualIdx >= meses.length) mesAtualIdx = 0;
+  var mesKey = meses[mesAtualIdx]; // "2026-07"
+  var partes = mesKey.split('-');
+  var nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var nomeMes = nomes[parseInt(partes[1])-1]+'/'+partes[0];
+  document.getElementById('mesTitulo').textContent = nomeMes;
+
+  // Agrega dados do mês
+  var tB=0,tC=0,tK=0,tL=0,tLit=0,tD=0,dias=0;
+  historico.forEach(function(s){
+    var fatsDoMes=(s.faturamentos||[]).filter(function(f){return f.data&&f.data.slice(0,7)===mesKey;});
+    if(!fatsDoMes.length) return;
+    // Proporção de dias do mês sobre total da semana
+    var propDias=s.faturamentos&&s.faturamentos.length?fatsDoMes.length/s.faturamentos.length:1;
+    tB  += fatsDoMes.reduce(function(s,f){return s+(f.bruto||0);},0);
+    dias += fatsDoMes.length;
+    // Abastecimentos: inclui os que cobrem datas deste mês
+    (s.abastecimentos||[]).forEach(function(ab){
+      var nDatasNoMes=(ab.datas||[]).filter(function(d){return d.slice(0,7)===mesKey;}).length;
+      if(!nDatasNoMes) return;
+      var frac=ab.datas.length>0?nDatasNoMes/ab.datas.length:1;
+      tC   += (ab.comb||0)*frac;
+      tK   += (ab.km||0)*frac;
+      tLit += (ab.litros||0)*frac;
+    });
+    // Despesas proporcionais
+    tD += (s.tD||0)*propDias;
+  });
+  tL = tB - tC;
+  var lqR = tL - tD;
+  var pctC = tB>0?Math.round(tC/tB*100):0;
+  var pctCor = pctC<=25?'var(--green)':'var(--red)';
+
+  document.getElementById('mesResumo').innerHTML =
+    '<div class="hist-kgrid" style="grid-template-columns:1fr 1fr 1fr">'+
+    '<div class="hk"><div class="hk-label">Bruto</div><div class="hk-val" style="color:var(--text)">R$ '+fmt(tB)+'</div></div>'+
+    '<div class="hk"><div class="hk-label">Combustível</div><div class="hk-val" style="color:var(--red)">R$ '+fmt(tC)+'</div><div style="font-size:0.65rem;color:'+pctCor+';font-weight:600">'+pctC+'%</div></div>'+
+    '<div class="hk"><div class="hk-label">Km</div><div class="hk-val" style="color:var(--warn)">'+(tK>0?fmt(tK)+' km':'—')+'</div></div>'+
+    '<div class="hk"><div class="hk-label">Litros</div><div class="hk-val" style="color:var(--purple)">'+(tLit>0?fmt(tLit)+' L':'—')+'</div></div>'+
+    '<div class="hk"><div class="hk-label">Líquido</div><div class="hk-val" style="color:var(--green)">R$ '+fmt(tL)+'</div></div>'+
+    '<div class="hk"><div class="hk-label">Liq. Real</div><div class="hk-val" style="color:'+(lqR>=0?'var(--green)':'var(--red)')+'">R$ '+fmt(lqR)+'</div></div>'+
+    '<div class="hk"><div class="hk-label">Dias trab.</div><div class="hk-val" style="color:var(--blue)">'+dias+'</div></div>'+
+    '<div class="hk"><div class="hk-label">Média/dia</div><div class="hk-val" style="color:var(--text)">'+(dias>0?'R$ '+fmt(tB/dias):'—')+'</div></div>'+
+    (tD>0?'<div class="hk"><div class="hk-label">Despesas</div><div class="hk-val" style="color:var(--purple)">R$ '+fmt(tD)+'</div></div>':'')+
+    '</div>';
+}
+
 function renderHistorico(){
+  renderMesAtual();
   renderGrafico();
   var el=document.getElementById('histLista');
   if(!historico.length){el.innerHTML='<div class="empty-hist">Nenhuma semana fechada ainda. 📚</div>';return;}
@@ -1257,12 +1350,48 @@ function renderHistorico(){
 // ===== GRÁFICO HISTÓRICO =====
 function renderGrafico(){
   var canvas=document.getElementById('grafico'); if(!canvas) return;
-  var dados=historico.slice().reverse().slice(-10); if(!dados.length) return;
   if(graficoInst){graficoInst.destroy();graficoInst=null;}
+
+  // Agrupa por mês
+  var mesesMap={};
+  historico.forEach(function(s){
+    (s.faturamentos||[]).forEach(function(f){
+      if(!f.data) return;
+      var m=f.data.slice(0,7);
+      if(!mesesMap[m]) mesesMap[m]={tB:0,tL:0,tC:0};
+      mesesMap[m].tB+=f.bruto||0;
+    });
+    (s.abastecimentos||[]).forEach(function(ab){
+      (ab.datas||[]).forEach(function(d){
+        var m=d.slice(0,7);
+        if(!mesesMap[m]) mesesMap[m]={tB:0,tL:0,tC:0};
+        var frac=ab.datas.length>0?1/ab.datas.length:1;
+        mesesMap[m].tC+=(ab.comb||0)*frac;
+      });
+    });
+  });
+  // Calcula líquido por mês
+  Object.keys(mesesMap).forEach(function(m){ mesesMap[m].tL=mesesMap[m].tB-mesesMap[m].tC; });
+
+  var nomes=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var keys=Object.keys(mesesMap).sort();
+  if(!keys.length) return;
+  var labels=keys.map(function(k){var p=k.split('-');return nomes[parseInt(p[1])-1]+'/'+p[0].slice(2);});
+  var vals=keys.map(function(k){return mesesMap[k].tL;});
+
   graficoInst=new Chart(canvas,{
     type:'bar',
-    data:{labels:dados.map(function(s){return s.periodo;}),datasets:[{label:'Líquido (R$)',data:dados.map(function(s){return s.tL;}),backgroundColor:dados.map(function(s){return s.tL>=META?'rgba(0,245,176,0.25)':'rgba(255,209,102,0.2)';}),borderColor:dados.map(function(s){return s.tL>=META?'rgba(0,245,176,0.8)':'rgba(255,209,102,0.8)';}),borderWidth:2,borderRadius:8}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return'R$ '+fmt(ctx.raw);}},backgroundColor:'rgba(13,18,32,0.9)',titleColor:'#f0f4ff',bodyColor:'#7a8aaa',borderColor:'rgba(255,255,255,0.1)',borderWidth:1}},scales:{x:{ticks:{color:'#5a6680',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},y:{ticks:{color:'#5a6680',callback:function(v){return'R$'+Math.round(v);},font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}}}
+    data:{labels:labels,datasets:[{label:'Líquido (R$)',data:vals,
+      backgroundColor:vals.map(function(v){return v>=META?'rgba(0,245,176,0.25)':'rgba(255,209,102,0.2)';}),
+      borderColor:vals.map(function(v){return v>=META?'rgba(0,245,176,0.8)':'rgba(255,209,102,0.8)';}),
+      borderWidth:2,borderRadius:8}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return'R$ '+fmt(ctx.raw);}},
+        backgroundColor:'rgba(13,18,32,0.9)',titleColor:'#f0f4ff',bodyColor:'#7a8aaa',
+        borderColor:'rgba(255,255,255,0.1)',borderWidth:1}},
+      scales:{x:{ticks:{color:'#5a6680',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#5a6680',callback:function(v){return'R$'+Math.round(v);},font:{size:9}},
+          grid:{color:'rgba(255,255,255,0.04)'}}}}
   });
 }
 
