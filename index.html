@@ -1348,6 +1348,7 @@ function renderHistorico(){
           '<div class="hk"><div class="hk-label">Bruto</div><div class="hk-val" style="color:var(--text)">R$ '+fmt(s.tB)+'</div></div>'+
           '<div class="hk"><div class="hk-label">Combustivel</div><div class="hk-val" style="color:var(--red)">R$ '+fmt(s.tC)+'</div>'+(pctC>0?'<div style="font-size:0.65rem;font-weight:600;margin-top:3px;color:'+pctCor+'">'+pctC+'%</div>':'')+'</div>'+
           '<div class="hk"><div class="hk-label">Km</div><div class="hk-val" style="color:var(--warn)">'+(s.tK>0?fmt(s.tK)+' km':'--')+'</div></div>'+
+          '<div class="hk"><div class="hk-label">Custo/km</div><div class="hk-val" style="color:var(--orange)">'+(s.tK>0&&s.tC>0?'R$ '+fmt(s.tC/s.tK)+'/km':'--')+'</div></div>'+
           '<div class="hk"><div class="hk-label">Litros</div><div class="hk-val" style="color:var(--purple)">'+(s.tLit>0?fmt(s.tLit)+' L':'--')+'</div></div>'+
           '<div class="hk"><div class="hk-label">Etanol</div><div class="hk-val" style="color:var(--etanol)">'+etS+'</div></div>'+
           '<div class="hk"><div class="hk-label">Gasolina</div><div class="hk-val" style="color:var(--gasolina)">'+gaS+'</div></div>'+
