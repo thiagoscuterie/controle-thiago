@@ -1308,46 +1308,98 @@ function renderHistorico(){
   renderMesAtual();
   renderGrafico();
   var el=document.getElementById('histLista');
-  if(!historico.length){el.innerHTML='<div class="empty-hist">Nenhuma semana fechada ainda. 📚</div>';return;}
-  el.innerHTML=historico.map(function(s){
-    var etS=s.mEt?fmt(s.mEt.media)+' km/L':'—';
-    var gaS=s.mGas?fmt(s.mGas.media)+' km/L':'—';
+  if(!historico.length){el.innerHTML='<div class="empty-hist">Nenhuma semana fechada ainda. \uD83D\uDCDA</div>';return;}
+
+  var VISIVEIS=4; // semanas visíveis por padrão
+
+  function buildSemana(s){
+    var etS=s.mEt?fmt(s.mEt.media)+' km/L':'--';
+    var gaS=s.mGas?fmt(s.mGas.media)+' km/L':'--';
     var lqR=s.tL-(s.tD||0);
+    var pctC=s.tB>0?Math.round(s.tC/s.tB*100):0;
+    var pctCor=pctC<=25?'var(--green)':'var(--red)';
     var dH=(s.faturamentos||[]).map(function(f){
-      return '<div class="hd-row"><span>'+fmtD(f.data)+'</span><span class="hd-liq">R$ '+fmt(f.bruto)+'</span><span></span><span></span></div>';
+      return '<div class="hd-row"><span>'+fmtD(f.data)+'</span><span class="hd-liq">R$ '+fmt(f.bruto)+'</span></div>';
     }).join('');
     var abH='';
     if((s.abastecimentos||[]).length){
-      abH='<div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:6px;margin-top:8px">⛽ ABASTECIMENTOS</div>';
+      abH+='<div style="font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:6px;margin-top:8px">ABASTECIMENTOS</div>';
       abH+=(s.abastecimentos||[]).map(function(ab,ai){
         var dOrd=ab.datas.slice().sort();
         var pTxt=dOrd.length>1?fmtD(dOrd[0])+'<br>'+fmtD(dOrd[dOrd.length-1]):fmtD(dOrd[0]);
-        var tg=ab.fuel==='etanol'?'🌿':'🔶';
+        var tg=ab.fuel==='etanol'?'(E)':'(G)';
         var vn=ab.veiculo?'<span style="font-size:0.6rem;color:var(--blue);margin-left:4px">'+ab.veiculo+'</span>':'';
-        return '<div class="hd-row-ab"><div class="hd-ab-info"><span>'+pTxt+' '+tg+'</span><span style="color:var(--red)">R$ '+fmt(ab.comb)+'</span>'+(ab.km>0?'<span style="color:var(--warn)">'+fmt(ab.km)+' km</span>':'')+(ab.media>0?'<span style="color:var(--sub)">'+fmt(ab.media)+' km/L</span>':'')+'</div><div class="hd-ab-acts"><button class="btn-he" onclick="editarAbHist('+s.id+','+ai+')">✏️</button><button class="btn-hd" onclick="excluirAbHist('+s.id+','+ai+')">🗑️</button></div></div>';
+        var pctAb=s.tB>0?Math.round((ab.comb/s.tB)*100):0;
+        var pctCo=pctAb>0?(pctAb<=25?'var(--green)':'var(--red)'):'var(--sub)';
+        var pctT=pctAb>0?'<span style="font-size:0.65rem;color:'+pctCo+';font-weight:600"> '+pctAb+'%</span>':'';
+        var ckm=ab.km>0&&ab.comb>0?ab.comb/ab.km:0;
+        return '<div class="hd-row-ab"><div class="hd-ab-info">'+
+          '<span>'+pTxt+' '+tg+vn+'</span>'+
+          '<span style="color:var(--red)">R$ '+fmt(ab.comb)+pctT+'</span>'+
+          (ab.km>0?'<span style="color:var(--warn)">'+fmt(ab.km)+' km'+(ckm>0?'<br><span style="font-size:0.65rem;color:var(--orange)">R$ '+fmt(ckm)+'/km</span>':'')+'</span>':'')+
+          (ab.media>0?'<span style="color:var(--sub)">'+fmt(ab.media)+' km/L</span>':'')+
+          '</div><div class="hd-ab-acts">'+
+          '<button class="btn-he" onclick="editarAbHist('+s.id+','+ai+')">'+String.fromCharCode(9998)+'</button>'+
+          '<button class="btn-hd" onclick="excluirAbHist('+s.id+','+ai+')">'+String.fromCharCode(128465)+'</button>'+
+          '</div></div>';
       }).join('');
     }
     var dpH='';
     if((s.despesas||[]).length){
-      dpH='<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'+
-        (s.despesas||[]).map(function(d){return'<div class="hd-row"><span>'+d.nome+'</span><span style="color:var(--purple)">R$ '+fmt(d.valor)+'</span></div>';}).join('')+'</div>';
+      dpH='<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'+(s.despesas||[]).map(function(d){
+        return '<div class="hd-row"><span>'+d.nome+'</span><span style="color:var(--purple)">R$ '+fmt(d.valor)+'</span></div>';
+      }).join('')+'</div>';
     }
-    return '<div class="hist-card"><div class="hist-head" onclick="toggleHist('+s.id+')"><div><div class="hist-period">📅 '+s.periodo+'</div><span class="hist-badge '+(s.ok?'ok':'nok')+'">'+(s.ok?'✅ Meta atingida':'❌ Abaixo da meta')+'</span></div><div><div class="hist-liq">R$ '+fmt(s.tL)+'</div><div class="hist-sub">toque p/ detalhes</div></div></div>'+
+    return '<div class="hist-card">'+
+      '<div class="hist-head" onclick="toggleHist('+s.id+')">'+
+        '<div><div class="hist-period">'+String.fromCharCode(128197)+' '+s.periodo+'</div>'+
+        '<span class="hist-badge '+(s.ok?'ok':'nok')+'">'+(s.ok?String.fromCharCode(9989)+' Meta atingida':String.fromCharCode(10060)+' Abaixo da meta')+'</span></div>'+
+        '<div><div class="hist-liq">R$ '+fmt(s.tL)+'</div><div class="hist-sub">toque p/ detalhes</div></div>'+
+      '</div>'+
       '<div class="hist-body" id="hb-'+s.id+'">'+
-      '<div class="hist-kgrid">'+
-      '<div class="hk"><div class="hk-label">Bruto</div><div class="hk-val" style="color:var(--text)">R$ '+fmt(s.tB)+'</div></div>'+
-      '<div class="hk"><div class="hk-label">Combustível</div><div class="hk-val" style="color:var(--red)">R$ '+fmt(s.tC)+'</div>'+(s.tB>0?'<div style="font-size:0.65rem;font-weight:600;margin-top:3px;color:'+(Math.round(s.tC/s.tB*100)<=25?'var(--green)':'var(--red)')+'">'+Math.round(s.tC/s.tB*100)+'%</div>':'')+'</div>'+
-      '<div class="hk"><div class="hk-label">Km</div><div class="hk-val" style="color:var(--warn)">'+(s.tK>0?fmt(s.tK)+' km':'—')+'</div></div>'+
-      '<div class="hk"><div class="hk-label">Litros</div><div class="hk-val" style="color:var(--purple)">'+(s.tLit>0?fmt(s.tLit)+' L':'—')+'</div></div>'+
-      '<div class="hk"><div class="hk-label">🌿 Etanol</div><div class="hk-val" style="color:var(--etanol)">'+etS+'</div></div>'+
-      '<div class="hk"><div class="hk-label">🔶 Gasolina</div><div class="hk-val" style="color:var(--gasolina)">'+gaS+'</div></div>'+
-      (s.tD>0?'<div class="hk"><div class="hk-label">Despesas</div><div class="hk-val" style="color:var(--purple)">R$ '+fmt(s.tD)+'</div></div>':'')+(s.tD>0?'<div class="hk"><div class="hk-label">Liq. Real</div><div class="hk-val" style="color:var(--green)">R$ '+fmt(lqR)+'</div></div>':'')+
-      '</div><div class="hist-days">'+dH+'</div>'+abH+dpH+
-      '<button class="btn-del-sem" onclick="excluirSemana('+s.id+')">🗑️ Remover esta semana</button></div></div>';
-  }).join('');
+        '<div class="hist-kgrid">'+
+          '<div class="hk"><div class="hk-label">Bruto</div><div class="hk-val" style="color:var(--text)">R$ '+fmt(s.tB)+'</div></div>'+
+          '<div class="hk"><div class="hk-label">Combustivel</div><div class="hk-val" style="color:var(--red)">R$ '+fmt(s.tC)+'</div>'+(pctC>0?'<div style="font-size:0.65rem;font-weight:600;margin-top:3px;color:'+pctCor+'">'+pctC+'%</div>':'')+'</div>'+
+          '<div class="hk"><div class="hk-label">Km</div><div class="hk-val" style="color:var(--warn)">'+(s.tK>0?fmt(s.tK)+' km':'--')+'</div></div>'+
+          '<div class="hk"><div class="hk-label">Litros</div><div class="hk-val" style="color:var(--purple)">'+(s.tLit>0?fmt(s.tLit)+' L':'--')+'</div></div>'+
+          '<div class="hk"><div class="hk-label">Etanol</div><div class="hk-val" style="color:var(--etanol)">'+etS+'</div></div>'+
+          '<div class="hk"><div class="hk-label">Gasolina</div><div class="hk-val" style="color:var(--gasolina)">'+gaS+'</div></div>'+
+          (s.tD>0?'<div class="hk"><div class="hk-label">Despesas</div><div class="hk-val" style="color:var(--purple)">R$ '+fmt(s.tD)+'</div></div>':'')+
+          (s.tD>0?'<div class="hk"><div class="hk-label">Liq. Real</div><div class="hk-val" style="color:var(--green)">R$ '+fmt(lqR)+'</div></div>':'')+
+        '</div>'+
+        '<div class="hist-days">'+dH+'</div>'+abH+dpH+
+        '<button class="btn-del-sem" onclick="excluirSemana('+s.id+')">Remover esta semana</button>'+
+      '</div></div>';
+  }
+
+  // 4 mais recentes ficam sempre visíveis
+  var recentes=historico.slice(0,VISIVEIS);
+  var antigas=historico.slice(VISIVEIS);
+
+  var html=recentes.map(buildSemana).join('');
+
+  if(antigas.length){
+    html+='<div style="background:var(--glass);border:1px solid var(--border);border-radius:16px;margin-bottom:10px;overflow:hidden">'+
+      '<div onclick="toggleAntigas()" style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;-webkit-user-select:none;user-select:none">'+
+        '<div style="font-size:0.85rem;font-weight:700;color:var(--sub)">Semanas anteriores ('+antigas.length+')</div>'+
+        '<span id="arrAntigas" style="color:var(--purple);font-size:1rem">'+String.fromCharCode(9660)+'</span>'+
+      '</div>'+
+      '<div id="listaAntigas" style="display:none">'+antigas.map(buildSemana).join('')+'</div>'+
+    '</div>';
+  }
+
+  el.innerHTML=html;
 }
 
-// ===== GRÁFICO HISTÓRICO =====
+function toggleAntigas(){
+  var el=document.getElementById('listaAntigas');
+  var arr=document.getElementById('arrAntigas');
+  if(!el) return;
+  var open=el.style.display!=='none';
+  el.style.display=open?'none':'block';
+  if(arr) arr.innerHTML=open?String.fromCharCode(9660):String.fromCharCode(9650);
+}
+
 function renderGrafico(){
   var canvas=document.getElementById('grafico'); if(!canvas) return;
   if(graficoInst){graficoInst.destroy();graficoInst=null;}
