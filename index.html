@@ -284,7 +284,10 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
   <div class="gc gc-chart" style="padding:12px 14px;margin-bottom:12px">
     <div class="gc-chart-inner">
       <div><div class="md-label">🎯 Bruto/dia restante</div><div class="md-val" id="mdMeta" style="color:var(--warn)">—</div></div>
-      <div style="text-align:right"><div class="md-label">📅 Dias trabalhados</div><div class="md-val" id="mdDias" style="color:var(--blue)">0</div></div>
+      <div style="text-align:right">
+        <div class="md-label">📅 Dias planejados</div>
+        <div class="md-val" id="mdDias" style="color:var(--blue);cursor:pointer;border-bottom:1px dashed rgba(116,192,252,0.4)" onclick="abrirSeletorDias()" title="Toque para alterar">0 ✎</div>
+      </div>
     </div>
     <div style="position:relative;height:60px"><canvas id="graficoSemanal"></canvas></div>
     <div id="graficoSemanalVazio" style="display:none;text-align:center;font-size:0.7rem;color:var(--sub);padding:6px 0">Lance o primeiro dia para ver o gráfico</div>
@@ -653,6 +656,30 @@ function renderKmLimite(kmRodado){
   document.getElementById('kmRodSem').textContent=kmRodado>0?fmt(kmRodado)+' km':'—';
   if(lim>0){ restEl.textContent=(restante>=0?'+':'')+fmt(restante)+' km'; restEl.style.color=restante>=0?'var(--green)':'var(--red)'; }
   else{ restEl.textContent='—'; restEl.style.color='var(--sub)'; }
+}
+
+// ===== SELETOR DE DIAS =====
+function abrirSeletorDias(){
+  var atual=parseInt(localStorage.getItem('th_dias_plan')||'7');
+  var html='';
+  for(var d=1;d<=7;d++){
+    var ativo=d===atual;
+    var bs='padding:12px 4px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;-webkit-appearance:none';
+    bs+=';border:1px solid '+(ativo?'rgba(0,245,176,0.5)':'rgba(255,255,255,0.14)');
+    bs+=';background:'+(ativo?'rgba(0,245,176,0.15)':'rgba(255,255,255,0.04)');
+    bs+=';color:'+(ativo?'var(--green)':'#7a8aaa');
+    html+='<button onclick="selecionarDias('+d+')" style="'+bs+'">'+d+'</button>';
+  }
+  document.getElementById('diasBtns').innerHTML=html;
+  document.getElementById('modalDiasOverlay').classList.remove('hidden');
+}
+function selecionarDias(n){
+  localStorage.setItem('th_dias_plan',String(n));
+  fecharSeletorDias();
+  renderSemana();
+}
+function fecharSeletorDias(){
+  document.getElementById('modalDiasOverlay').classList.add('hidden');
 }
 
 // ===== INIT =====
@@ -1154,18 +1181,26 @@ function renderSemana(){
   document.getElementById('mDespDia').textContent=t.tD>0?'R$ '+fmt(t.tD/7)+'/dia':'sem despesas';
 
   // Meta diária (bruto)
+  var diasPlan=parseInt(localStorage.getItem('th_dias_plan')||'7');
   var faltaBruto=Math.max(brutoNec-t.tB,0);
-  var dHoje=hojeDate(), dIdx=dHoje.getDay()===0?6:dHoje.getDay()-1;
+  var hjStr=hoje();
+  var brutoHoje=0;
+  for(var fi=0;fi<faturamentos.length;fi++){if(faturamentos[fi].data===hjStr)brutoHoje+=faturamentos[fi].bruto||0;}
   var datasLan={}; for(var k=0;k<faturamentos.length;k++) datasLan[faturamentos[k].data]=true;
-  var diasR=0;
-  for(var x=dIdx;x<=6;x++){
-    var dt2=new Date(dHoje); dt2.setDate(dt2.getDate()+(x-dIdx));
-    var ds2=dt2.getFullYear()+'-'+String(dt2.getMonth()+1).padStart(2,'0')+'-'+String(dt2.getDate()).padStart(2,'0');
-    if(!datasLan[ds2]) diasR++;
-  }
+  // Dias restantes: usa diasPlan como base, desconta dias já lançados
+  var diasTrab=faturamentos.length;
+  var diasR=Math.max(diasPlan-diasTrab,0);
+  // Se hoje tem lançamento, verifica se bateu a meta diária
   var mD=diasR>0?faltaBruto/diasR:0;
-  document.getElementById('mdMeta').textContent=falta<=0?'✅ Bateu!':(diasR>0?'R$ '+fmt(mD)+'/dia':'—');
-  document.getElementById('mdDias').textContent=faturamentos.length;
+  var hojeTemLanc=datasLan[hjStr];
+  var hojeBateu=hojeTemLanc&&mD>0&&brutoHoje>=mD;
+  var metaTxt;
+  if(falta<=0){ metaTxt='✅ Meta semanal batida!'; }
+  else if(hojeBateu){ metaTxt='✅ Hoje bateu! (R$ '+fmt(brutoHoje)+')'; }
+  else if(diasR>0){ metaTxt='R$ '+fmt(mD)+'/dia'; }
+  else { metaTxt='—'; }
+  document.getElementById('mdMeta').textContent=metaTxt;
+  document.getElementById('mdDias').textContent=diasPlan+' dias ✎';
 
   // Gráfico semanal
   renderGraficoSemanal();
@@ -1521,6 +1556,17 @@ init();
       <button class="modal-cancel" onclick="document.getElementById('modalFecharOverlay').classList.add('hidden')">✕ Cancelar</button>
       <button class="modal-confirm" onclick="confirmarFecharSemana()">✓ Confirmar</button>
     </div>
+  </div>
+</div>
+
+<!-- MODAL DIAS DA SEMANA -->
+<div class="modal-overlay hidden" id="modalDiasOverlay" onclick="if(event.target===this)fecharSeletorDias()">
+  <div class="modal-box">
+    <div class="modal-icon">📅</div>
+    <div class="modal-title">Dias que vai trabalhar</div>
+    <div class="modal-msg">Selecione quantos dias você planeja trabalhar nesta semana.</div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:20px" id="diasBtns"></div>
+    <button class="modal-cancel" onclick="fecharSeletorDias()">Fechar</button>
   </div>
 </div>
 </body>
