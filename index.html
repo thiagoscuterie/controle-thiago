@@ -274,7 +274,7 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
       <div class="sec" style="margin-bottom:6px">📊 Para bater a meta você precisa faturar</div>
       <div class="mini-grid">
         <div class="mini-item"><div class="mini-label">Bruto necessário</div><div class="mini-val" id="mBrutoNec" style="color:var(--orange)">—</div></div>
-        <div class="mini-item"><div class="mini-label">⛽ Comb. estimado p/ meta</div><div class="mini-val" id="mCombMeta" style="color:var(--red)">—</div><div class="mini-sub" id="mCombMed">—</div></div>
+        <div class="mini-item"><div class="mini-label">⛽ Comb. estimado p/ meta</div><div class="mini-val" id="mCombMeta" style="color:var(--red)">—</div></div>
         <div class="mini-item"><div class="mini-label">Despesas fixas</div><div class="mini-val" id="mDesp" style="color:var(--purple)">—</div><div class="mini-sub" id="mDespDia">—</div></div>
         <div class="mini-item"><div class="mini-label">% comb. histórico</div><div class="mini-val" id="mPctComb" style="color:var(--warn)">—</div></div>
       </div>
@@ -1175,7 +1175,7 @@ function renderSemana(){
   document.getElementById('metaBruto').style.display='block';
   document.getElementById('mBrutoNec').textContent=brutoNec>0?'R$ '+fmt(brutoNec):'—';
   document.getElementById('mCombMeta').textContent=combParaMeta>0?'R$ '+fmt(combParaMeta):'—';
-  document.getElementById('mCombMed').textContent=combMedSem>0?'média sem: R$ '+fmt(combMedSem):'sem histórico';
+  // mCombMed removido
   document.getElementById('mPctComb').textContent=pctCombHist>0?fmt(pctCombHist)+'%':'~30% estimado';
   document.getElementById('mDesp').textContent='R$ '+fmt(t.tD);
   document.getElementById('mDespDia').textContent=t.tD>0?'R$ '+fmt(t.tD/7)+'/dia':'sem despesas';
