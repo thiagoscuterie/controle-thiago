@@ -344,6 +344,103 @@ body::before{background:
 .kpi-icon{opacity:.8;}
 @media(max-width:380px){.meta-num{font-size:1.65rem}.trio-label{font-size:.49rem}.trio-val{font-size:.86rem}.header-title{font-size:1.72rem}}
 </style>
+
+<style id="premium-v4-visual">
+/* V4 — referência visual aprovada: dashboard premium compacto */
+body{max-width:760px;margin:0 auto;padding:8px 14px 42px;background:#050a0f!important;}
+.header{display:none!important;}
+.tabs{margin:0 0 0!important;position:relative!important;top:auto!important;border-radius:18px 18px 0 0!important;padding:3px!important;gap:3px!important;background:rgba(12,19,27,.9)!important;box-shadow:none!important;}
+.tab-btn{height:50px;font-size:.77rem!important;border-radius:15px!important;}
+
+/* Hero de meta */
+.v4-meta{position:relative;min-height:300px;padding:22px 285px 18px 26px!important;margin-bottom:14px!important;border-radius:24px!important;overflow:hidden;background:linear-gradient(135deg,rgba(11,24,30,.98),rgba(6,13,19,.98))!important;border:1px solid rgba(0,245,176,.20)!important;box-shadow:0 14px 40px rgba(0,0,0,.28)!important;}
+.v4-meta:before{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,var(--green2),var(--green),transparent);opacity:.85;}
+.v4-meta-main{position:relative;z-index:2;}
+.v4-meta-kicker{font-size:.67rem;letter-spacing:1.7px;color:#b7c2cf;text-transform:uppercase;margin-bottom:7px;font-weight:500;}
+.v4-meta-value{font-family:'DM Mono',monospace;font-size:2.55rem;line-height:1.02;color:var(--green);font-weight:600;letter-spacing:-.05em;white-space:nowrap;}
+.v4-meta-value small{font-family:'Plus Jakarta Sans',sans-serif;font-size:.95rem;color:#b7c2cf;letter-spacing:0;font-weight:500;}
+.v4-meta-edit{font-size:.58rem;color:var(--sub);margin-left:7px;vertical-align:middle;}
+.v4-meta-progress{margin-top:16px;padding:9px 13px;border:1px solid rgba(255,255,255,.08);border-radius:15px;background:rgba(3,9,14,.32);}
+.v4-meta-progress-top{display:flex;justify-content:space-between;align-items:center;font-size:.68rem;color:#c8d0da;margin-bottom:8px;}
+.v4-meta-track{height:9px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;}
+.v4-meta-fill{height:100%;width:0;background:linear-gradient(90deg,var(--green2),var(--green));border-radius:99px;box-shadow:0 0 13px rgba(0,245,176,.32);transition:width .7s ease;}
+.v4-meta-pct{font-family:'DM Mono',monospace;color:var(--green);font-size:.8rem;font-weight:600;}
+.v4-meta-bottom{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:16px;}
+.v4-meta-stat{padding-right:16px;}
+.v4-meta-stat+ .v4-meta-stat{border-left:1px solid rgba(255,255,255,.10);padding-left:18px;padding-right:0;}
+.v4-meta-stat-label{font-size:.58rem;letter-spacing:1.1px;color:#a4afbd;text-transform:uppercase;margin-bottom:4px;}
+.v4-meta-stat-val{font-family:'DM Mono',monospace;font-size:1.12rem;color:#f1f5f9;}
+.v4-meta-stat-sub{font-size:.65rem;color:#a4afbd;margin-top:2px;}
+.v4-ring{position:absolute;right:30px;top:28px;width:178px;height:178px;display:grid;place-items:center;z-index:1;}
+.v4-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.v4-ring-bg{fill:none;stroke:rgba(255,255,255,.09);stroke-width:8;}
+.v4-ring-fill{fill:none;stroke:url(#v4Grad);stroke-width:8;stroke-linecap:round;stroke-dasharray:502;stroke-dashoffset:502;transition:stroke-dashoffset .8s ease;filter:drop-shadow(0 0 5px rgba(0,245,176,.25));}
+.v4-ring-content{text-align:center;position:relative;z-index:2;}
+.v4-ring-icon{font-size:1.55rem;opacity:.9;line-height:1;}
+.v4-ring-number{font-family:'DM Mono',monospace;font-size:2.1rem;color:var(--green);margin-top:5px;line-height:1;}
+.v4-ring-label{font-size:.65rem;color:#c5ccd6;margin-top:4px;}
+
+/* faixa de dias */
+.v4-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:8px 10px 11px;background:rgba(9,16,23,.86);border:1px solid rgba(255,255,255,.075);border-top:0;border-radius:0 0 18px 18px;margin-bottom:15px;}
+.v4-day{text-align:center;color:#687487;font-size:.63rem;line-height:1.3;min-width:0;}
+.v4-day-name{display:block;margin-bottom:5px;}
+.v4-day-dot{width:6px;height:6px;border-radius:50%;background:#667386;margin:auto;}
+.v4-day.active{color:var(--green);font-weight:700;}
+.v4-day.active .v4-day-dot{background:var(--green);box-shadow:0 0 8px rgba(0,245,176,.5);}
+
+/* esconder o bloco de gráfico antigo para dar lugar ao dashboard da referência */
+#pSemana>.gc-chart{display:none!important;}
+.premium-insight{display:none!important;}
+
+/* Trio: SEMPRE 3 colunas alinhadas */
+.trio-bar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch!important;margin-bottom:12px!important;border-radius:20px!important;background:linear-gradient(145deg,rgba(13,22,30,.96),rgba(7,13,19,.96))!important;border:1px solid rgba(255,255,255,.09)!important;box-shadow:0 9px 26px rgba(0,0,0,.22)!important;overflow:hidden!important;}
+.trio-bar:before{height:1px!important;opacity:.8;}
+.trio-item{min-width:0!important;padding:15px 8px 13px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;text-align:center!important;}
+.trio-sep{width:1px!important;height:auto!important;margin:10px 0!important;background:rgba(255,255,255,.10)!important;}
+.trio-label{font-size:.58rem!important;letter-spacing:1.05px!important;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px!important;}
+.trio-val{font-size:1.06rem!important;white-space:nowrap!important;line-height:1.1!important;}
+.trio-item .mini-sub{font-size:.61rem!important;margin-top:5px!important;}
+.trio-item button{margin-top:6px!important;}
+
+/* combustível */
+.sec{font-size:.60rem!important;letter-spacing:1.6px!important;margin:7px 2px 9px!important;}
+.fuel-row{gap:10px!important;margin-bottom:12px!important;}
+.fuel-card{min-height:118px!important;border-radius:19px!important;padding:15px!important;}
+.fuel-icon{font-size:1rem!important;margin-bottom:6px!important;}
+.fuel-name{font-size:.60rem!important;letter-spacing:1.5px!important;}
+.fuel-avg{font-size:1.25rem!important;margin-top:6px!important;}
+.fuel-sub{font-size:.62rem!important;margin-top:5px!important;}
+
+/* Esconde controles antigos que competem com a referência visual, mas mantém os elementos funcionais no DOM. */
+@media(max-width:620px){
+  body{padding:7px 12px 35px;}
+  .v4-meta{min-height:270px;padding:19px 205px 15px 20px!important;}
+  .v4-meta-value{font-size:2.05rem;}
+  .v4-ring{width:145px;height:145px;right:15px;top:31px;}
+  .v4-ring-number{font-size:1.72rem;}
+  .v4-ring-icon{font-size:1.25rem;}
+  .v4-meta-stat-val{font-size:.94rem;}
+  .v4-meta-stat-sub{font-size:.57rem;}
+  .trio-item{padding:13px 5px 12px!important;}
+  .trio-label{font-size:.51rem!important;letter-spacing:.8px!important;}
+  .trio-val{font-size:.93rem!important;}
+}
+@media(max-width:390px){
+  .v4-meta{min-height:248px;padding:17px 166px 13px 17px!important;}
+  .v4-meta-value{font-size:1.72rem;}
+  .v4-meta-value small{font-size:.68rem;}
+  .v4-ring{width:125px;height:125px;right:8px;top:29px;}
+  .v4-ring-number{font-size:1.48rem;}
+  .v4-ring-label{font-size:.55rem;}
+  .v4-meta-progress{margin-top:12px;padding:7px 9px;}
+  .v4-meta-bottom{margin-top:12px;}
+  .v4-meta-stat-val{font-size:.80rem;}
+  .trio-item{padding-left:3px!important;padding-right:3px!important;}
+  .trio-label{font-size:.47rem!important;}
+  .trio-val{font-size:.82rem!important;}
+}
+</style>
+
 </head>
 <body>
 
@@ -362,27 +459,31 @@ body::before{background:
 <!-- ===== SEMANA ===== -->
 <div id="pSemana">
 
-  <div class="gc ag">
-    <div class="sec sec-hero">META SEMANAL <span>LÍQUIDO REAL</span></div>
-    <div class="meta-goal-row">
-      <span class="meta-num" id="metaVal" onclick="editMeta()">R$ 1.200,00</span>
-      <span class="meta-tap" onclick="editMeta()">✏️ editar</span>
+  <div class="gc ag v4-meta">
+    <div class="v4-meta-main">
+      <div class="v4-meta-kicker">Meta diária restante</div>
+      <div class="v4-meta-value"><span id="metaVal" onclick="editMeta()">R$ 1.200,00</span><small>/dia</small><span class="v4-meta-edit" onclick="editMeta()">✎</span></div>
       <input type="number" class="meta-inp" id="metaInp" onblur="saveMeta()" onkeydown="if(event.key==='Enter')saveMeta()">
-      <span class="meta-pct" id="metaPct">0%</span>
-    </div>
-    <div class="meta-track"><div class="meta-fill" id="metaFill" style="width:0%"></div></div>
-    <div class="meta-row"><span class="meta-done" id="metaDone">R$ 0,00 atingido</span></div>
-    <div class="meta-hint" id="metaHint"></div>
-    <div id="metaBruto" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06)">
-      <div class="sec" style="margin-bottom:6px">📊 Para bater a meta você precisa faturar</div>
-      <div class="mini-grid">
-        <div class="mini-item"><div class="mini-label">Bruto necessário</div><div class="mini-val" id="mBrutoNec" style="color:var(--orange)">—</div></div>
-        <div class="mini-item"><div class="mini-label">⛽ Comb. estimado p/ meta</div><div class="mini-val" id="mCombMeta" style="color:var(--red)">—</div></div>
-        <div class="mini-item"><div class="mini-label">Despesas fixas</div><div class="mini-val" id="mDesp" style="color:var(--purple)">—</div><div class="mini-sub" id="mDespDia">—</div></div>
-        <div class="mini-item"><div class="mini-label">% comb. histórico</div><div class="mini-val" id="mPctComb" style="color:var(--warn)">—</div></div>
+      <div class="v4-meta-progress">
+        <div class="v4-meta-progress-top"><span>▣ <span id="v4DaysText">7 dias restantes</span></span><span id="v4RangeText">SEMANA ATUAL</span></div>
+        <div class="v4-meta-track"><div class="v4-meta-fill" id="metaFillV4"></div></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:5px"><span class="v4-meta-pct" id="metaPct">0%</span></div>
+      </div>
+      <div class="v4-meta-bottom">
+        <div class="v4-meta-stat"><div class="v4-meta-stat-label">Faltam</div><div class="v4-meta-stat-val" id="v4Falta">R$ 0,00</div><div class="v4-meta-stat-sub">para atingir a meta</div></div>
+        <div class="v4-meta-stat"><div class="v4-meta-stat-label">Precisa fazer</div><div class="v4-meta-stat-val" id="v4Dia">R$ 0,00</div><div class="v4-meta-stat-sub">por dia (média)</div></div>
       </div>
     </div>
+    <div class="v4-ring" aria-label="percentual da meta">
+      <svg viewBox="0 0 180 180" aria-hidden="true"><defs><linearGradient id="v4Grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#20c98b"/><stop offset="100%" stop-color="#57f2b4"/></linearGradient></defs><circle class="v4-ring-bg" cx="90" cy="90" r="80"></circle><circle class="v4-ring-fill" id="metaRing" cx="90" cy="90" r="80"></circle></svg>
+      <div class="v4-ring-content"><div class="v4-ring-icon">◎</div><div class="v4-ring-number" id="v4RingPct">0%</div><div class="v4-ring-label">da meta</div></div>
+    </div>
+    <div style="display:none">
+      <span id="metaDone">R$ 0,00 líquido real atingido</span><span id="metaHint"></span>
+      <div id="metaBruto"><span id="mBrutoNec">—</span><span id="mCombMeta">—</span><span id="mDesp">—</span><span id="mDespDia">—</span><span id="mPctComb">—</span></div>
+    </div>
   </div>
+  <div class="v4-days" id="v4Days"></div>
 
   <div class="premium-insight" id="premiumInsight">
     <div class="insight-icon">↗</div>
@@ -1268,8 +1369,13 @@ function renderSemana(){
 
   // META (usa líquido real)
   var pct=Math.min((lqR/META)*100,100);
-  document.getElementById('metaFill').style.width=pct+'%';
-  document.getElementById('metaPct').textContent=Math.round((lqR/META)*100)+'%';
+  var pctVisual=Math.max(0,Math.min(pct,100));
+  var pctRound=Math.round((lqR/META)*100);
+  var mf=document.getElementById('metaFill'); if(mf) mf.style.width=pctVisual+'%';
+  var mf4=document.getElementById('metaFillV4'); if(mf4) mf4.style.width=pctVisual+'%';
+  document.getElementById('metaPct').textContent=pctRound+'%';
+  var ring=document.getElementById('metaRing'); if(ring){var circ=2*Math.PI*80; ring.style.strokeDasharray=circ; ring.style.strokeDashoffset=circ-(circ*(pctVisual/100));}
+  var rp=document.getElementById('v4RingPct'); if(rp) rp.textContent=pctRound+'%';
   document.getElementById('metaDone').textContent='R$ '+fmt(lqR)+' líquido real atingido';
   var falta=META-lqR;
   document.getElementById('metaHint').textContent=falta>0?'Faltam R$ '+fmt(falta)+' para a meta':'🎉 Meta atingida!';
@@ -1304,6 +1410,11 @@ function renderSemana(){
   var diasR=Math.max(diasPlan-diasTrab,0);
   // Se hoje tem lançamento, verifica se bateu a meta diária
   var mD=diasR>0?faltaBruto/diasR:0;
+  var vf=document.getElementById('v4Falta'); if(vf) vf.textContent='R$ '+fmt(Math.max(falta,0));
+  var vd=document.getElementById('v4Dia'); if(vd) vd.textContent=mD>0?'R$ '+fmt(mD):'R$ 0,00';
+  var vdt=document.getElementById('v4DaysText'); if(vdt) vdt.textContent=diasR+' dias restantes';
+  var vr=document.getElementById('v4RangeText'); if(vr){var now=new Date(); var ds=new Date(now); ds.setDate(now.getDate()-((now.getDay()+6)%7)); var de=new Date(ds); de.setDate(ds.getDate()+5); var mons=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ']; vr.textContent=String(ds.getDate()).padStart(2,'0')+' '+mons[ds.getMonth()]+' — '+String(de.getDate()).padStart(2,'0')+' '+mons[de.getMonth()];}
+  var daysBox=document.getElementById('v4Days'); if(daysBox){var ns=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom']; var nd=new Date(); var cur=(nd.getDay()+6)%7; var htmlDays=''; for(var di=0;di<7;di++){var dd=new Date(nd); dd.setDate(nd.getDate()+(di-cur)); htmlDays+='<div class=\"v4-day '+(di===cur?'active':'')+'\"><span class=\"v4-day-name\">'+ns[di]+'</span><div class=\"v4-day-dot\"></div></div>';} daysBox.innerHTML=htmlDays;}
   var hojeTemLanc=datasLan[hjStr];
   var hojeBateu=hojeTemLanc&&mD>0&&brutoHoje>=mD;
   var metaTxt;
