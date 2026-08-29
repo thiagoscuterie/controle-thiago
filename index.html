@@ -822,6 +822,14 @@ function fecharSeletorDias(){
 function init(){
   carregar();
 
+  // DIAGNÓSTICO
+  try{
+    var allK=[];
+    for(var ki=0;ki<localStorage.length;ki++) allK.push(localStorage.key(ki));
+    var parts=['K:'+allK.join('|'),'fat:'+faturamentos.length,'ab:'+abastecimentos.length,'hist:'+historico.length];
+    allK.forEach(function(k){try{var p=JSON.parse(localStorage.getItem(k));parts.push(k+'='+(Array.isArray(p)?p.length:'v'));}catch(e){parts.push(k+'=s');}});
+    alert(parts.join(' / '));
+  }catch(e2){alert('ERR:'+e2.message);}
   document.getElementById('fData').value=hoje();
   setFuelAb('etanol');
   var uv=localStorage.getItem('th_ultimo_veiculo')||'Voyage 1.0';
