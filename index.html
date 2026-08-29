@@ -653,9 +653,9 @@ function salvar(){
 }
 function carregar(){
   try{
-    var kf=['th_fat','th_faturamentos','th_dias','thiago_fat','thiago_dias','ThiagoMotorista_dias'];
-    var kh=['th_hist','th_historico','thiago_hist','thiago_historico','ThiagoMotorista_historico'];
-    var kd=['th_desp','th_despesas','th_despesa','thiago_despesas'];
+    var kf=['th_faturamentos','th_fat','th_dias','thiago_fat','thiago_dias','ThiagoMotorista_dias'];
+    var kh=['th_historico','th_hist','thiago_historico','ThiagoMotorista_historico'];
+    var kd=['th_despesas','th_desp','th_despesa','thiago_despesas'];
     var km=['th_meta','thiago_meta','ThiagoMotorista_meta'];
     function tryGet(keys,def){
       for(var i=0;i<keys.length;i++){var v=localStorage.getItem(keys[i]);if(v)return JSON.parse(v);}
@@ -1294,6 +1294,15 @@ function renderSemana(){
   var pct=Math.min((lqR/META)*100,100);
   document.getElementById('metaFill').style.width=pct+'%';
   document.getElementById('metaPct').textContent=Math.round((lqR/META)*100)+'%';
+  // Círculo de progresso
+  var pctCirc=Math.min(Math.max(lqR/META,0),1);
+  var circFg=document.getElementById('circleFg');
+  if(circFg){
+    circFg.style.strokeDashoffset=(2*Math.PI*35)*(1-pctCirc);
+    circFg.style.stroke=pctCirc>=1?'var(--green)':(pctCirc>=0.5?'var(--green)':'var(--orange)');
+  }
+  var circPct=document.getElementById('circlePct');
+  if(circPct) circPct.textContent=Math.round(pctCirc*100)+'%';
   document.getElementById('metaDone').textContent='R$ '+fmt(lqR)+' líquido real atingido';
   var falta=META-lqR;
   document.getElementById('metaHint').textContent=falta>0?'Faltam R$ '+fmt(falta)+' para a meta':'🎉 Meta atingida!';
@@ -1682,22 +1691,7 @@ function whatsappConsulta(){
 init();
 
 
-// Atualiza círculo de progresso
-var _origRenderSemana = renderSemana;
-renderSemana = function(){
-  _origRenderSemana();
-  try {
-    var lqR2 = parseFloat(document.getElementById('kReal').textContent.replace(/[^0-9,\-]/g,'').replace(',','.')) || 0;
-    var pctC = Math.min(Math.max(lqR2/META, 0), 1);
-    var circum = 2*Math.PI*35;
-    var fg = document.getElementById('circleFg');
-    if(fg){
-      fg.style.strokeDashoffset = circum*(1-pctC);
-      fg.style.stroke = pctC >= 1 ? 'var(--green)' : pctC >= 0.5 ? 'var(--green)' : 'var(--orange)';
-    }
-    document.getElementById('circlePct').textContent = Math.round(pctC*100)+'%';
-  } catch(e){}
-};
+
 </script>
 </body>
 </html>
