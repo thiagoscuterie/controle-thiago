@@ -678,17 +678,16 @@ function carregar(){
     // Normaliza faturamentos
     faturamentos = rawFat.map(function(d){ return {data:d.data||'', bruto:d.bruto||0}; });
 
-    // Normaliza abastecimentos — garante campo datas[] e todos os campos numéricos
+    // Normaliza abastecimentos
     abastecimentos = rawAb.map(function(ab){
-      // Formato antigo: datas era um array de strings, ou era só uma data
-      var dts = ab.datas || (ab.data ? [ab.data] : []);
-      var comb  = ab.comb  || ab.custReal || ab.valorComb || 0;
-      var preco = ab.preco || ab.precoL   || 0;
-      var km    = ab.km    || ab.kmLiq    || ab.kmRodado  || 0;
-      var lit   = ab.litros|| ab.litrosReais || (preco>0&&comb>0?comb/preco:0);
-      var med   = ab.media || ab.medConsumo  || (lit>0&&km>0?km/lit:0);
-      var fuel  = ab.fuel  || ab.combustivel || 'etanol';
-      var veic=ab.veiculo||'Voyage 1.0';
+      var dts = ab.datas && ab.datas.length ? ab.datas : (ab.data ? [ab.data] : ['2026-01-01']);
+      var comb  = parseFloat(ab.comb  || ab.custReal || ab.valorComb || 0);
+      var preco = parseFloat(ab.preco || ab.precoL   || 0);
+      var km    = parseFloat(ab.km    || ab.kmLiq    || ab.kmRodado  || 0);
+      var lit   = parseFloat(ab.litros|| ab.litrosReais || 0) || (preco>0&&comb>0?comb/preco:0);
+      var med   = parseFloat(ab.media || ab.medConsumo  || 0) || (lit>0&&km>0?km/lit:0);
+      var fuel  = ab.fuel || ab.combustivel || 'etanol';
+      var veic  = ab.veiculo || 'Voyage 1.0';
       return {id:ab.id||Date.now(),datas:dts,comb:comb,preco:preco,km:km,litros:lit,media:med,fuel:fuel,veiculo:veic};
     });
 
