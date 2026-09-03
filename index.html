@@ -289,7 +289,14 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
         <div class="md-val" id="mdDias" style="color:var(--blue);cursor:pointer;border-bottom:1px dashed rgba(116,192,252,0.4)" onclick="abrirSeletorDias()" title="Toque para alterar">0 ✎</div>
       </div>
     </div>
-    <div style="position:relative;height:60px"><canvas id="graficoSemanal"></canvas></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="13" width="4" height="9" rx="1" fill="#b197fc" opacity="0.6"/><rect x="10" y="7" width="4" height="15" rx="1" fill="#b197fc"/><rect x="18" y="9" width="4" height="12" rx="1" fill="#b197fc" opacity="0.6"/></svg>
+        <span style="font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--sub);font-weight:700">Faturamento por dia</span>
+      </div>
+      <span id="graficoHoje" style="font-family:'DM Mono',monospace;font-size:0.85rem;font-weight:700;color:var(--green)"></span>
+    </div>
+    <div style="position:relative;height:160px"><canvas id="graficoSemanal"></canvas></div>
     <div id="graficoSemanalVazio" style="display:none;text-align:center;font-size:0.7rem;color:var(--sub);padding:6px 0">Lance o primeiro dia para ver o gráfico</div>
   </div>
 
@@ -1031,7 +1038,7 @@ function renderGraficoSemanal(){
   var canvas=document.getElementById('graficoSemanal');
   if(!canvas) return;
   var pw=canvas.parentElement?canvas.parentElement.offsetWidth:280;
-  canvas.width=pw; canvas.height=60;
+  canvas.width=pw; canvas.height=160;
   var hj=hojeDate(), labels=[], values=[], cores=[];
   var t=totalsDe(faturamentos,abastecimentos,despesas);
   var brutoNecLocal=t.tD>0?(META+t.tD)*1.3:META*1.3;
@@ -1042,8 +1049,14 @@ function renderGraficoSemanal(){
     var wd=WEEKDAYS[dt.getDay()===0?6:dt.getDay()-1];
     var total=0; for(var f=0;f<faturamentos.length;f++){if(faturamentos[f].data===ds)total+=faturamentos[f].bruto||0;}
     labels.push(wd); values.push(total);
-    cores.push(total===0?'rgba(255,255,255,0.07)':(mDia>0&&total>=mDia?'rgba(0,245,176,0.75)':'rgba(255,209,102,0.75)'));
+    cores.push(total===0?'rgba(255,255,255,0.06)':(mDia>0&&total>=mDia?'rgba(0,245,176,0.85)':'rgba(255,185,50,0.80)'));
   }
+  // Atualiza "Hoje: R$ X"
+  var hjStr2=hoje();
+  var brutoHojeG=0;
+  for(var fi2=0;fi2<faturamentos.length;fi2++){if(faturamentos[fi2].data===hjStr2)brutoHojeG+=faturamentos[fi2].bruto||0;}
+  var hojeEl=document.getElementById('graficoHoje');
+  if(hojeEl) hojeEl.textContent=brutoHojeG>0?'Hoje: R$ '+fmt(brutoHojeG):'';
   var vazio=document.getElementById('graficoSemanalVazio');
   var temDados=values.some(function(v){return v>0;});
   if(vazio) vazio.style.display=temDados?'none':'block';
@@ -1052,24 +1065,28 @@ function renderGraficoSemanal(){
   if(graficoSemanalInst){graficoSemanalInst.destroy();graficoSemanalInst=null;}
   graficoSemanalInst=new Chart(canvas,{
     type:'bar',
-    data:{labels:labels,datasets:[{data:values,backgroundColor:cores,borderWidth:0,borderRadius:3,barPercentage:0.7}]},
+    data:{labels:labels,datasets:[{data:values,backgroundColor:cores,borderWidth:0,borderRadius:8,barPercentage:0.65,categoryPercentage:0.8}]},
     options:{
-      responsive:false, animation:false,
+      responsive:false, animation:{duration:600,easing:'easeOutQuart'},
       plugins:{legend:{display:false},tooltip:{enabled:false}},
       scales:{
-        x:{ticks:{color:'#5a6680',font:{size:8},maxRotation:0,padding:0},grid:{display:false},border:{display:false}},
+        x:{ticks:{color:'#7a8aaa',font:{size:10,weight:'600'},maxRotation:0,padding:4},grid:{display:false},border:{display:false}},
         y:{display:false,beginAtZero:true}
       },
-      layout:{padding:{top:14,bottom:0,left:2,right:2}}
+      layout:{padding:{top:24,bottom:0,left:4,right:4}}
     },
-    plugins:[{id:'miniLabels',afterDatasetsDraw:function(chart){
+    plugins:[{id:'premiumLabels',afterDatasetsDraw:function(chart){
       var ctx2=chart.ctx;
       chart.data.datasets[0].data.forEach(function(val,idx){
         if(val<=0) return;
         var bar=chart.getDatasetMeta(0).data[idx];
-        ctx2.save(); ctx2.fillStyle='rgba(240,244,255,0.85)';
-        ctx2.font='600 8px "DM Mono",monospace'; ctx2.textAlign='center'; ctx2.textBaseline='bottom';
-        ctx2.fillText(Math.round(val),bar.x,bar.y-1); ctx2.restore();
+        // Valor acima da barra
+        ctx2.save();
+        ctx2.fillStyle='rgba(240,244,255,0.9)';
+        ctx2.font='700 11px "DM Mono",monospace';
+        ctx2.textAlign='center'; ctx2.textBaseline='bottom';
+        ctx2.fillText(Math.round(val),bar.x,bar.y-4);
+        ctx2.restore();
       });
     }}]
   });
