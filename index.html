@@ -1043,12 +1043,15 @@ function renderGraficoSemanal(){
   var t=totalsDe(faturamentos,abastecimentos,despesas);
   var brutoNecLocal=t.tD>0?(META+t.tD)*1.3:META*1.3;
   var mDia=brutoNecLocal/7;
-  for(var i=6;i>=0;i--){
-    var dt=new Date(hj); dt.setDate(dt.getDate()-i);
+  // Sempre mostra Seg a Dom da semana atual
+  var diaSem=hj.getDay()===0?6:hj.getDay()-1; // 0=Seg, 6=Dom
+  var seg=new Date(hj); seg.setDate(hj.getDate()-diaSem);
+  var fixedLabels=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  for(var i=0;i<7;i++){
+    var dt=new Date(seg); dt.setDate(seg.getDate()+i);
     var ds=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
-    var wd=WEEKDAYS[dt.getDay()===0?6:dt.getDay()-1];
     var total=0; for(var f=0;f<faturamentos.length;f++){if(faturamentos[f].data===ds)total+=faturamentos[f].bruto||0;}
-    labels.push(wd); values.push(total);
+    labels.push(fixedLabels[i]); values.push(total);
     cores.push(total===0?'rgba(255,255,255,0.06)':(mDia>0&&total>=mDia?'rgba(0,245,176,0.85)':'rgba(255,185,50,0.80)'));
   }
   // Atualiza "Hoje: R$ X"
@@ -1057,17 +1060,41 @@ function renderGraficoSemanal(){
   for(var fi2=0;fi2<faturamentos.length;fi2++){if(faturamentos[fi2].data===hjStr2)brutoHojeG+=faturamentos[fi2].bruto||0;}
   var hojeEl=document.getElementById('graficoHoje');
   if(hojeEl) hojeEl.textContent=brutoHojeG>0?'Hoje: R$ '+fmt(brutoHojeG):'';
+  // Destaca o dia de hoje no gráfico com borda
+  var hojeIdx=diaSem; // índice do dia de hoje (0=Seg...6=Dom)
   var vazio=document.getElementById('graficoSemanalVazio');
   var temDados=values.some(function(v){return v>0;});
   if(vazio) vazio.style.display=temDados?'none':'block';
   canvas.style.display=temDados?'block':'none';
   if(!temDados){if(graficoSemanalInst){graficoSemanalInst.destroy();graficoSemanalInst=null;}return;}
   if(graficoSemanalInst){graficoSemanalInst.destroy();graficoSemanalInst=null;}
+  // Usa gradientes canvas para cores premium
+  var gradPlugin={id:'gradientBars',beforeDatasetsDraw:function(chart){
+    var ctx3=chart.ctx, ds=chart.data.datasets[0], meta=chart.getDatasetMeta(0);
+    ds.backgroundColor=ds.data.map(function(val,i){
+      var bar=meta.data[i];
+      if(!bar) return 'rgba(255,255,255,0.06)';
+      var top=bar.y, bottom=chart.chartArea.bottom;
+      if(val<=0) return 'rgba(255,255,255,0.06)';
+      var isMeta=mDia>0&&val>=mDia;
+      var grad=ctx3.createLinearGradient(0,top,0,bottom);
+      if(isMeta){
+        grad.addColorStop(0,'rgba(120,255,210,0.95)');
+        grad.addColorStop(0.5,'rgba(0,245,176,0.85)');
+        grad.addColorStop(1,'rgba(0,180,120,0.70)');
+      } else {
+        grad.addColorStop(0,'rgba(255,230,80,0.95)');
+        grad.addColorStop(0.5,'rgba(255,185,50,0.85)');
+        grad.addColorStop(1,'rgba(200,130,20,0.70)');
+      }
+      return grad;
+    });
+  }};
   graficoSemanalInst=new Chart(canvas,{
     type:'bar',
-    data:{labels:labels,datasets:[{data:values,backgroundColor:cores,borderWidth:0,borderRadius:8,barPercentage:0.65,categoryPercentage:0.8}]},
+    data:{labels:labels,datasets:[{data:values,backgroundColor:cores,borderWidth:0,borderRadius:10,borderSkipped:false,barPercentage:0.65,categoryPercentage:0.8}]},
     options:{
-      responsive:false, animation:{duration:600,easing:'easeOutQuart'},
+      responsive:false, animation:{duration:700,easing:'easeOutQuart'},
       plugins:{legend:{display:false},tooltip:{enabled:false}},
       scales:{
         x:{ticks:{color:'#7a8aaa',font:{size:10,weight:'600'},maxRotation:0,padding:4},grid:{display:false},border:{display:false}},
@@ -1075,17 +1102,17 @@ function renderGraficoSemanal(){
       },
       layout:{padding:{top:24,bottom:0,left:4,right:4}}
     },
-    plugins:[{id:'premiumLabels',afterDatasetsDraw:function(chart){
+    plugins:[gradPlugin,{id:'premiumLabels',afterDatasetsDraw:function(chart){
       var ctx2=chart.ctx;
       chart.data.datasets[0].data.forEach(function(val,idx){
         if(val<=0) return;
         var bar=chart.getDatasetMeta(0).data[idx];
-        // Valor acima da barra
+        var isMeta=mDia>0&&val>=mDia;
         ctx2.save();
-        ctx2.fillStyle='rgba(240,244,255,0.9)';
+        ctx2.fillStyle=isMeta?'rgba(180,255,230,0.95)':'rgba(255,240,150,0.95)';
         ctx2.font='700 11px "DM Mono",monospace';
         ctx2.textAlign='center'; ctx2.textBaseline='bottom';
-        ctx2.fillText(Math.round(val),bar.x,bar.y-4);
+        ctx2.fillText(Math.round(val),bar.x,bar.y-5);
         ctx2.restore();
       });
     }}]
