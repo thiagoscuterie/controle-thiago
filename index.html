@@ -100,7 +100,9 @@ body>*{position:relative;z-index:1;}
 
 /* FUEL */
 .fuel-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.fuel-card{border-radius:16px;padding:10px 12px;}
+.fuel-card{border-radius:14px;padding:10px 12px;display:flex;flex-direction:row;align-items:center;gap:12px;}
+.fuel-card-icon{font-size:1.5rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;width:36px;}
+.fuel-card-info{display:flex;flex-direction:column;}
 .fuel-card.et{background:linear-gradient(135deg,rgba(64,224,160,0.12),rgba(64,224,160,0.04));border:1px solid rgba(64,224,160,0.25);box-shadow:0 2px 12px rgba(64,224,160,0.08);}
 .fuel-card.gas{background:linear-gradient(135deg,rgba(255,159,67,0.12),rgba(255,159,67,0.04));border:1px solid rgba(255,159,67,0.25);box-shadow:0 2px 12px rgba(255,159,67,0.08);}
 .fuel-icon{font-size:1.05rem;margin-bottom:3px;}
@@ -341,8 +343,8 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
 
   <div class="sec" style="margin-top:4px">⛽ Média por combustível</div>
   <div class="fuel-row">
-    <div class="fuel-card et"><div class="fuel-icon">🌿</div><div class="fuel-name">Etanol</div><div class="fuel-avg" id="fEt">—</div><div class="fuel-sub" id="fEtSub">sem registros</div></div>
-    <div class="fuel-card gas"><div class="fuel-icon">🔶</div><div class="fuel-name">Gasolina</div><div class="fuel-avg" id="fGas">—</div><div class="fuel-sub" id="fGasSub">sem registros</div></div>
+    <div class="fuel-card et"><div class="fuel-card-icon">🌿</div><div class="fuel-card-info"><div class="fuel-name">Etanol</div><div class="fuel-avg" id="fEt">—</div><div class="fuel-sub" id="fEtSub">sem registros</div></div></div>
+    <div class="fuel-card gas"><div class="fuel-card-icon">🔶</div><div class="fuel-card-info"><div class="fuel-name">Gasolina</div><div class="fuel-avg" id="fGas">—</div><div class="fuel-sub" id="fGasSub">sem registros</div></div></div>
   </div>
 
   <div class="gc ap">
