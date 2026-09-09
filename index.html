@@ -661,9 +661,9 @@ function renderKmLimite(kmRodado){
   var lim=getKmLimite(), saldo=getSaldoKm();
   var disponivel=lim>0?lim+saldo:0, restante=lim>0?disponivel-kmRodado:0;
   var restEl=document.getElementById('kmRest');
-  document.getElementById('kmDisp').textContent=lim>0?fmt(disponivel)+' km':'—';
-  document.getElementById('kmRodSem').textContent=kmRodado>0?fmt(kmRodado)+' km':'—';
-  if(lim>0){ restEl.textContent=(restante>=0?'+':'')+fmt(restante)+' km'; restEl.style.color=restante>=0?'var(--green)':'var(--red)'; }
+  document.getElementById('kmDisp').textContent=lim>0?Math.round(disponivel)+' km':'—';
+  document.getElementById('kmRodSem').textContent=kmRodado>0?Math.round(kmRodado)+' km':'—';
+  if(lim>0){ restEl.textContent=(restante>=0?'+':'')+Math.round(Math.abs(restante))+' km'; restEl.style.color=restante>=0?'var(--green)':'var(--red)'; }
   else{ restEl.textContent='—'; restEl.style.color='var(--sub)'; }
 }
 
