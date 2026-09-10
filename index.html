@@ -598,6 +598,7 @@ function carregar(){
 
 // ===== UTILS =====
 function fmt(v){return Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtKm(v){return Math.round(v).toLocaleString('pt-BR');}
 function fmtD(s){if(!s)return'—';var p=s.split('-');return p[2]+'/'+p[1];}
 function hoje(){
   var d=new Date(), h=d.getHours(), m=d.getMinutes();
@@ -661,9 +662,9 @@ function renderKmLimite(kmRodado){
   var lim=getKmLimite(), saldo=getSaldoKm();
   var disponivel=lim>0?lim+saldo:0, restante=lim>0?disponivel-kmRodado:0;
   var restEl=document.getElementById('kmRest');
-  document.getElementById('kmDisp').textContent=lim>0?Math.round(disponivel)+' km':'—';
-  document.getElementById('kmRodSem').textContent=kmRodado>0?Math.round(kmRodado)+' km':'—';
-  if(lim>0){ restEl.textContent=(restante>=0?'+':'')+Math.round(Math.abs(restante))+' km'; restEl.style.color=restante>=0?'var(--green)':'var(--red)'; }
+  document.getElementById('kmDisp').textContent=lim>0?fmtKm(disponivel)+' km':'—';
+  document.getElementById('kmRodSem').textContent=kmRodado>0?fmtKm(kmRodado)+' km':'—';
+  if(lim>0){ restEl.textContent=(restante>=0?'+':'')+fmtKm(Math.abs(restante))+' km'; restEl.style.color=restante>=0?'var(--green)':'var(--red)'; }
   else{ restEl.textContent='—'; restEl.style.color='var(--sub)'; }
 }
 
