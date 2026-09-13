@@ -1234,9 +1234,21 @@ function renderSemana(){
   var brutoHoje=0;
   for(var fi=0;fi<faturamentos.length;fi++){if(faturamentos[fi].data===hjStr)brutoHoje+=faturamentos[fi].bruto||0;}
   var datasLan={}; for(var k=0;k<faturamentos.length;k++) datasLan[faturamentos[k].data]=true;
-  // Dias restantes: usa diasPlan como base, desconta dias já lançados
+  // Dias restantes: conta dias da semana atual (Seg-Dom) que ainda não têm lançamento
+  // e estão dentro dos diasPlan planejados
+  var hjDate=hojeDate(), diaSemHj=hjDate.getDay()===0?6:hjDate.getDay()-1;
+  var segDate=new Date(hjDate); segDate.setDate(hjDate.getDate()-diaSemHj);
+  // Conta dias sem lançamento da semana (Seg até Dom), limitado a diasPlan
+  var diasSemLanc=0, diasContados=0;
+  for(var wi=0;wi<7;wi++){
+    var wd=new Date(segDate); wd.setDate(segDate.getDate()+wi);
+    var wds=wd.getFullYear()+'-'+String(wd.getMonth()+1).padStart(2,'0')+'-'+String(wd.getDate()).padStart(2,'0');
+    if(diasContados>=diasPlan) break; // já contou todos os dias planejados
+    diasContados++;
+    if(!datasLan[wds] && wds>=hjStr) diasSemLanc++; // dia futuro ou hoje sem lançamento
+  }
   var diasTrab=faturamentos.length;
-  var diasR=Math.max(diasPlan-diasTrab,0);
+  var diasR=diasSemLanc;
   // Se hoje tem lançamento, verifica se bateu a meta diária
   var mD=diasR>0?faltaBruto/diasR:0;
   var hojeTemLanc=datasLan[hjStr];
