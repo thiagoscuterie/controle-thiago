@@ -668,28 +668,58 @@ function renderKmLimite(kmRodado){
   else{ restEl.textContent='—'; restEl.style.color='var(--sub)'; }
 }
 
-// ===== SELETOR DE DIAS =====
+// ===== SELETOR DE DIAS DE FOLGA =====
+var DIAS_SEMANA=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+
+function getDiasFolga(){
+  try{ return JSON.parse(localStorage.getItem('th_dias_folga')||'[]'); }catch(e){ return []; }
+}
+function setDiasFolga(arr){
+  localStorage.setItem('th_dias_folga', JSON.stringify(arr));
+}
+function getDiasTrabalho(){
+  return 7 - getDiasFolga().length;
+}
+
 function abrirSeletorDias(){
-  var atual=parseInt(localStorage.getItem('th_dias_plan')||'7');
+  var folgas=getDiasFolga();
   var html='';
-  for(var d=1;d<=7;d++){
-    var ativo=d===atual;
-    var bs='padding:12px 4px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;-webkit-appearance:none';
-    bs+=';border:1px solid '+(ativo?'rgba(0,245,176,0.5)':'rgba(255,255,255,0.14)');
-    bs+=';background:'+(ativo?'rgba(0,245,176,0.15)':'rgba(255,255,255,0.04)');
-    bs+=';color:'+(ativo?'var(--green)':'#7a8aaa');
-    html+='<button onclick="selecionarDias('+d+')" style="'+bs+'">'+d+'</button>';
+  for(var d=0;d<7;d++){
+    var isFolga=folgas.indexOf(d)>=0;
+    var bs='padding:10px 2px;border-radius:10px;font-size:0.78rem;font-weight:700;cursor:pointer;-webkit-appearance:none;width:100%;';
+    bs+='border:1px solid '+(isFolga?'rgba(255,77,109,0.5)':'rgba(255,255,255,0.12)')+';';
+    bs+='background:'+(isFolga?'rgba(255,77,109,0.15)':'rgba(255,255,255,0.04)')+';';
+    bs+='color:'+(isFolga?'var(--red)':'#7a8aaa')+';';
+    html+='<button onclick="toggleFolga('+d+')" style="'+bs+'" id="folgaBtn'+d+'">'+DIAS_SEMANA[d]+'</button>';
   }
-  document.getElementById('diasBtns').innerHTML=html;
+  document.getElementById('diasFolgaBtns').innerHTML=html;
+  atualizaCountFolga();
   document.getElementById('modalDiasOverlay').classList.remove('hidden');
 }
-function selecionarDias(n){
-  localStorage.setItem('th_dias_plan',String(n));
-  fecharSeletorDias();
-  renderSemana();
+
+function toggleFolga(d){
+  var folgas=getDiasFolga();
+  var idx=folgas.indexOf(d);
+  if(idx>=0) folgas.splice(idx,1); else folgas.push(d);
+  setDiasFolga(folgas);
+  var isFolga=folgas.indexOf(d)>=0;
+  var btn=document.getElementById('folgaBtn'+d);
+  if(btn){
+    btn.style.borderColor=isFolga?'rgba(255,77,109,0.5)':'rgba(255,255,255,0.12)';
+    btn.style.background=isFolga?'rgba(255,77,109,0.15)':'rgba(255,255,255,0.04)';
+    btn.style.color=isFolga?'var(--red)':'#7a8aaa';
+  }
+  atualizaCountFolga();
 }
+
+function atualizaCountFolga(){
+  var el=document.getElementById('diasTrabCount');
+  if(el) el.textContent=getDiasTrabalho();
+}
+
 function fecharSeletorDias(){
   document.getElementById('modalDiasOverlay').classList.add('hidden');
+  renderSemana();
 }
 
 // ===== INIT =====
@@ -1023,6 +1053,7 @@ function confirmarFecharSemana(){
     setSaldoKm(novoSaldo);
   }
   faturamentos=[]; abastecimentos=[];
+  setDiasFolga([]); // reseta folgas ao fechar semana
   salvar(); renderSemana();
   alert('✅ Semana fechada!\nPeríodo: '+per+'\nLíquido: R$ '+fmt(t.tL));
   showTab(1);
@@ -1228,7 +1259,7 @@ function renderSemana(){
   document.getElementById('mDespDia').textContent=t.tD>0?'R$ '+fmt(t.tD/7)+'/dia':'sem despesas';
 
   // Meta diária (bruto)
-  var diasPlan=parseInt(localStorage.getItem('th_dias_plan')||'7');
+  var diasPlan=getDiasTrabalho();
   var faltaBruto=Math.max(brutoNec-t.tB,0);
   var hjStr=hoje();
   var brutoHoje=0;
@@ -1247,7 +1278,8 @@ function renderSemana(){
   else if(diasR>0){ metaTxt='R$ '+fmt(mD)+'/dia'; }
   else { metaTxt='—'; }
   document.getElementById('mdMeta').textContent=metaTxt;
-  document.getElementById('mdDias').textContent=diasPlan+' dias ✎';
+  var diasTrab7=getDiasTrabalho();
+  document.getElementById('mdDias').textContent=diasTrab7+' dias ✎';
 
   // Gráfico semanal
   renderGraficoSemanal();
@@ -1609,11 +1641,12 @@ init();
 <!-- MODAL DIAS DA SEMANA -->
 <div class="modal-overlay hidden" id="modalDiasOverlay" onclick="if(event.target===this)fecharSeletorDias()">
   <div class="modal-box">
-    <div class="modal-icon">📅</div>
-    <div class="modal-title">Dias que vai trabalhar</div>
-    <div class="modal-msg">Selecione quantos dias você planeja trabalhar nesta semana.</div>
-    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:20px" id="diasBtns"></div>
-    <button class="modal-cancel" onclick="fecharSeletorDias()">Fechar</button>
+    <div class="modal-icon">😴</div>
+    <div class="modal-title">Dias de folga esta semana</div>
+    <div class="modal-msg">Selecione os dias que você <strong style="color:var(--red)">NÃO</strong> vai trabalhar.</div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px" id="diasFolgaBtns"></div>
+    <div style="text-align:center;font-size:0.82rem;color:var(--sub);margin-bottom:16px">Dias de trabalho: <span id="diasTrabCount" style="color:var(--green);font-weight:700;font-family:'DM Mono',monospace">7</span></div>
+    <button class="modal-confirm" style="width:100%" onclick="fecharSeletorDias()">✓ Confirmar</button>
   </div>
 </div>
 </body>
