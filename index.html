@@ -1222,10 +1222,9 @@ function renderSemana(){
   sMedEl.textContent=t.mc>0?fmt(t.mc)+' km/L':'—';
   if(t.mc>0&&histMedGeral>0){
     sMedEl.style.color=t.mc>=histMedGeral?'var(--green)':'var(--red)';
-    badge.style.display='inline'; badge.className='badge '+(t.mc>=histMedGeral?'up':'dn');
-    badge.textContent=t.mc>=histMedGeral?'▲ ACIMA':'▼ ABAIXO';
-    document.getElementById('sMedSub').textContent='Média geral: '+fmt(histMedGeral)+' km/L';
-  } else { sMedEl.style.color=''; badge.style.display='none'; document.getElementById('sMedSub').textContent=histMedGeral>0?'Média geral: '+fmt(histMedGeral)+' km/L':''; }
+  } else { sMedEl.style.color=t.mc>0?'var(--green)':''; }
+  if(badge) badge.style.display='none';
+  var subEl=document.getElementById('sMedSub'); if(subEl) subEl.textContent='';
   document.getElementById('sLit').textContent=t.tLit>0?fmt(t.tLit)+' L':'—';
   var mBkm=t.tK>0?t.tB/t.tK:0;
   document.getElementById('sBkm').textContent=mBkm>0?'R$ '+fmt(mBkm)+'/km':'—';
