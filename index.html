@@ -272,13 +272,32 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
     <div class="meta-track"><div class="meta-fill" id="metaFill" style="width:0%"></div></div>
     <div class="meta-row"><span class="meta-done" id="metaDone">R$ 0,00 atingido</span></div>
     <div class="meta-hint" id="metaHint"></div>
-    <div id="metaBruto" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06)">
-      <div class="sec" style="margin-bottom:6px">📊 Para bater a meta você precisa faturar</div>
-      <div class="mini-grid">
-        <div class="mini-item"><div class="mini-label">Bruto necessário</div><div class="mini-val" id="mBrutoNec" style="color:var(--orange)">—</div></div>
-        <div class="mini-item"><div class="mini-label">⛽ Comb. estimado p/ meta</div><div class="mini-val" id="mCombMeta" style="color:var(--red)">—</div></div>
-        <div class="mini-item"><div class="mini-label">Despesas fixas</div><div class="mini-val" id="mDesp" style="color:var(--purple)">—</div><div class="mini-sub" id="mDespDia">—</div></div>
-        <div class="mini-item"><div class="mini-label">% comb. histórico</div><div class="mini-val" id="mPctComb" style="color:var(--warn)">—</div></div>
+    <div id="metaBruto" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+      <div class="sec" style="margin-bottom:10px">📊 Para bater a meta você precisa faturar</div>
+      <!-- BRUTO NECESSÁRIO — DESTAQUE -->
+      <div style="background:linear-gradient(135deg,rgba(255,159,67,0.1),rgba(255,159,67,0.03));border:1px solid rgba(255,159,67,0.2);border-radius:16px;padding:14px 16px;margin-bottom:10px;position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center">
+        <div style="position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,159,67,0.6),transparent)"></div>
+        <div>
+          <div style="font-size:0.48rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,159,67,0.6);font-weight:700;margin-bottom:4px">Bruto necessário</div>
+          <div class="mini-val" id="mBrutoNec" style="color:var(--orange);font-size:1.5rem;font-weight:900;font-family:'DM Mono',monospace">—</div>
+          <div style="font-size:0.6rem;color:rgba(255,159,67,0.4);margin-top:4px">valor bruto total para atingir a meta</div>
+        </div>
+        <div style="font-size:1.8rem;opacity:0.4">🎯</div>
+      </div>
+      <!-- GRID: DESPESAS + DIAS/META DIA -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(177,151,252,0.5),transparent)"></div>
+          <div style="font-size:0.48rem;letter-spacing:1.5px;text-transform:uppercase;color:#6b7a99;font-weight:700;margin-bottom:4px">🏠 Despesas fixas</div>
+          <div class="mini-val" id="mDesp" style="color:var(--purple);font-family:'DM Mono',monospace;font-size:1rem;font-weight:700">—</div>
+          <div class="mini-sub" id="mDespDia" style="font-size:0.6rem;color:#6b7a99;margin-top:3px;font-family:'DM Mono',monospace">—</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(116,192,252,0.5),transparent)"></div>
+          <div style="font-size:0.48rem;letter-spacing:1.5px;text-transform:uppercase;color:#6b7a99;font-weight:700;margin-bottom:4px">📅 Dias restantes</div>
+          <div id="mDiasRest" style="color:var(--blue);font-family:'DM Mono',monospace;font-size:1rem;font-weight:700">—</div>
+          <div id="mMetaDia" style="display:inline-block;font-size:0.52rem;padding:2px 7px;border-radius:99px;font-weight:700;margin-top:5px;background:rgba(0,245,176,0.1);color:#00f5b0;border:1px solid rgba(0,245,176,0.2)">—</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1251,11 +1270,20 @@ function renderSemana(){
   var combParaMeta=brutoNec*pctFrac;
   document.getElementById('metaBruto').style.display='block';
   document.getElementById('mBrutoNec').textContent=brutoNec>0?'R$ '+fmt(brutoNec):'—';
-  document.getElementById('mCombMeta').textContent=combParaMeta>0?'R$ '+fmt(combParaMeta):'—';
-  // mCombMed removido
-  document.getElementById('mPctComb').textContent=pctCombHist>0?fmt(pctCombHist)+'%':'~30% estimado';
   document.getElementById('mDesp').textContent='R$ '+fmt(t.tD);
   document.getElementById('mDespDia').textContent=t.tD>0?'R$ '+fmt(t.tD/7)+'/dia':'sem despesas';
+  // Dias restantes e meta/dia no novo card
+  var diasRestEl=document.getElementById('mDiasRest');
+  var metaDiaEl=document.getElementById('mMetaDia');
+  var diasPlanT=getDiasTrabalho?getDiasTrabalho():7;
+  var faturados=faturamentos.length;
+  var diasSobr=Math.max(diasPlanT-faturados,0);
+  if(diasRestEl) diasRestEl.textContent=diasSobr+' dia'+(diasSobr!==1?'s':'');
+  if(metaDiaEl && diasSobr>0){
+    var metaDiaVal=falta/diasSobr;
+    metaDiaEl.textContent='Meta/dia: R$ '+fmt(metaDiaVal);
+    metaDiaEl.style.display='inline-block';
+  } else if(metaDiaEl){ metaDiaEl.style.display='none'; }
 
   // Meta diária (bruto)
   var diasPlan=getDiasTrabalho();
