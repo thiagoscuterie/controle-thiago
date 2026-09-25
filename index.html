@@ -262,42 +262,16 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
 <div id="pSemana">
 
   <div class="gc ag">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-      <!-- LEFT -->
-      <div style="flex:1;min-width:0">
-        <div class="sec" style="margin-bottom:8px">🎯 Meta Semanal</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:nowrap">
-          <span class="meta-num" id="metaVal" onclick="editMeta()" style="white-space:nowrap">R$ 1.200,00</span>
-          <!-- Botão lápis circular -->
-          <span onclick="editMeta()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(240,244,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </span>
-          <input type="number" class="meta-inp" id="metaInp" onblur="saveMeta()" onkeydown="if(event.key==='Enter')saveMeta()">
-        </div>
-        <div style="margin-bottom:3px"><span class="meta-done" id="metaDone" style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--green);font-weight:700">R$ 0,00 <span style="font-size:0.6rem;color:rgba(0,245,176,0.5);font-weight:400">atingido</span></span></div>
-        <div class="meta-hint" id="metaHint" style="font-size:0.65rem;color:var(--orange);font-family:'DM Mono',monospace"></div>
-      </div>
-      <!-- CÍRCULO DE PROGRESSO -->
-      <div style="position:relative;width:80px;height:80px;flex-shrink:0">
-        <svg width="80" height="80" viewBox="0 0 80 80" style="transform:rotate(-90deg);display:block">
-          <defs>
-            <linearGradient id="circGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" style="stop-color:#00c98a"/>
-              <stop offset="100%" style="stop-color:#00f5b0"/>
-            </linearGradient>
-          </defs>
-          <circle fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6" cx="40" cy="40" r="35"/>
-          <circle id="circleFg" fill="none" stroke="url(#circGrad)" stroke-width="6" stroke-linecap="round"
-            cx="40" cy="40" r="35"
-            stroke-dasharray="220" stroke-dashoffset="220"
-            style="transition:stroke-dashoffset 0.8s ease;filter:drop-shadow(0 0 5px rgba(0,245,176,0.4))"/>
-        </svg>
-        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-          <div id="circlePct" style="font-family:'Montserrat',sans-serif;font-size:1.05rem;font-weight:900;color:#00f5b0;line-height:1">0%</div>
-          <div style="font-size:0.38rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-top:2px">da meta</div>
-        </div>
-      </div>
+    <div class="sec">🎯 Meta Semanal — Líquido Real</div>
+    <div class="meta-goal-row">
+      <span class="meta-num" id="metaVal" onclick="editMeta()">R$ 1.200,00</span>
+      <span class="meta-tap" onclick="editMeta()">✏️ editar</span>
+      <input type="number" class="meta-inp" id="metaInp" onblur="saveMeta()" onkeydown="if(event.key==='Enter')saveMeta()">
+      <span class="meta-pct" id="metaPct">0%</span>
     </div>
+    <div class="meta-track"><div class="meta-fill" id="metaFill" style="width:0%"></div></div>
+    <div class="meta-row"><span class="meta-done" id="metaDone">R$ 0,00 atingido</span></div>
+    <div class="meta-hint" id="metaHint"></div>
     <div id="metaBruto" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
       <div class="sec" style="margin-bottom:10px">📊 Para bater a meta você precisa faturar</div>
       <!-- BRUTO NECESSÁRIO — DESTAQUE -->
@@ -1280,12 +1254,7 @@ function renderSemana(){
   var pct=Math.min((lqR/META)*100,100);
   document.getElementById('metaFill').style.width=pct+'%';
   document.getElementById('metaPct').textContent=Math.round((lqR/META)*100)+'%';
-  var pctC=Math.min(Math.max(lqR/META,0),1);
-  var cFg=document.getElementById('circleFg');
-  if(cFg){cFg.style.strokeDashoffset=(220*(1-pctC)).toFixed(1);cFg.style.stroke=pctC>=0.5?'url(#circGrad)':'var(--orange)';}
-  var cPct=document.getElementById('circlePct');
-  if(cPct) cPct.textContent=Math.round(pctC*100)+'%';
-  document.getElementById('metaDone').innerHTML='R$ '+fmt(lqR)+' <span style="font-size:0.6rem;color:rgba(0,245,176,0.5);font-weight:400">atingido</span>';
+  document.getElementById('metaDone').textContent='R$ '+fmt(lqR)+' líquido real atingido';
   var falta=META-lqR;
   document.getElementById('metaHint').textContent=falta>0?'Faltam R$ '+fmt(falta)+' para a meta':'🎉 Meta atingida!';
 
