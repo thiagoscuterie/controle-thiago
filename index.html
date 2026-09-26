@@ -42,11 +42,11 @@ body>*{position:relative;z-index:1;}
 .gc.ap{border-color:rgba(177,151,252,0.2);background:linear-gradient(135deg,rgba(177,151,252,0.05),var(--glass));}
 .gc.gc-chart{position:relative;overflow:hidden;}
 .gc.gc-chart::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--purple),var(--blue),var(--green));border-radius:99px;}
-.sec{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--sub);margin-bottom:10px;font-weight:600;}
+.sec{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--sub);margin-bottom:10px;font-weight:700;}
 
 /* META */
 .meta-goal-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
-.meta-num{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:600;color:var(--green);cursor:pointer;border-bottom:1px dashed rgba(0,245,176,0.4);}
+.meta-num{font-family:'DM Mono',monospace;font-size:1.9rem;font-weight:900;color:var(--green);cursor:pointer;text-shadow:0 0 20px rgba(0,245,176,0.2);}
 .meta-inp{background:rgba(0,245,176,0.08);border:1px solid rgba(0,245,176,0.3);border-radius:10px;color:var(--green);font-family:'DM Mono',monospace;font-size:1.1rem;padding:4px 10px;width:130px;outline:none;display:none;-webkit-appearance:none;}
 .meta-tap{font-size:0.7rem;color:var(--sub);background:var(--glass2);border:1px solid var(--border2);border-radius:99px;padding:3px 10px;cursor:pointer;}
 .meta-track{width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;margin-bottom:8px;}
@@ -262,10 +262,12 @@ input,select,textarea{color-scheme:dark;background:rgba(255,255,255,0.04);color:
 <div id="pSemana">
 
   <div class="gc ag">
-    <div class="sec">🎯 Meta Semanal — Líquido Real</div>
+    <div class="sec">🎯 Meta Semanal</div>
     <div class="meta-goal-row">
       <span class="meta-num" id="metaVal" onclick="editMeta()">R$ 1.200,00</span>
-      <span class="meta-tap" onclick="editMeta()">✏️ editar</span>
+      <span onclick="editMeta()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;vertical-align:middle">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(240,244,255,0.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </span>
       <input type="number" class="meta-inp" id="metaInp" onblur="saveMeta()" onkeydown="if(event.key==='Enter')saveMeta()">
       <span class="meta-pct" id="metaPct">0%</span>
     </div>
@@ -1254,9 +1256,9 @@ function renderSemana(){
   var pct=Math.min((lqR/META)*100,100);
   document.getElementById('metaFill').style.width=pct+'%';
   document.getElementById('metaPct').textContent=Math.round((lqR/META)*100)+'%';
-  document.getElementById('metaDone').textContent='R$ '+fmt(lqR)+' líquido real atingido';
+  document.getElementById('metaDone').innerHTML='<span style="font-family:\'DM Mono\',monospace;font-size:0.95rem;font-weight:700;color:var(--green)">R$ '+fmt(lqR)+'</span> <span style="font-size:0.72rem;color:rgba(0,245,176,0.55);font-weight:500">atingido</span>';
   var falta=META-lqR;
-  document.getElementById('metaHint').textContent=falta>0?'Faltam R$ '+fmt(falta)+' para a meta':'🎉 Meta atingida!';
+  document.getElementById('metaHint').innerHTML=falta>0?'<span style="font-size:0.6rem;color:rgba(255,159,67,0.5)">faltam</span> <span style="font-family:\'DM Mono\',monospace;font-size:0.82rem;font-weight:700;color:var(--orange)">R$ '+fmt(falta)+'</span>':'<span style="color:var(--green);font-size:0.78rem">🎉 Meta atingida!</span>';
 
   // Bruto necessário
   // Últimas 8 semanas fechadas — cálculo ponderado (total/total, não média das médias)
